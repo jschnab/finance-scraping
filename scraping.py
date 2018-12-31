@@ -6,6 +6,7 @@ import numpy as np
 import requests
 from bs4 import BeautifulSoup
 import bs4
+import os
 
 # convert string with comma to float, e.g. '2,42' to 2.42
 def string_to_float(string):
@@ -28,14 +29,11 @@ def scraping():
     # display progress on console
     print('Web scraping of financial data\n')
 
-    # if the database file does not exist
     # create a csv file with just header, to be appended with data below
     filename = '/home/jonathans/finance-scraping/finance-data-' + today + '.csv'
-    if 'finance-data.sq3' not in os.listdir():
-        with open(filename, 'w') as csvfile:
-            csvfile.write('name,capital,date,time,lastquote,lastabs,lastrel,bid,offer,low,\
+    with open(filename, 'w') as csvfile:
+        csvfile.write('name,capital,date,time,lastquote,lastabs,lastrel,bid,offer,low,\
 high,dayvol,pe,yield\n')
-
 
     # display progress on console
     print('Saving data in ' + filename + '\n')
