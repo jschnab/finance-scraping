@@ -52,12 +52,15 @@ high,dayvol,pe,yield\n')
                 # get name of company
                 name = content.find('span', attrs={'class':'securityName'}).get_text()
 
-                # get last_quote and date
+                # get last_quote
                 last_quote = content.find('span', attrs={'id':'Col0Price'}).get_text()
                 last_quote = string_to_float(last_quote)
+
+                # get date
                 last_date = content.find('p', attrs={'id':'Col0PriceTime'}).get_text().split(' ')[1]
                 last_time = last_date[10:]
-                last_date = last_date[:10]
+                last_date = last_date[:10].split('/')
+                last_date = '-'.join(reversed(last_date))
 
                 # get last quote relative variation
                 quote_detail = content.find('span', attrs={'id':'Col0PriceDetail'}).get_text()
