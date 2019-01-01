@@ -61,6 +61,9 @@ high,dayvol,pe,yield\n')
                 last_time = last_date[10:]
                 last_date = last_date[:10].split('/')
                 last_date = '-'.join(reversed(last_date))
+                # if there is not date, set to 'NULL'
+                if last_date == '--':
+                    last_date = 'NULL'
 
                 # get last quote relative variation
                 quote_detail = content.find('span', attrs={'id':'Col0PriceDetail'}).get_text()

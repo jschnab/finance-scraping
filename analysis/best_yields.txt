@@ -1,0 +1,5 @@
+SELECT name, max(date), yield
+FROM euronext_techno
+GROUP BY name
+ORDER BY yield DESC
+LIMIT 10;

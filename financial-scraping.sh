@@ -10,7 +10,7 @@ check=`python3 scraping.py | tail -c5`
 if [ $check == 'done' ]; then
     echo 'Scraping was successful, now storing data in a database.'
     csvfile=`ls -t *.csv | head -n1`
-    python3 ~/sqlitetools/sqlitetools/file2db.py -d ~/finance-scraping/finance-data.sq3 -t euronext_techno -f $csvfile -e latin1
+    python3 ~/sqlitetools/sqlitetools/file2db.py -d ~/finance-scraping/finance-data.sq3 -t euronext_techno -f $csvfile -e utf8
 
 else
     echo 'Scraping was not successful.'

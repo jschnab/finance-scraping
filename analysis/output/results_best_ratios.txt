@@ -1,0 +1,12 @@
+                    name    max(date)       pe
+----------------------------------------------
+          NSE Industries   2018-12-31   327.71
+       Generix Group FCE   2018-12-31    325.0
+                2CRSI SA   2018-12-31   156.77
+                Atari SA   2018-12-31    70.51
+         Solutions 30 SE   2018-12-31    68.23
+            Esi Group SA   2018-12-31    66.07
+                Dalet SA   2018-12-31    62.63
+          Axway Software   2018-12-31     62.1
+   Ubisoft Entertainment   2018-12-31    59.73
+              Kerlink SA   2018-12-31    53.38

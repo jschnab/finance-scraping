@@ -1,0 +1,5 @@
+SELECT name, max(date), capital
+FROM euronext_techno
+GROUP BY name
+ORDER BY capital DESC
+LIMIT 10;
