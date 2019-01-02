@@ -45,8 +45,16 @@ high,dayvol,pe,yield\n')
     with open(links, 'r') as urlfile:
         while True:
             url = urlfile.readline()
+            # stay in the loop while the files contains lines with a URL
             if url != '':
-                response = requests.get(url, timeout=240)
+                try:
+                    response = requests.get(url, timeout=10)
+                except ConnectionResetError as e:
+                    with open('errorlog.txt', 'a') as errorlog:
+                        errorlog.write(str(datetime.now())[:19] + ' ' + e + '\n')
+                    print('Could not read URL : ' + url)
+                    continue
+
                 content = BeautifulSoup(response.content, 'html.parser')
 
                 # get name of company
@@ -113,6 +121,7 @@ high,dayvol,pe,yield\n')
                     csvfile.write(writestring + '\n')
 
             else:
+                # exit loop at the end of the file containing URLs
                 break
 
     # print progress on console
