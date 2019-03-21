@@ -48,77 +48,83 @@ high,dayvol,pe,yield\n')
             # stay in the loop while the files contains lines with a URL
             if url != '':
                 try:
-                    response = requests.get(url, timeout=10)
+                    response = requests.get(url, timeout=100)
                 except ConnectionResetError as e:
                     with open('errorlog.txt', 'a') as errorlog:
                         errorlog.write(str(datetime.now())[:19] + ' ' + e + '\n')
                     print('Could not read URL : ' + url)
                     continue
 
-                content = BeautifulSoup(response.content, 'html.parser')
+                if response.status_code == 200:
+                    content = BeautifulSoup(response.content, 'html.parser')
 
-                # get name of company
-                name = content.find('span', attrs={'class':'securityName'}).get_text()
+                    # get name of company
+                    name = content.find('span', attrs={'class':'securityName'}).get_text()
 
-                # get last_quote
-                last_quote = content.find('span', attrs={'id':'Col0Price'}).get_text()
-                last_quote = string_to_float(last_quote)
+                    # get last_quote
+                    last_quote = content.find('span', attrs={'id':'Col0Price'}).get_text()
+                    last_quote = string_to_float(last_quote)
 
-                # get date
-                last_date = content.find('p', attrs={'id':'Col0PriceTime'}).get_text().split(' ')[1]
-                last_time = last_date[10:]
-                last_date = last_date[:10].split('/')
-                last_date = '-'.join(reversed(last_date))
-                # if there is not date, set to 'NULL'
-                if last_date == '--':
-                    last_date = 'NULL'
+                    # get date
+                    last_date = content.find('p', attrs={'id':'Col0PriceTime'}).get_text().split(' ')[1]
+                    last_time = last_date[10:]
+                    last_date = last_date[:10].split('/')
+                    last_date = '-'.join(reversed(last_date))
+                    # if there is not date, set to 'NULL'
+                    if last_date == '--':
+                        last_date = 'NULL'
 
-                # get last quote relative variation
-                quote_detail = content.find('span', attrs={'id':'Col0PriceDetail'}).get_text()
-                quote_detail_abs = string_to_float(quote_detail.split('|')[0])
-                quote_detail_rel = string_to_float(quote_detail.split('|')[1].replace('%', '')) / 100
+                    # get last quote relative variation
+                    quote_detail = content.find('span', attrs={'id':'Col0PriceDetail'}).get_text()
+                    quote_detail_abs = string_to_float(quote_detail.split('|')[0])
+                    quote_detail_rel = string_to_float(quote_detail.split('|')[1].replace('%', '')) / 100
 
-                # get bid and offer
-                bid_offer = content.find('td', attrs={'id':'Col0BidOffer'}).get_text().split(' - ')
-                bid = string_to_float(bid_offer[0])
-                offer = string_to_float(bid_offer[1])
+                    # get bid and offer
+                    bid_offer = content.find('td', attrs={'id':'Col0BidOffer'}).get_text().split(' - ')
+                    bid = string_to_float(bid_offer[0])
+                    offer = string_to_float(bid_offer[1])
 
-                # get daily low/high
-                lo_hi = content.find('td', attrs={'id':'Col0LowHigh'}).get_text().split(' - ')
-                if len(lo_hi) == 2:
-                    low = string_to_float(lo_hi[0])
-                    high = string_to_float(lo_hi[1])
+                    # get daily low/high
+                    lo_hi = content.find('td', attrs={'id':'Col0LowHigh'}).get_text().split(' - ')
+                    if len(lo_hi) == 2:
+                        low = string_to_float(lo_hi[0])
+                        high = string_to_float(lo_hi[1])
+                    else:
+                        low = 'NULL'
+                        high = 'NULL'
+
+                    # get daily volume
+                    day_vol = string_to_float(content.find('td', attrs={'id':'Col0DayVolume'}).get_text())
+
+                    # capital
+                    capital_str = content.find('td', attrs={'id':'Col0MCap'}).get_text()
+                    if capital_str[-3:] == 'Mil':
+                        capital = string_to_float(capital_str[:-3]) * 10e6
+                    elif capital_str[-3:] == 'Bil':
+                        capital = string_to_float(capital_str[:-3]) * 10e9
+                    else:
+                        capital = string_to_float(capital_str)
+
+                    # get last closing value
+                    last_close = string_to_float(content.find('td', attrs={'id':'Col0LastClose'}).get_text())
+
+                    # get yield ratio P/E
+                    p_e = string_to_float(content.find('td', attrs={'id':'Col0PE'}).get_text())
+
+                    # get yield (percent)
+                    yield_percent = string_to_float(content.find('td', attrs={'id':'Col0Yield'}).get_text()) / 100
+
+                    # append data to a csv file
+                    writestring = ','.join([name, str(capital), last_date, last_time, str(last_quote),\
+            str(quote_detail_abs), str(quote_detail_rel), str(bid), str(offer), str(low), str(high),\
+            str(day_vol), str(p_e), str(yield_percent)])
+                    with open(filename, 'a') as csvfile:
+                        csvfile.write(writestring + '\n')
+
+                # if response.status code is not 200
                 else:
-                    low = 'NULL'
-                    high = 'NULL'
-
-                # get daily volume
-                day_vol = string_to_float(content.find('td', attrs={'id':'Col0DayVolume'}).get_text())
-
-                # capital
-                capital_str = content.find('td', attrs={'id':'Col0MCap'}).get_text()
-                if capital_str[-3:] == 'Mil':
-                    capital = string_to_float(capital_str[:-3]) * 10e6
-                elif capital_str[-3:] == 'Bil':
-                    capital = string_to_float(capital_str[:-3]) * 10e9
-                else:
-                    capital = string_to_float(capital_str)
-
-                # get last closing value
-                last_close = string_to_float(content.find('td', attrs={'id':'Col0LastClose'}).get_text())
-
-                # get yield ratio P/E
-                p_e = string_to_float(content.find('td', attrs={'id':'Col0PE'}).get_text())
-
-                # get yield (percent)
-                yield_percent = string_to_float(content.find('td', attrs={'id':'Col0Yield'}).get_text()) / 100
-
-                # append data to a csv file
-                writestring = ','.join([name, str(capital), last_date, last_time, str(last_quote),\
-        str(quote_detail_abs), str(quote_detail_rel), str(bid), str(offer), str(low), str(high),\
-        str(day_vol), str(p_e), str(yield_percent)])
-                with open(filename, 'a') as csvfile:
-                    csvfile.write(writestring + '\n')
+                    print('Status code {0} - could not retrieve data for:'.format(response.status_code))
+                    print('{0}\n'.format(url))
 
             else:
                 # exit loop at the end of the file containing URLs
