@@ -1,12 +1,12 @@
                           name    max(date)                 yield
 -----------------------------------------------------------------
+                         Tessi   2019-03-15                0.1899
    Locasystem international SA   2017-08-26                0.1429
-                       Debflex   2018-12-05                 0.126
-                     Netgem SA   2018-12-31                 0.102
-                         HF Co   2018-12-31                0.0926
+                       Debflex   2018-12-06                 0.126
                     Consort NT   2017-11-22                0.0891
-                           IDS   2018-12-07                0.0862
-                 HiTechPros SA   2018-12-29                 0.085
-      Magillem Design Services   2018-12-29   0.07429999999999999
-       Eutelsat Communications   2018-12-31   0.07339999999999999
-             Neocom Multimedia   2018-12-19                0.0707
+                           IDS   2019-03-15                0.0862
+                 HiTechPros SA   2019-03-15   0.08449999999999999
+                         HF Co   2019-03-15   0.07690000000000001
+                     Netgem SA   2019-03-15   0.07690000000000001
+       Eutelsat Communications   2019-03-15                0.0766
+             Neocom Multimedia   2019-03-15                0.0722

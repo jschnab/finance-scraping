@@ -5,6 +5,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
+import pandas as pd
 
 def plot_time_series(x, y, ylabel, title, time_interval):
     """
@@ -22,7 +23,10 @@ def plot_time_series(x, y, ylabel, title, time_interval):
     """
     
     # convert datetimes to datetime objects
-    dates = [datetime.strptime(i, "%Y-%m-%d") for i in x]
+    if not isinstance(x.iloc[0], pd._libs.tslibs.timestamps.Timestamp):
+        dates = [datetime.strptime(i, "%Y-%m-%d") for i in x]
+    else:
+        dates = x
 
     # plot data
     fig, ax = plt.subplots()
@@ -31,7 +35,7 @@ def plot_time_series(x, y, ylabel, title, time_interval):
     # modify x axis
     if time_interval == 'month':
         ax.get_xaxis().set_major_locator(mdates.MonthLocator(interval=1))
-        ax.get_xaxis().set_major_formatter(mdates.Dateformatter('%b %Y'))
+        ax.get_xaxis().set_major_formatter(mdates.DateFormatter('%b %Y'))
     elif time_interval == 'week':
         ax.get_xaxis().set_major_locator(mdates.DayLocator(interval=7))
         ax.get_xaxis().set_major_formatter(mdates.DateFormatter('%d-%m-%y'))

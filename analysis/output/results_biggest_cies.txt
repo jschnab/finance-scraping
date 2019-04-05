@@ -1,12 +1,12 @@
                       name    max(date)              capital
 ------------------------------------------------------------
-                 Nokia Oyj   2018-12-31       281300000000.0
-      Dassault Systemes SE   2018-12-31       263400000000.0
-              Capgemini SE   2018-12-31       143600000000.0
-     STMicroelectronics NV   2018-12-31       109900000000.0
-     Ubisoft Entertainment   2018-12-31        76700000000.0
-                   Atos SE   2018-12-31        75400000000.0
-                Gemalto NV         NULL        45900000000.0
-   Eutelsat Communications   2018-12-31   40199999999.999985
-                  Rexel SA   2018-12-31        28000000000.0
-                     Alten   2018-12-31        24300000000.0
+      Dassault Systemes SE   2019-03-15       338300000000.0
+                 Nokia Oyj   2019-03-15       305800000000.0
+              Capgemini SE   2019-03-15   175799999999.99994
+     STMicroelectronics NV   2019-03-15       125100000000.0
+                   Atos SE   2019-03-15        89400000000.0
+     Ubisoft Entertainment   2019-03-15        79500000000.0
+                Gemalto NV         NULL        46300000000.0
+   Eutelsat Communications   2019-03-15        38600000000.0
+                  Rexel SA   2019-03-15        32500000000.0
+                     Alten   2019-03-15        31600000000.0
