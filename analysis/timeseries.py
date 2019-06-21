@@ -19,7 +19,7 @@ def plot_time_series(x, y, ylabel, title, time_interval):
     time_interval (str): datetime interval between x axis ticks
 
     Returns:
-    matplotlib plot
+    None
     """
     
     # convert datetimes to datetime objects
