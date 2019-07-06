@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 # plots a time series
 
@@ -7,7 +7,13 @@ import matplotlib.dates as mdates
 from datetime import datetime
 import pandas as pd
 
-def plot_time_series(x, y, ylabel, title, time_interval):
+def plot_time_series(
+        x,
+        y,
+        ylabel='',
+        title='',
+        time_interval='month'
+):
     """
     Plots a time series with datetime as x and variable as y.
 
@@ -17,6 +23,7 @@ def plot_time_series(x, y, ylabel, title, time_interval):
     ylabel (str): label of the y axis
     title (str): title of the plot
     time_interval (str): datetime interval between x axis ticks
+                         accepted values are 'month' or 'week'
 
     Returns:
     None
@@ -44,8 +51,10 @@ def plot_time_series(x, y, ylabel, title, time_interval):
     # adjust figure appearance
     for i in ['top', 'right', 'bottom', 'left']:
         ax.spines[i].set_visible(False)
-    ax.set_ylabel(ylabel, fontsize=16)
-    ax.set_title(title, fontsize=18)
+    if ylabel:
+        ax.set_ylabel(ylabel, fontsize=16)
+    if title:
+        ax.set_title(title, fontsize=18)
     ax.grid(color='grey', linestyle=':')
 
     plt.show()

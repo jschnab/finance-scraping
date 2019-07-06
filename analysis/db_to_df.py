@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 # import data from sqlite3 database into pandas dataframe
 
