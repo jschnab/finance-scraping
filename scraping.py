@@ -8,6 +8,42 @@ from bs4 import BeautifulSoup
 import bs4
 import os
 
+
+def get_urls(urls_file):
+    """
+    Get the list of URLs to scrape from a text file.
+
+    :param str urls_file: path to the file containing URLs
+    :return list(str): list of URLs
+    """
+    with open(urls_file) as f:
+        urls = f.readlines()
+
+    urls_stripped = [u.strip('\n') for u in urls]
+
+    return urls_stripped
+
+
+def download_page_contents(session, url):
+    """
+    Download the contents of a web page.
+
+    :param requests.Session: Session object
+    :param str url: page URL
+    :return bytes: web page contents
+    """
+    try:
+        response = session.get(url, timeout=10)
+
+    except:
+        pass
+
+    response.raise_on_status()
+
+    return response.content
+
+
+
 # convert string with comma to float, e.g. '2,42' to 2.42
 def string_to_float(string):
     """Convert a string with a comma to a float"""
