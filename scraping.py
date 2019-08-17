@@ -1,12 +1,15 @@
 # script to perform web scraping of financial data
 # see https://towardsdatascience.com/stock-market-analysis-in-python-part-1-getting-data-by-web-scraping-cb0589aca178 
 
-from datetime import datetime
-import numpy as np
-import requests
-from bs4 import BeautifulSoup
 import bs4
+from bs4 import BeautifulSoup
+from datetime import datetime
+from io import StringIO
+import numpy as np
 import os
+import requests
+
+import boto3
 
 
 def get_urls(urls_file):
@@ -42,6 +45,20 @@ def download_page_contents(session, url):
 
     return response.content
 
+
+def upload_file_object_to_s3(file_object, bucket, key):
+    """
+    Upload a file-like object to S3.
+
+    :param data: a file-like object such as a StringIO object
+    :param str bucket: S3 bucket where to upload data
+    :param str key: S3 object key where to upload data
+    """
+    client = boto3.client('s3')
+
+    response = client.upload_fileobj(Body=file_object, Bucket=bucket, Key=key)
+
+    check_response(response)
 
 
 # convert string with comma to float, e.g. '2,42' to 2.42
