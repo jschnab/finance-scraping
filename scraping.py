@@ -8,15 +8,21 @@ from io import StringIO
 import numpy as np
 import os
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 import boto3
 
+from config import get_session_parameters
 
-def get_urls(urls_file):
+
+def get_urls(bucket, urls_key, aws_profile=None):
     """
-    Get the list of URLs to scrape from a text file.
+    Get the list of URLs to scrape from a text file stored in S3.
 
-    :param str urls_file: path to the file containing URLs
+    :param str bucket: AWS S3 bucket where the file containing URLS is stored
+    :param str urls_key: AWS S3 key to the file containing URLs
+    :param str aws_profile: AWS profile to use (default None)
     :return list(str): list of URLs
     """
     with open(urls_file) as f:
@@ -27,16 +33,47 @@ def get_urls(urls_file):
     return urls_stripped
 
 
-def download_page_contents(session, url):
+def get_session(parameters):
+    """
+    Get session object for HTTP requests.
+
+    To have granular control on request retries, we define a 'Retry' object
+    from urllib3 and use it as a parameter for the HTTP adapter mounted on the
+    Session object.
+
+    :param dict: session parameters
+    :return requests.Session: session object
+    """
+    session = requests.Session()
+
+    retry = Retry(
+        total=parameters['max_retries'],
+        read=parameters.get['max_retries'],
+        connect=parameters.get['max_retries'],
+        backoff_factor=parameters.get['backoff_factor'],
+        status_forcelist=parameters.get['retry_on']
+    )
+
+    adapter = HTTPAdapter(max_retries=retry)
+
+    session.mount('http://', adapter)
+
+    session.mount('https://', adapter)
+
+    return session
+
+
+def download_page_contents(session, url, timeout):
     """
     Download the contents of a web page.
 
     :param requests.Session: Session object
     :param str url: page URL
     :return bytes: web page contents
+    :raises requests.exceptions.HTTPError: if status code is 4xx or 5xx
     """
     try:
-        response = session.get(url, timeout=10)
+        response = session.get(url, timeout)
 
     except:
         pass
@@ -44,21 +81,6 @@ def download_page_contents(session, url):
     response.raise_on_status()
 
     return response.content
-
-
-def upload_file_object_to_s3(file_object, bucket, key):
-    """
-    Upload a file-like object to S3.
-
-    :param data: a file-like object such as a StringIO object
-    :param str bucket: S3 bucket where to upload data
-    :param str key: S3 object key where to upload data
-    """
-    client = boto3.client('s3')
-
-    response = client.upload_fileobj(Body=file_object, Bucket=bucket, Key=key)
-
-    check_response(response)
 
 
 # convert string with comma to float, e.g. '2,42' to 2.42
