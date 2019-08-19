@@ -3,31 +3,50 @@ from configparser import ConfigParser
 
 def get_config():
     """
-    Read configuration file and return the whole configuration.
+    Read configuration file, perform appropriate typ conversion
+    and return the whole configuration.
+
+    :return dict[dict]: configuration
     """
     config = ConfigParser()
 
     config.read('config.ini')
 
-    return config
+    # get AWS config
+    aws_config = config['AWS']
 
+    aws_params = {}
 
-def get_session_parameters():
-    """
-    Get parameters for the the requests.Session object.
+    aws_params['bucket'] = aws_config['bucket']
 
-    :return dict: session parameters
-    """
-    config = get_config()['SCRAPING']
+    aws_params['profile'] = aws_config['profile']
 
-    session_params = {}
+    # get requests config
+    requests_config = config['REQUESTS']
 
-    session_params['max_retries'] = int(config['max_retries'])
+    requests_params = {}
 
-    session_params['backoff_factor'] = float(config['backoff_factor'])
+    requests_params['max_retries'] = int(requests_config['max_retries'])
 
-    session_params['retry_on'] = tuple(map(int, config['retry_on'].split(',')))
+    requests_params['backoff_factor'] = float(
+        requests_config['backoff_factor']
+    )
 
-    session_params['timeout'] = int(config['timeout'])
+    requests_params['retry_on'] = tuple(
+        map(int, requests_config['retry_on'].split(','))
+    )
 
-    return session_params
+    requests_params['timeout'] = int(requests_config['timeout'])
+
+    # get scraping config
+    scraping_config = config['SCRAPING']
+
+    scraping_params = {}
+
+    scraping_params['urls_s3_key'] = scraping_config['urls_s3_key']
+
+    return {
+        'AWS': aws_params,
+        'REQUESTS': requests_params,
+        'SCRAPING': scraping_params
+    }

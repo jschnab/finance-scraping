@@ -1,8 +1,24 @@
 # this module stores utility functions to interact with AWS
 
+from datetime import datetime
 from io import StringIO
 
 import boto3
+
+
+def get_s3_key(prefix, suffix):
+    """
+    Get an AWS S3 key formatted with the date.
+
+    :param str prefix: prefix of the S3 key
+    :param str suffix: suffix of the S3 key
+    :return str: AWS S3 key
+    """
+    date = datetime.today().strftime('%Y/%m/%d')
+
+    key = f'{prefix}/{date}/{suffix}'
+
+    return key
 
 
 def get_client(service, profile):
@@ -38,11 +54,11 @@ def download_s3_object(bucket, key, profile):
     return data
 
 
-def upload_s3_object(file_object, bucket, key, profile):
+def upload__object_to_s3(file_object, bucket, key, profile):
     """
     Upload a file-like object to S3.
 
-    :param data: a file-like object such as a StringIO object
+    :param data: file-like object data (e.g. StringIO.getvalue())
     :param str bucket: S3 bucket where to upload data
     :param str key: S3 object key where to upload data
     :para str profile: AWS profile to use

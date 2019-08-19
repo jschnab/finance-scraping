@@ -13,7 +13,7 @@ from requests.packages.urllib3.util.retry import Retry
 
 import boto3
 
-from config import get_session_parameters
+from config import get_config
 
 
 def get_urls(bucket, urls_key, aws_profile=None):
@@ -25,12 +25,17 @@ def get_urls(bucket, urls_key, aws_profile=None):
     :param str aws_profile: AWS profile to use (default None)
     :return list(str): list of URLs
     """
-    with open(urls_file) as f:
-        urls = f.readlines()
+    data = download_s3_object(
+        bucket,
+        'urls_to_scrape.txt',
+        profile
+    )
 
-    urls_stripped = [u.strip('\n') for u in urls]
+    text = data.decode()
 
-    return urls_stripped
+    urls = text.split(os.linesep)
+
+    return urls
 
 
 def get_session(parameters):
@@ -69,7 +74,7 @@ def download_page_contents(session, url, timeout):
 
     :param requests.Session: Session object
     :param str url: page URL
-    :return bytes: web page contents
+    :return dict: reponse from the server
     :raises requests.exceptions.HTTPError: if status code is 4xx or 5xx
     """
     try:
@@ -78,9 +83,35 @@ def download_page_contents(session, url, timeout):
     except:
         pass
 
-    response.raise_on_status()
+    return response.text
 
-    return response.content
+
+def get_stock_id(url):
+    """
+    Get stock ID from the URL where financial information about this stock
+    is displayed, using a regular expression.
+
+    :param str url: url of the stock's page
+    :return str: ID of the stock
+    """
+    result = re.search('(?<=&id=).{10}', url)
+
+    return result.group(0)
+
+
+def get_s3_key(prefix, suffix):
+    """
+    Get an AWS S3 key formatted with the date.
+
+    :param str prefix: prefix of the S3 key
+    :param str suffix: suffix of the S3 key
+    :return str: AWS S3 key
+    """
+    date = datetime.today().strftime('%Y/%m/%d')
+
+    key = f'{prefix}/{date}/{suffix}'
+
+    return key
 
 
 # convert string with comma to float, e.g. '2,42' to 2.42
