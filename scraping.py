@@ -68,22 +68,36 @@ def get_session(parameters):
     return session
 
 
-def download_page_contents(session, url, timeout):
+def download_page_contents(session, url, timeout, max_retries):
     """
     Download the contents of a web page.
 
     :param requests.Session: Session object
     :param str url: page URL
-    :return dict: reponse from the server
+    :param int timeout: allowed period for the server to respond (seconds)
+    :para int max_retries: number of retries in case of a connection error
+    :return str | int | list: reponse from the server
     :raises requests.exceptions.HTTPError: if status code is 4xx or 5xx
     """
-    try:
-        response = session.get(url, timeout)
+    errors = []
 
-    except:
-        pass
+    while max_retries > 0:
 
-    return response.text
+        try:
+            response = session.get(url, timeout)
+
+            if response.ok:
+                return response.text
+
+            else:
+                return response.status_code
+
+        except:
+            errors.append(sys.exc_info[1])
+            max_retries -= 1
+            time.sleep(10)
+
+    return errors
 
 
 def get_stock_id(url):
