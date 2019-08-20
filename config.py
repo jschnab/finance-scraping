@@ -9,25 +9,19 @@ def get_config():
     :return dict[dict]: configuration
     """
     config = ConfigParser()
-
     config.read('config.ini')
 
     # get AWS config
     aws_config = config['AWS']
-
     aws_params = {}
-
     aws_params['bucket'] = aws_config['bucket']
-
     aws_params['profile'] = aws_config['profile']
 
     # get requests config
     requests_config = config['REQUESTS']
-
     requests_params = {}
-
+    requests_params['user_agent'] = requests_config['user_agent']
     requests_params['max_retries'] = int(requests_config['max_retries'])
-
     requests_params['backoff_factor'] = float(
         requests_config['backoff_factor']
     )
@@ -40,9 +34,7 @@ def get_config():
 
     # get scraping config
     scraping_config = config['SCRAPING']
-
     scraping_params = {}
-
     scraping_params['urls_s3_key'] = scraping_config['urls_s3_key']
 
     return {

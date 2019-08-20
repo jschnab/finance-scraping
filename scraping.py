@@ -32,7 +32,6 @@ def get_urls(bucket, urls_key, aws_profile=None):
     )
 
     text = data.decode()
-
     urls = text.split(os.linesep)
 
     return urls
@@ -60,32 +59,43 @@ def get_session(parameters):
     )
 
     adapter = HTTPAdapter(max_retries=retry)
-
     session.mount('http://', adapter)
-
     session.mount('https://', adapter)
-
     return session
 
 
-def download_page_contents(session, url, timeout, max_retries):
+def download_page_contents(
+        session,
+        url,
+        user_agent,
+        timeout,
+        max_retries
+):
     """
     Download the contents of a web page.
 
+    If the server's response was 200 return the text part of the response.
+    If the response is not 200 and not one of the status codes the Session
+    object is programmed to retry on (typically 500, 502 and 504), send the
+    status code.
+    If an error happens during a retry, store the error in a list and return
+    the list of errors when the maximum number of retries is reached.
+
     :param requests.Session: Session object
     :param str url: page URL
+    :param str user_agent: custome user-agent to put in request headers
     :param int timeout: allowed period for the server to respond (seconds)
     :para int max_retries: number of retries in case of a connection error
-    :return str | int | list: reponse from the server
+    :return str | int | list: page content | status code | list of errors
     :raises requests.exceptions.HTTPError: if status code is 4xx or 5xx
     """
+    headers = {'User-Agent': user_agent}
     errors = []
 
     while max_retries > 0:
 
         try:
-            response = session.get(url, timeout)
-
+            response = session.get(url, timeout=timeout, headers=headers)
             if response.ok:
                 return response.text
 
@@ -109,23 +119,7 @@ def get_stock_id(url):
     :return str: ID of the stock
     """
     result = re.search('(?<=&id=).{10}', url)
-
     return result.group(0)
-
-
-def get_s3_key(prefix, suffix):
-    """
-    Get an AWS S3 key formatted with the date.
-
-    :param str prefix: prefix of the S3 key
-    :param str suffix: suffix of the S3 key
-    :return str: AWS S3 key
-    """
-    date = datetime.today().strftime('%Y/%m/%d')
-
-    key = f'{prefix}/{date}/{suffix}'
-
-    return key
 
 
 # convert string with comma to float, e.g. '2,42' to 2.42

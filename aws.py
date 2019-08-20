@@ -15,7 +15,6 @@ def get_s3_key(prefix, suffix):
     :return str: AWS S3 key
     """
     date = datetime.today().strftime('%Y/%m/%d')
-
     key = f'{prefix}/{date}/{suffix}'
 
     return key
@@ -44,11 +43,8 @@ def download_s3_object(bucket, key, profile):
     :return bytes: data from the AWS S3 object
     """
     client = get_client('s3', profile)
-
     data = StringIO()
-
     response = client.get_object(Bucket=bucket, Key=key)
-
     data = response.get('Body').read()
 
     return data
@@ -64,5 +60,4 @@ def upload__object_to_s3(file_object, bucket, key, profile):
     :para str profile: AWS profile to use
     """
     client = get_client('s3', profile)
-
     client.put_object(Body=file_object, Bucket=bucket, Key=key)
