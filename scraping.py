@@ -5,16 +5,43 @@ import bs4
 from bs4 import BeautifulSoup
 from datetime import datetime
 from io import StringIO
+import logging
 import numpy as np
 import os
+import re
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+import sys
+import time
 
 import boto3
 
 import aws
 from config import get_config
+
+
+def validate_urls(urls):
+    """
+    Make sure each URL in a list starts with 'http://' and is not empty,
+    which can happen when reading URLs from a file.
+
+    :param list(str) urls: list of URLs
+    :return list(str): list of validated URLs
+    """
+    validated = []
+
+    for u in urls:
+        if u.startswith('http://'):
+            validated.append(u)
+
+        elif u.startswith('www.'):
+            validated.append(f'http://{u}')
+
+        else:
+            continue
+
+    return validated
 
 
 def get_urls(bucket, urls_key, aws_profile=None):
@@ -28,14 +55,14 @@ def get_urls(bucket, urls_key, aws_profile=None):
     """
     data = aws.download_s3_object(
         bucket,
-        'urls_to_scrape.txt',
+        urls_key,
         aws_profile
     )
 
     text = data.decode()
     urls = text.split(os.linesep)
-
-    return urls
+    validated = validate_urls(urls)
+    return validated
 
 
 def get_session(parameters):
@@ -53,10 +80,10 @@ def get_session(parameters):
 
     retry = Retry(
         total=parameters['max_retries'],
-        read=parameters.get['max_retries'],
-        connect=parameters.get['max_retries'],
-        backoff_factor=parameters.get['backoff_factor'],
-        status_forcelist=parameters.get['retry_on']
+        read=parameters.get('max_retries'),
+        connect=parameters.get('max_retries'),
+        backoff_factor=parameters.get('backoff_factor'),
+        status_forcelist=parameters.get('retry_on')
     )
 
     adapter = HTTPAdapter(max_retries=retry)
@@ -87,28 +114,27 @@ def download_page_contents(
     :param str user_agent: custome user-agent to put in request headers
     :param int timeout: allowed period for the server to respond (seconds)
     :para int max_retries: number of retries in case of a connection error
-    :return str | int | list: page content | status code | list of errors
-    :raises requests.exceptions.HTTPError: if status code is 4xx or 5xx
+    :return str: web page content
     """
     headers = {'User-Agent': user_agent}
-    errors = []
 
     while max_retries > 0:
 
         try:
             response = session.get(url, timeout=timeout, headers=headers)
             if response.ok:
+                logging.info(f'scraped {url}')
                 return response.text
 
             else:
-                return response.status_code
+                msg = f'scraping failed: {response.status_code} for {url}'
+                logging.error(msg)
 
         except:
-            errors.append(sys.exc_info[1])
+            msg = f'scraping failed: {sys.exc_info()[1]} for {url}'
+            logging.error(msg)
             max_retries -= 1
             time.sleep(10)
-
-    return errors
 
 
 def get_stock_id(url):

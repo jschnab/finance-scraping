@@ -50,7 +50,7 @@ def download_s3_object(bucket, key, profile):
     return data
 
 
-def upload__object_to_s3(file_object, bucket, key, profile):
+def upload_object_to_s3(file_object, bucket, key, profile):
     """
     Upload a file-like object to S3.
 

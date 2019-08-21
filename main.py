@@ -1,5 +1,6 @@
 from io import BytesIO, StringIO
 import logging
+import time
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import aws
@@ -16,7 +17,7 @@ def extract():
         filename='log.txt',
         format=fmt,
         filemode='a',
-        level=logging.DEBUG
+        level=logging.INFO
     )
 
     # get parameters
@@ -24,6 +25,7 @@ def extract():
     bucket = params['AWS']['s3_bucket']
     profile = params['AWS']['profile']
     urls_key = params['SCRAPING']['urls_s3_key']
+    user_agent = params['REQUESTS']['user_agent']
     timeout = params['REQUESTS']['timeout']
     max_retries = params['REQUESTS']['max_retries']
 
@@ -34,45 +36,34 @@ def extract():
         profile
     )
 
-    session = scraping.get_session(params['SESSION'])
+    session = scraping.get_session(params['REQUESTS'])
 
     # open a ZipFile archive to be stored in memory
     zip_file_object = BytesIO()
     zip_archive = ZipFile(zip_file_object, 'a', compression=ZIP_DEFLATED)
 
     # iterate through URL and download page content
-    logging.debug('scraping started')
+    logging.info('scraping started')
 
     for url in urls_list:
 
         results = scraping.download_page_contents(
             session,
             url,
+            user_agent,
             timeout,
             max_retries
         )
 
-        # if scraping of this page was successful
-        if isinstance(results, str):
-            text_buffer = StringIO(results)
-            stock_id = scraping.get_stock_id(url)
-            zip_archive.writestr(f'{stock_id}.txt', text_buffer.getvalue())
-
-        # if the server responds with a code indicating failure
-        elif isinstance(results, int):
-            msg = f'scraping {url} failed with status code {results}'
-            logging.debug(msg)
-
-        # if too many connection errors happened
-        elif isinstance(results, list):
-            errors = ', '.join(results)
-            msg = f'scraping {url} failed with the following errors: {errors}'
-            logging.debug(msg)
+        text_buffer = StringIO(results)
+        stock_id = scraping.get_stock_id(url)
+        zip_archive.writestr(f'{stock_id}.txt', text_buffer.getvalue())
+        time.sleep(0.5)
 
     # upload ZIP archive containing raw page contents to S3
     archive_key = aws.get_s3_key('raw-page-content', 'archive.zip')
-    msg = f'uploading pages contents to  s3://{bucket}/{archive_key}'
-    logging.debug(msg)
+    msg = f'uploading pages contents to s3://{bucket}/{archive_key}'
+    logging.info(msg)
 
     aws.upload_object_to_s3(
         zip_file_object.getvalue(),
@@ -80,6 +71,8 @@ def extract():
         archive_key,
         profile
     )
+
+    logging.info('scraping finished')
 
 
 if __name__ == '__main__':
