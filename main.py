@@ -10,7 +10,7 @@ import scraping
 def extract():
 
     # setup logging
-    fmt = '%(asctime)s %message)s'
+    fmt = '%(asctime)s %(message)s'
 
     logging.basicConfig(
         filename='log.txt',
@@ -21,7 +21,7 @@ def extract():
 
     # get parameters
     params = config.get_config()
-    bucket = params['AWS']['bucket']
+    bucket = params['AWS']['s3_bucket']
     profile = params['AWS']['profile']
     urls_key = params['SCRAPING']['urls_s3_key']
     timeout = params['REQUESTS']['timeout']
@@ -71,7 +71,7 @@ def extract():
 
     # upload ZIP archive containing raw page contents to S3
     archive_key = aws.get_s3_key('raw-page-content', 'archive.zip')
-    msg = f'uploading pages contents to  s3://{bucket}/{archive_key}')
+    msg = f'uploading pages contents to  s3://{bucket}/{archive_key}'
     logging.debug(msg)
 
     aws.upload_object_to_s3(
@@ -80,3 +80,7 @@ def extract():
         archive_key,
         profile
     )
+
+
+if __name__ == '__main__':
+    extract()

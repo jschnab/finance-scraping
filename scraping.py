@@ -13,6 +13,7 @@ from requests.packages.urllib3.util.retry import Retry
 
 import boto3
 
+import aws
 from config import get_config
 
 
@@ -25,10 +26,10 @@ def get_urls(bucket, urls_key, aws_profile=None):
     :param str aws_profile: AWS profile to use (default None)
     :return list(str): list of URLs
     """
-    data = download_s3_object(
+    data = aws.download_s3_object(
         bucket,
         'urls_to_scrape.txt',
-        profile
+        aws_profile
     )
 
     text = data.decode()

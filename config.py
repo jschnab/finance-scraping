@@ -14,7 +14,7 @@ def get_config():
     # get AWS config
     aws_config = config['AWS']
     aws_params = {}
-    aws_params['bucket'] = aws_config['bucket']
+    aws_params['s3_bucket'] = aws_config['s3_bucket']
     aws_params['profile'] = aws_config['profile']
 
     # get requests config
