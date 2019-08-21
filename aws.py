@@ -1,7 +1,6 @@
 # this module stores utility functions to interact with AWS
 
 from datetime import datetime
-from io import StringIO
 
 import boto3
 
@@ -35,7 +34,7 @@ def get_client(service, profile):
 
 def download_s3_object(bucket, key, profile):
     """
-    Download data from an AWS S3 object containing text.
+    Download data from an AWS S3 object.
 
     :param str bucket: AWS S3 bucket where the object is stored
     :param str key: AWS S3 key to the object
@@ -43,10 +42,8 @@ def download_s3_object(bucket, key, profile):
     :return bytes: data from the AWS S3 object
     """
     client = get_client('s3', profile)
-    data = StringIO()
     response = client.get_object(Bucket=bucket, Key=key)
     data = response.get('Body').read()
-
     return data
 
 

@@ -9,6 +9,12 @@ import scraping
 
 
 def extract():
+    """
+    Perform the extraction steps of webscraping:
+        - download raw pages contents
+        - zip data
+        - upload to AWS S3
+    """
 
     # setup logging
     fmt = '%(asctime)s %(message)s'
@@ -55,10 +61,13 @@ def extract():
             max_retries
         )
 
+        # zip each page as a text file in an archive
         text_buffer = StringIO(results)
         stock_id = scraping.get_stock_id(url)
         zip_archive.writestr(f'{stock_id}.txt', text_buffer.getvalue())
         time.sleep(0.5)
+
+    zip_archive.close()
 
     # upload ZIP archive containing raw page contents to S3
     archive_key = aws.get_s3_key('raw-page-content', 'archive.zip')
@@ -73,6 +82,16 @@ def extract():
     )
 
     logging.info('scraping finished')
+
+
+def transform():
+    """
+    Perform the transform steps of the pipeline:
+        - download raw page contents from AWS S3 and unzip
+        - parse page contents to retrieve financial data
+        - store data as a CSV file
+        - upload to S3
+    """
 
 
 if __name__ == '__main__':
