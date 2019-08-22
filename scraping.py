@@ -149,11 +149,15 @@ def get_stock_id(url):
     return result.group(0)
 
 
-# convert string with comma to float, e.g. '2,42' to 2.42
 def string_to_float(string):
-    """Convert a string with a comma to a float"""
+    """
+    Convert a string with a comma (i.e. '3.14') to a float.
+
+    :param str string: string representing a float
+    :return numpy.float:
+    """
     # \xa0 is non-breaking space in latin1
-    string_modif = string.replace(u',', u'.').replace(u'-', u'').replace(u'\xa0', u'')
+    string_modif = string.replace(u',', u'.').replace(u'\xa0', u'')
     if string_modif == '':
         return np.nan
     else:
