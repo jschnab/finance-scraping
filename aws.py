@@ -51,10 +51,10 @@ def upload_object_to_s3(file_object, bucket, key, profile):
     """
     Upload a file-like object to S3.
 
-    :param data: file-like object data (e.g. StringIO.getvalue())
+    :param data: file-like object
     :param str bucket: S3 bucket where to upload data
     :param str key: S3 object key where to upload data
     :para str profile: AWS profile to use
     """
     client = get_client('s3', profile)
-    client.put_object(Body=file_object, Bucket=bucket, Key=key)
+    client.put_object(Body=file_object.getvalue(), Bucket=bucket, Key=key)

@@ -5,19 +5,19 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import aws
 import config
+import parsing_html
 import scraping
 
 
-def extract():
+def setup():
     """
-    Perform the extraction steps of webscraping:
-        - download raw pages contents
-        - zip data
-        - upload to AWS S3
-    """
+    Retrieve configuration parameters from 'config.ini' and
+    setup logging.
 
+    :return dict: configuration parameters
+    """
     # setup logging
-    fmt = '%(asctime)s %(message)s'
+    fmt = '%(asctime)s %(levalname)s: %(message)s'
 
     logging.basicConfig(
         filename='log.txt',
@@ -28,13 +28,31 @@ def extract():
 
     # get parameters
     params = config.get_config()
-    bucket = params['AWS']['s3_bucket']
-    profile = params['AWS']['profile']
-    urls_key = params['SCRAPING']['urls_s3_key']
-    user_agent = params['REQUESTS']['user_agent']
-    timeout = params['REQUESTS']['timeout']
-    max_retries = params['REQUESTS']['max_retries']
 
+    return params
+
+
+def extract(
+    bucket,
+    urls_key,
+    profile,
+    user_agent,
+    timeout,
+    max_retries
+):
+    """
+    Perform the extraction steps of webscraping:
+        - download raw pages contents
+        - zip data
+        - upload zipped archive to AWS S3
+
+    :param str bucket: AWS S3 bucket where data is stored
+    :param str urls_key: AWS S3 key of the file storing the URLs to scrape
+    :param str profile: AWS profile
+    :param str user_agent: user agent to use for HTTP requests
+    :param int timeout: timeout period (seconds) for HTTP requests
+    :param int max_retries: maximum number of retries on HTTP request failure
+    """
     # get list of urls to scrape
     urls_list = scraping.get_urls(
         bucket,
@@ -84,15 +102,70 @@ def extract():
     logging.info('scraping finished')
 
 
-def transform():
+def transform(
+    bucket,
+    profile
+):
     """
     Perform the transform steps of the pipeline:
-        - download raw page contents from AWS S3 and unzip
+        - download and unzip raw page archive from AWS S3
         - parse page contents to retrieve financial data
-        - store data as a CSV file
-        - upload to S3
+        - write data as a CSV file
+        - upload CSV to S3
+
+    :param str bucket: AWS S3 bucket where data is stored
+    :param str profile: AWS profile
+    """
+    # download raw webpages contents
+    archive_key = aws.get_s3_key('raw-page-content', 'archive.zip')
+
+    logging.info(f'downloading raw pages {archive_key} from bucket {bucket}')
+
+    raw_pages_zip = aws.download_s3_object(
+        bucket,
+        archive_key,
+        profile
+    )
+
+    logging.info('reading raw pages archive')
+    zip_data = BytesIO(raw_pages_zip)
+    zip_obj = ZipFile(zip_data, 'r')
+
+    # unzip and parse data
+    for file_name in zip_obj.namelist():
+        logging.info(f'parsing {file_name}')
+        page_contents = zpi_obj.read(file_name).decode()
+        parsed = parsing_html.parse_webpage(page_contents)
+        csv_obj = StringIO()
+        in_out.write_csv(csv_obj, header, parsed)
+        csv_key = aws.get_s3_key('output', f'{file_name}.csv')
+
+        logging.info(f'uploading file {csv_key} to bucket {bucket}')
+        aws.upload_object_to_s3(
+            csv_obj,
+            bucket,
+            key,
+            profile
+        )
+
+
+def main():
+    """
+    Run the entire ETL pipeline.
     """
 
+    params = setup()
+
+    extract(
+        params['AWS']['s3_bucket'],
+        params['SCRAPING']['urls_s3_key'],
+        params['AWS']['profile'],
+        params['REQUESTS']['user_agent'],
+        params['REQUESTS']['timeout'],
+        params['REQUESTS']['max_retries']
+    )
+
+    transform(params['AWS']['bucket'], params['AWS']['profile'])
 
 if __name__ == '__main__':
-    extract()
+    main()
