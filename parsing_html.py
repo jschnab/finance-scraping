@@ -1,4 +1,6 @@
-import csv
+import re
+
+from bs4 import BeautifulSoup
 import numpy as np
 
 
@@ -11,10 +13,12 @@ def string_to_float(string):
     """
     # \xa0 is non-breaking space in latin1
     string_modif = string.replace(u',', u'.').replace(u'\xa0', u'')
-    if string_modif == '':
-        return np.nan
-    else:
+
+    # empty strings or symbols (e.g. '-') would throw a ValueError
+    try:
         return np.float(string_modif)
+    except ValueError:
+        return np.nan
 
 
 def parse_webpage(page_contents):
@@ -27,43 +31,60 @@ def parse_webpage(page_contents):
     """
     results = {}
 
-    parsed = BeautifulSoup(page_contents, 'html.parser')
+    soup = BeautifulSoup(page_contents, 'html.parser')
 
     # get name of company
-    results['company_name'] = content.find(
+    results['company_name'] = soup.find(
         'span',
-        attrs={'class':'securityName'}
-    )
+        attrs={'class': 'securityName'}
+    ).get_text()
 
     # get last_quote
-    last_quote = content.find('span', attrs={'id':'Col0Price'})
+    last_quote = soup.find('span', attrs={'id': 'Col0Price'}).get_text()
     results['last_quote'] = string_to_float(last_quote)
 
     # get date
-    timestamp = content.find('p', attrs={'id':'Col0PriceTime'}).split(' ')[1]
-    results['last_time'] = timestamp[10:]
-    last_date_raw = timestamp[:10]
+    timestamp = soup.find(
+        'p',
+        attrs={'id': 'Col0PriceTime'}
+    ).get_text().split()[1]
+
+    results['time'] = timestamp[10:]
+    date_raw = timestamp[:10]
+
     # if there is not date, set to 'NULL'
-    last_date = re.sub(f'(\d+)/(\d+)/(\d+)', r'\3-\2-\1', last_date_raw)
-    if last_date == last_date_raw:
-        results['last_date'] = 'NULL'
+    date = re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\2-\1', date_raw)
+    if date == date_raw:
+        results['date'] = 'NULL'
     else:
-        results['last_date'] = last_date
+        results['date'] = date
 
     # get last quote relative variation
-    quote_detail = content.find('span', attrs={'id':'Col0PriceDetail'})
+    quote_detail = soup.find(
+        'span',
+        attrs={'id': 'Col0PriceDetail'}
+    ).get_text()
+
     quote_detail_abs = quote_detail.split('|')[0]
-    results['quote_detail_abs'] = string_to_float(quote_detail_abs)
+    results['daily_change_abs'] = string_to_float(quote_detail_abs)
     quote_detail_rel = quote_detail.split('|')[1].replace('%', '')
-    results['quote_detail_rel'] = string_to_float(quote_detail_rel) / 100
+    results['daily_change_rel'] = string_to_float(quote_detail_rel) / 100
 
     # get bid and offer
-    bid_offer = content.find('td', attrs={'id':'Col0BidOffer'}).split(' - ')
+    bid_offer = soup.find(
+        'td',
+        attrs={'id': 'Col0BidOffer'}
+    ).get_text().split(' - ')
+
     results['bid'] = string_to_float(bid_offer[0])
     results['offer'] = string_to_float(bid_offer[1])
 
     # get daily low/high
-    lo_hi = content.find('td', attrs={'id':'Col0LowHigh'}).split(' - ')
+    lo_hi = soup.find(
+        'td',
+        attrs={'id': 'Col0LowHigh'}
+    ).get_text().split(' - ')
+
     if len(lo_hi) == 2:
         results['low'] = string_to_float(lo_hi[0])
         results['high'] = string_to_float(lo_hi[1])
@@ -72,11 +93,11 @@ def parse_webpage(page_contents):
         results['high'] = 'NULL'
 
     # get daily volume
-    day_vol = content.find('td', attrs={'id':'Col0DayVolume'})
-    results['daily_vol'] = string_to_float(day_vol)
+    day_vol = soup.find('td', attrs={'id': 'Col0DayVolume'}).get_text()
+    results['day_volume'] = string_to_float(day_vol)
 
     # capital
-    capital_str = content.find('td', attrs={'id':'Col0MCap'})
+    capital_str = soup.find('td', attrs={'id': 'Col0MCap'}).get_text()
     if capital_str[-3:] == 'Mil':
         capital = string_to_float(capital_str[:-3]) * 10e6
     elif capital_str[-3:] == 'Bil':
@@ -86,15 +107,15 @@ def parse_webpage(page_contents):
     results['capital'] = capital
 
     # get last closing value
-    last_close = content.find('td', attrs={'id':'Col0LastClose'})
+    last_close = soup.find('td', attrs={'id': 'Col0LastClose'}).get_text()
     results['last_close'] = string_to_float(last_close)
 
     # get yield ratio P/E
-    p_e = content.find('td', attrs={'id':'Col0PE'})
+    p_e = soup.find('td', attrs={'id': 'Col0PE'}).get_text()
     results['p_e'] = string_to_float(p_e)
 
     # get yield (percent)
-    _yield = content.find('td', attrs={'id':'Col0Yield'})
+    _yield = soup.find('td', attrs={'id': 'Col0Yield'}).get_text()
     yield_percent = string_to_float(_yield) / 100
     results['yield_percent'] = yield_percent
 

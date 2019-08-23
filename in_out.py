@@ -1,7 +1,7 @@
 import csv
 
 
-def write_csv(file_obj, header, rows):
+def write_csv(file_obj, header, row):
     """
     Write rows represented by a list of dictionaries to a CSV file.
 
@@ -9,6 +9,6 @@ def write_csv(file_obj, header, rows):
     :param list[str] header: list of column names
     :param list[dict] rows: rows of the CSV
     """
-    writer = csv.DictWriter(outfile, header, lineterminator='\n')
+    writer = csv.DictWriter(file_obj, header, lineterminator='\n')
     writer.writeheader()
-    writer.writerows(rows)
+    writer.writerow(row)
