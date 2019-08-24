@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 from io import BytesIO, StringIO
 import logging
+import sys
 import time
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -54,7 +55,6 @@ def setup():
 
     # get parameters
     params = config.get_config()
-
     return params
 
 
@@ -218,20 +218,33 @@ def main():
     """
     Run the entire ETL pipeline.
     """
+    args = utils.parse_cli()
+    print(args)
+    sys.exit()
+
+    if args.configure:
+        config.configure()
+
     params = setup()
 
-    extract(
-        params['AWS']['s3_bucket'],
-        params['SCRAPING']['urls_s3_key'],
-        params['AWS']['profile'],
-        params['REQUESTS']['max_retries'],
-        params['REQUESTS']['backoff_factor'],
-        params['REQUESTS']['retry_on'],
-        params['REQUESTS']['user_agent'],
-        params['REQUESTS']['timeout'],
-    )
+    if args.extract:
+        extract(
+            params['AWS']['s3_bucket'],
+            params['SCRAPING']['urls_s3_key'],
+            params['AWS']['profile'],
+            params['REQUESTS']['max_retries'],
+            params['REQUESTS']['backoff_factor'],
+            params['REQUESTS']['retry_on'],
+            params['REQUESTS']['user_agent'],
+            params['REQUESTS']['timeout'],
+        )
 
-    transform(params['AWS']['s3_bucket'], params['AWS']['profile'])
+    if args.transform:
+        transform(
+            params['AWS']['s3_bucket'],
+            params['AWS']['profile'],
+            args.date
+        )
 
 
 if __name__ == '__main__':
