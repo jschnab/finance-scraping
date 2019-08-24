@@ -1,3 +1,5 @@
+import csv
+from datetime import datetime
 from io import BytesIO, StringIO
 import logging
 import time
@@ -5,9 +7,9 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import aws
 import config
-import in_out
 import parsing_html
 import scraping
+import utils
 
 RAW_PAGES_S3_PREFIX = 'raw-page-content'
 RAW_PAGES_S3_SUFFIX = 'archive.zip'
@@ -28,7 +30,8 @@ CSV_HEADER = [
     'high',
     'day_volume',
     'p_e',
-    'yield_percent'
+    'yield_percent',
+    'collection_date'
 ]
 
 
@@ -119,7 +122,12 @@ def extract(
     zip_archive.close()
 
     # upload ZIP archive containing raw page contents to S3
-    archive_key = aws.get_s3_key(RAW_PAGES_S3_PREFIX, RAW_PAGES_S3_SUFFIX)
+    date = datetime.today().strftime('%Y/%m/%d')
+    archive_key = aws.get_s3_key(
+        RAW_PAGES_S3_PREFIX,
+        RAW_PAGES_S3_SUFFIX,
+        date
+    )
     msg = f'uploading pages contents to s3://{bucket}/{archive_key}'
     logging.info(msg)
 
@@ -133,10 +141,7 @@ def extract(
     logging.info('scraping finished')
 
 
-def transform(
-    bucket,
-    profile
-):
+def transform(bucket, profile, date=None):
     """
     Perform the transform steps of the pipeline:
         - download and unzip raw page archive from AWS S3
@@ -144,11 +149,25 @@ def transform(
         - write data as a CSV file
         - upload CSV to S3
 
+    If you want to transform data collected at a date other than today,
+    pass the 'date' argument.
+
     :param str bucket: AWS S3 bucket where data is stored
     :param str profile: AWS profile
+    :param str date: date corresponding to the data to process,
+                     optional (default None)
     """
-    # download raw webpages contents
-    archive_key = aws.get_s3_key(RAW_PAGES_S3_PREFIX, RAW_PAGES_S3_SUFFIX)
+    if not date:
+        date = datetime.today().strftime('%Y/%m/%d')
+    else:
+        date = utils.format_date(date)
+
+    # download raw web pages contents
+    archive_key = aws.get_s3_key(
+        RAW_PAGES_S3_PREFIX,
+        RAW_PAGES_S3_SUFFIX,
+        date
+    )
 
     logging.info(f'downloading raw pages {archive_key} from bucket {bucket}')
 
@@ -158,21 +177,31 @@ def transform(
         profile
     )
 
+    # we will unzip web pages contents in memory
     logging.info('reading raw pages archive')
     zip_data = BytesIO(raw_pages_zip)
     zip_obj = ZipFile(zip_data, 'r')
 
-    # unzip and parse data
+    # we will write data parsed from the web page to a csv in memory
+    # 1 page = 1 row
+    csv_obj = StringIO()
+    writer = csv.DictWriter(csv_obj, CSV_HEADER, lineterminator='\n')
+    writer.writeheader()
+
+    # loop through files in the archive (1 file = 1 web page)
     for file_name in zip_obj.namelist():
+
         logging.info(f'parsing {file_name}')
+
+        # extract file content, parse HTML code, write to csv
         page_contents = zip_obj.read(file_name).decode()
-        parsed = parsing_html.parse_webpage(page_contents)
-        csv_obj = StringIO()
-        in_out.write_csv(csv_obj, CSV_HEADER, parsed)
+        parsed = parsing_html.parse_webpage(page_contents, date)
+        writer.writerow(parsed)
 
     csv_key = aws.get_s3_key(
         SECURITY_REPORT_S3_PREFIX,
-        SECURITY_REPORT_S3_SUFFIX
+        SECURITY_REPORT_S3_SUFFIX,
+        date
     )
 
     logging.info(f'uploading file {csv_key} to bucket {bucket}')
@@ -189,7 +218,6 @@ def main():
     """
     Run the entire ETL pipeline.
     """
-
     params = setup()
 
     extract(

@@ -1,21 +1,18 @@
 # this module stores utility functions to interact with AWS
 
-from datetime import datetime
-
 import boto3
 
 
-def get_s3_key(prefix, suffix):
+def get_s3_key(prefix, suffix, date):
     """
     Get an AWS S3 key formatted with the date.
 
     :param str prefix: prefix of the S3 key
     :param str suffix: suffix of the S3 key
+    :param str date: date
     :return str: AWS S3 key
     """
-    date = datetime.today().strftime('%Y/%m/%d')
-    key = f'{prefix}/{date}/{suffix}'
-
+    key = f"{prefix}/{date}/{suffix}"
     return key
 
 
@@ -28,7 +25,6 @@ def get_client(service, profile):
     :return boto3.Client: client for API calls
     """
     client = boto3.Session(profile_name=profile).client(service)
-
     return client
 
 

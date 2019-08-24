@@ -1,7 +1,11 @@
 import re
 
 from bs4 import BeautifulSoup
-import numpy as np
+
+import utils
+
+# a way to check if a results is 'NaN'
+NAN = float('nan')
 
 
 def string_to_float(string):
@@ -16,20 +20,38 @@ def string_to_float(string):
 
     # empty strings or symbols (e.g. '-') would throw a ValueError
     try:
-        return np.float(string_modif)
+        return float(string_modif)
     except ValueError:
-        return np.nan
+        return NAN
 
 
-def parse_webpage(page_contents):
+def nan_to_null(d):
+    """
+    Converts the NaN (not a number) value of a dictionary to the string
+    'NULL'.
+
+    :param dict d: dictionary to convert
+    :return dict: dictionary where NaN values are 'NULL'
+    """
+    for key, value in d.items():
+        if value is NAN:
+            d[key] = 'NULL'
+    return d
+
+
+def parse_webpage(page_contents, collection_date):
     """
     Parse the text of the HTML page.
 
     :param str page_contents: HTML code of the web page
+    :param str collection_date: date when data was collected
     :return dict: dictionary where keys are stock attributes and values are
                   the corresponding values parsed from the HTML
     """
-    results = {}
+    if not collection_date:
+        collection_date = utils.format_date(collection_date)
+
+    results = {'collection_date': collection_date}
 
     soup = BeautifulSoup(page_contents, 'html.parser')
 
@@ -68,7 +90,12 @@ def parse_webpage(page_contents):
     quote_detail_abs = quote_detail.split('|')[0]
     results['daily_change_abs'] = string_to_float(quote_detail_abs)
     quote_detail_rel = quote_detail.split('|')[1].replace('%', '')
-    results['daily_change_rel'] = string_to_float(quote_detail_rel) / 100
+    quote_detail_rel = string_to_float(quote_detail_rel)
+    # NAN / 100 is not NAN
+    if quote_detail_rel is NAN:
+        results['daily_change_rel'] = quote_detail_rel
+    else:
+        results['daily_change_rel'] = quote_detail_rel / 100
 
     # get bid and offer
     bid_offer = soup.find(
@@ -116,7 +143,10 @@ def parse_webpage(page_contents):
 
     # get yield (percent)
     _yield = soup.find('td', attrs={'id': 'Col0Yield'}).get_text()
-    yield_percent = string_to_float(_yield) / 100
-    results['yield_percent'] = yield_percent
+    _yield = string_to_float(_yield)
+    results['yield_percent'] = _yield if _yield is NAN else _yield / 100
+
+    # convert all NaN to 'NULL'
+    results = nan_to_null(results)
 
     return results
