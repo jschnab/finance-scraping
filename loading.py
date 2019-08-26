@@ -151,9 +151,18 @@ def copy_into(
                         optional (default 'NULL')
     """
     cur = connection.cursor()
-    cur.copy_from(
-        file=file_object,
-        table=table_name,
-        sep=separator,
-        null=null_if
-    )
+    try:
+        cur.copy_from(
+            file=file_object,
+            table=table_name,
+            sep=separator,
+            null=null_if
+        )
+    except Exception as e:
+        logging.critical(e)
+        connection.rollback()
+        raise
+    finally:
+        connection.commit()
+        connection.close()
+

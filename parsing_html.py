@@ -146,6 +146,6 @@ def parse_webpage(page_contents, collection_date):
     results['yield_percent'] = _yield if _yield is NAN else _yield / 100
 
     # convert all NaN to 'NULL'
-    results = nan_to_null(results)
+    results = to_null(results)
 
     return results
