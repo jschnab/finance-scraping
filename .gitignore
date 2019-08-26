@@ -1,0 +1,7 @@
+*.csv
+*.pem
+*.swp
+*.sq3
+*.txt
+__pycache__
+.git-old
