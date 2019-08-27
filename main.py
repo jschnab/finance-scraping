@@ -41,8 +41,7 @@ TABLE_NAME = 'daily_security_data'
 
 def setup():
     """
-    Retrieve configuration parameters from 'config.ini' and
-    setup logging.
+    Retrieve configuration parameters from 'config.ini' and setup logging.
 
     :return dict: configuration parameters
     """
@@ -118,8 +117,8 @@ def extract(
 
         # zip each page as a text file in an archive
         text_buffer = StringIO(results)
-        stock_id = scraping.get_stock_id(url)
-        zip_archive.writestr(f'{stock_id}.txt', text_buffer.getvalue())
+        security_id = scraping.get_security_id(url)
+        zip_archive.writestr(f'{security_id}.txt', text_buffer.getvalue())
         time.sleep(0.5)
 
     zip_archive.close()
@@ -146,7 +145,7 @@ def extract(
 
 def transform(bucket, profile, date=None):
     """
-    Perform the transform steps of the pipeline:
+    Perform the transform step of the pipeline:
         - download and unzip raw page archive from AWS S3
         - parse page contents to retrieve financial data
         - write data as a CSV file
@@ -208,22 +207,17 @@ def transform(bucket, profile, date=None):
     )
 
     logging.info(f'uploading file {csv_key} to bucket {bucket}')
-
     aws.upload_object_to_s3(
         csv_obj,
         bucket,
         csv_key,
         profile
     )
+
     logging.info('transform finished')
 
 
-def load(
-    connection_parameters,
-    bucket,
-    profile,
-    date=None
-):
+def load(connection_parameters, bucket, profile, date=None):
     """
     Load the CSV file containing security data into the database.
 
