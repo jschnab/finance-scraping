@@ -4,7 +4,6 @@ import re
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-import sys
 import time
 
 import aws
@@ -97,8 +96,7 @@ def download_page_contents(
     If the response is not 200 and not one of the status codes the Session
     object is programmed to retry on (typically 500, 502 and 504), send the
     status code.
-    If an error happens during a retry, store the error in a list and return
-    the list of errors when the maximum number of retries is reached.
+    We catch other unexpected errors and retry a maximum of 10 times.
 
     :param requests.Session: Session object
     :param str url: page URL
@@ -121,20 +119,20 @@ def download_page_contents(
                 msg = f'scraping failed: {response.status_code} for {url}'
                 logging.error(msg)
 
-        except Exception:
-            msg = f'scraping failed: {sys.exc_info()[1]} for {url}'
+        except Exception as e:
+            msg = f'scraping failed: {e} for {url}'
             logging.error(msg)
             max_retries -= 1
             time.sleep(10)
 
 
-def get_stock_id(url):
+def get_security_id(url):
     """
-    Get stock ID from the URL where financial information about this stock
-    is displayed, using a regular expression.
+    Get security ID from the URL where financial information about this
+    security is displayed, using a regular expression.
 
-    :param str url: url of the stock's page
-    :return str: ID of the stock
+    :param str url: url of the company's page
+    :return str: ID of the security
     """
     result = re.search('(?<=&id=).{10}', url)
     return result.group(0)
