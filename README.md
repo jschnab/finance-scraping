@@ -9,13 +9,13 @@ data details from pages on [morningstar.fr](http://tools.morningstar.fr/fr/stock
 * load: copy the CSV file into a Postgres database
 
 ## How to run
-# Requirements
+### Requirements
 * Python >= 3.6
 * requests >= 2.22
 * BeautifulSoup 4
 * psycopg2 >= 2.8
 
-# Installation
+### Installation
 * Make sure you installed the correct version of Python and the required libraries.
 * Clone this repository.
 * Install Posgres, and create a database to load data into. Take note of the user name and
