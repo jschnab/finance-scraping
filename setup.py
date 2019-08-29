@@ -13,11 +13,11 @@ with open(os.path.join(here, 'requirements.txt')) as f:
 
 setup(
     name='finance-scraping',
-    packages=['finance-scraping'],
+    packages=['finance_scraping'],
     entry_points={
-        'console_scripts': ['finance-scraping=finance-scraping.main']
+        'console_scripts': ['finance-scraping=finance_scraping.main:main']
     },
-    version=version,
+    version=__version__,
     description='Finance Scraping ETL Pipeline',
     url='https://github.com/jschnab/finance-scraping',
     author='Jonathan Schnabel',
