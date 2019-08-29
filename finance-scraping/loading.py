@@ -165,4 +165,3 @@ def copy_into(
     finally:
         connection.commit()
         connection.close()
-

@@ -2,7 +2,6 @@ import csv
 from datetime import datetime
 from io import BytesIO, StringIO
 import logging
-import sys
 import time
 from zipfile import ZIP_DEFLATED, ZipFile
 
