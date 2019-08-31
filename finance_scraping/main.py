@@ -114,10 +114,13 @@ def extract(
             max_retries
         )
 
-        # zip each page as a text file in an archive
-        text_buffer = StringIO(results)
-        security_id = scraping.get_security_id(url)
-        zip_archive.writestr(f'{security_id}.txt', text_buffer.getvalue())
+        # if page scraping was successful
+        # zip page contents as a text file in an archive
+        if results is not None:
+            text_buffer = StringIO(results)
+            security_id = scraping.get_security_id(url)
+            zip_archive.writestr(f'{security_id}.txt', text_buffer.getvalue())
+
         time.sleep(0.5)
 
     zip_archive.close()

@@ -6,7 +6,7 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 import time
 
-import aws
+import finance_scraping.aws as aws
 
 
 def validate_urls(urls):
@@ -118,6 +118,7 @@ def download_page_contents(
             else:
                 msg = f'scraping failed: {response.status_code} for {url}'
                 logging.error(msg)
+                return
 
         except Exception as e:
             msg = f'scraping failed: {e} for {url}'

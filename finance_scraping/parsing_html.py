@@ -1,11 +1,9 @@
+from math import isnan
 import re
 
 from bs4 import BeautifulSoup
 
-import utils
-
-# a way to check if a results is 'NaN'
-NAN = float('nan')
+from finance_scraping import utils
 
 
 def string_to_float(string):
@@ -22,7 +20,7 @@ def string_to_float(string):
     try:
         return float(string_modif)
     except ValueError:
-        return NAN
+        return float('nan')
 
 
 def to_null(d):
@@ -34,10 +32,160 @@ def to_null(d):
     :return dict: dictionary where NaN and empty values are 'NULL'
     """
     for key, value in d.items():
-        if value is NAN or not value:
-            d[key] = 'NULL'
+        if isinstance(value, float):
+            if isnan(value):
+                d[key] = 'NULL'
+        elif isinstance(value, str):
+            if not value:
+                d[key] = 'NULL'
     return d
 
+
+def get_company_name(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return str: company name
+    """
+    found = soup.find(
+        'span',
+        attrs={'class': 'securityName'}
+    ).get_text()
+    return found
+
+
+def get_last_quote(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return str: last quote of the day
+    """
+    found = soup.find('span', attrs={'id': 'Col0Price'}).get_text()
+    return string_to_float(found)
+
+
+def get_date_time(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return tuple(str, str): date and time of web page update
+    """
+    # get date and time
+    timestamp = soup.find(
+        'p',
+        attrs={'id': 'Col0PriceTime'}
+    ).get_text().split()[1]
+    time = timestamp[10:]
+    date_raw = timestamp[:10]
+
+    # if there is not date, set to 'NULL'
+    date = re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\2-\1', date_raw)
+    if date == date_raw:
+        date = 'NULL'
+
+    return time, date
+
+
+def get_daily_change(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return tuple(float, float): absolute and daily value change
+    """
+    quote_detail = soup.find(
+        'span',
+        attrs={'id': 'Col0PriceDetail'}
+    ).get_text()
+
+    quote_detail_abs = string_to_float(quote_detail.split('|')[0])
+    quote_detail_rel = quote_detail.split('|')[1].replace('%', '')
+    quote_detail_rel = string_to_float(quote_detail_rel) / 100
+
+    return quote_detail_abs, quote_detail_rel
+
+
+def get_bid_offer(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return tuple(float, float): bid and offer on the security
+    """
+    bid_offer = soup.find(
+        'td',
+        attrs={'id': 'Col0BidOffer'}
+    ).get_text().split(' - ')
+
+    bid = string_to_float(bid_offer[0])
+    offer = string_to_float(bid_offer[1])
+
+    return bid, offer
+
+
+def get_low_high(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return tuple(float, float): daily low and high of the security
+    """
+    lo_hi = soup.find(
+        'td',
+        attrs={'id': 'Col0LowHigh'}
+    ).get_text().split(' - ')
+
+    if len(lo_hi) == 2:
+        low = string_to_float(lo_hi[0])
+        high = string_to_float(lo_hi[1])
+    else:
+        low, high = 'NULL', 'NULL'
+
+    return low, high
+
+
+def get_daily_volume(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return float: daily volume traded
+    """
+    day_vol = soup.find('td', attrs={'id': 'Col0DayVolume'}).get_text()
+    return string_to_float(day_vol)
+
+
+def get_capital(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return float: capital of the company
+    """
+    capital_str = soup.find('td', attrs={'id': 'Col0MCap'}).get_text()
+    if capital_str[-3:] == 'Mil':
+        capital = string_to_float(capital_str[:-3]) * 10e6
+    elif capital_str[-3:] == 'Bil':
+        capital = string_to_float(capital_str[:-3]) * 10e9
+    else:
+        capital = string_to_float(capital_str)
+
+    return capital
+
+
+def get_closing_value(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return float: closing value of the security
+    """
+    last_close = soup.find('td', attrs={'id': 'Col0LastClose'}).get_text()
+    return string_to_float(last_close)
+
+
+def get_PE_ratio(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return float: P/E ratio of the security
+    """
+    p_e = soup.find('td', attrs={'id': 'Col0PE'}).get_text()
+    return string_to_float(p_e)
+
+
+def get_yield(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return float: yield of the security, in percent
+    """
+    y = soup.find('td', attrs={'id': 'Col0Yield'}).get_text()
+    y = string_to_float(y)
+    return y / 100
 
 def parse_webpage(page_contents, collection_date):
     """
@@ -48,102 +196,35 @@ def parse_webpage(page_contents, collection_date):
     :return dict: dictionary where keys are stock attributes and values are
                   the corresponding values parsed from the HTML
     """
-    if not collection_date:
-        collection_date = utils.format_date(collection_date)
-
     results = {'collection_date': collection_date}
 
+    # parse each relevant element of the web page, one at a time and put
+    # them in a dictionary
     soup = BeautifulSoup(page_contents, 'html.parser')
 
-    # get name of company
-    results['company_name'] = soup.find(
-        'span',
-        attrs={'class': 'securityName'}
-    ).get_text()
+    results['company_name'] = get_company_name(soup)
 
-    # get last_quote
-    last_quote = soup.find('span', attrs={'id': 'Col0Price'}).get_text()
-    results['last_quote'] = string_to_float(last_quote)
+    results['last_quote'] = get_last_quote(soup)
 
-    # get date and time
-    timestamp = soup.find(
-        'p',
-        attrs={'id': 'Col0PriceTime'}
-    ).get_text().split()[1]
-    results['time'] = timestamp[10:]
-    date_raw = timestamp[:10]
+    results['time'], results['date'] = get_date_time(soup)
 
-    # if there is not date, set to 'NULL'
-    date = re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\2-\1', date_raw)
-    if date == date_raw:
-        results['date'] = 'NULL'
-    else:
-        results['date'] = date
+    absolute, relative = get_daily_change(soup)
+    results['daily_change_abs'] = absolute
+    results['daily_change_rel'] = relative
 
-    # get last quote relative variation
-    quote_detail = soup.find(
-        'span',
-        attrs={'id': 'Col0PriceDetail'}
-    ).get_text()
+    results['bid'], results['offer'] = get_bid_offer(soup)
 
-    quote_detail_abs = quote_detail.split('|')[0]
-    results['daily_change_abs'] = string_to_float(quote_detail_abs)
-    quote_detail_rel = quote_detail.split('|')[1].replace('%', '')
-    quote_detail_rel = string_to_float(quote_detail_rel)
-    # NAN / 100 is not NAN
-    if quote_detail_rel is NAN:
-        results['daily_change_rel'] = quote_detail_rel
-    else:
-        results['daily_change_rel'] = quote_detail_rel / 100
+    results['low'], results['high'] = get_low_high(soup)
 
-    # get bid and offer
-    bid_offer = soup.find(
-        'td',
-        attrs={'id': 'Col0BidOffer'}
-    ).get_text().split(' - ')
+    results['day_volume'] = get_daily_volume(soup)
 
-    results['bid'] = string_to_float(bid_offer[0])
-    results['offer'] = string_to_float(bid_offer[1])
+    results['capital'] = get_capital(soup)
 
-    # get daily low/high
-    lo_hi = soup.find(
-        'td',
-        attrs={'id': 'Col0LowHigh'}
-    ).get_text().split(' - ')
+    results['last_close'] = get_closing_value(soup)
 
-    if len(lo_hi) == 2:
-        results['low'] = string_to_float(lo_hi[0])
-        results['high'] = string_to_float(lo_hi[1])
-    else:
-        results['low'] = 'NULL'
-        results['high'] = 'NULL'
+    results['p_e'] = get_PE_ratio(soup)
 
-    # get daily volume
-    day_vol = soup.find('td', attrs={'id': 'Col0DayVolume'}).get_text()
-    results['day_volume'] = string_to_float(day_vol)
-
-    # capital
-    capital_str = soup.find('td', attrs={'id': 'Col0MCap'}).get_text()
-    if capital_str[-3:] == 'Mil':
-        capital = string_to_float(capital_str[:-3]) * 10e6
-    elif capital_str[-3:] == 'Bil':
-        capital = string_to_float(capital_str[:-3]) * 10e9
-    else:
-        capital = string_to_float(capital_str)
-    results['capital'] = capital
-
-    # get last closing value
-    last_close = soup.find('td', attrs={'id': 'Col0LastClose'}).get_text()
-    results['last_close'] = string_to_float(last_close)
-
-    # get yield ratio P/E
-    p_e = soup.find('td', attrs={'id': 'Col0PE'}).get_text()
-    results['p_e'] = string_to_float(p_e)
-
-    # get yield (percent)
-    _yield = soup.find('td', attrs={'id': 'Col0Yield'}).get_text()
-    _yield = string_to_float(_yield)
-    results['yield_percent'] = _yield if _yield is NAN else _yield / 100
+    results['yield_percent'] = get_yield(soup)
 
     # convert all NaN to 'NULL'
     results = to_null(results)
