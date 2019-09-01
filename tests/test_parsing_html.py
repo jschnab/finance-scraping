@@ -3,7 +3,22 @@ from math import isnan
 from unittest import TestCase
 from unittest.mock import patch
 
-from finance_scraping.parsing_html import *
+from finance_scraping.parsing_html import (
+    string_to_float,
+    to_null,
+    get_company_name,
+    get_last_quote,
+    get_date_time,
+    get_daily_change,
+    get_bid_offer,
+    get_low_high,
+    get_daily_volume,
+    get_capital,
+    get_closing_value,
+    get_PE_ratio,
+    get_yield,
+    parse_webpage
+)
 
 
 class TestParsingHTML(TestCase):
@@ -19,7 +34,7 @@ class TestParsingHTML(TestCase):
         f = string_to_float('-')
         self.assertTrue(isnan(f))
 
-    def test_to_nul(self):
+    def test_to_null(self):
         d = {'key1': 'value1', 'key2': '', 'key3': float('nan')}
         expected = {'key1': 'value1', 'key2': 'NULL', 'key3': 'NULL'}
         d_to_null = to_null(d)

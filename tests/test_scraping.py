@@ -1,7 +1,13 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from finance_scraping import scraping
+from finance_scraping.scraping import (
+    validate_urls,
+    get_urls,
+    get_session,
+    download_page_contents,
+    get_security_id
+)
 
 
 class SessionMock:
@@ -28,7 +34,7 @@ class TestScraping(TestCase):
 
     def test_validate_urls(self):
         urls = ['http://mydomain.com', 'www.nicewebsite.org', 'badurl.net']
-        validated = scraping.validate_urls(urls)
+        validated = validate_urls(urls)
         expected = ['http://mydomain.com', 'http://www.nicewebsite.org']
         self.assertEqual(validated, expected)
 
@@ -36,14 +42,14 @@ class TestScraping(TestCase):
     def test_get_urls(self, download_mock):
         download_mock.return_value = \
                 b'www.mysite.com\nthis is not a url\nhttp://www.visitme.fr\n'
-        validated = scraping.get_urls('bucket', 'key', 'profile')
+        validated = get_urls('bucket', 'key', 'profile')
         expected = ['http://www.mysite.com', 'http://www.visitme.fr']
         self.assertEqual(validated, expected)
 
     @patch("finance_scraping.scraping.Retry")
     @patch("finance_scraping.scraping.requests.Session")
     def test_get_session(self, session_mock, retry_mock):
-        _ = scraping.get_session(10, 0.3, [500, 502, 504])
+        _ = get_session(10, 0.3, [500, 502, 504])
         retry_mock.assert_called_with(
             total=10,
             read=10,
@@ -54,7 +60,7 @@ class TestScraping(TestCase):
 
     def test_download_page_contents(self):
         session = SessionMock(ok=True, text='hello')
-        text = scraping.download_page_contents(
+        text = download_page_contents(
             session,
             'url',
             'timeout',
@@ -67,7 +73,7 @@ class TestScraping(TestCase):
     @patch("finance_scraping.scraping.time")
     def test_download_page_contents_error(self, time_mock, log_mock):
         session = SessionMock(ok=True, text='hello')
-        _ = scraping.download_page_contents(
+        _ = download_page_contents(
             session,
             'bad_url',
             'timeout',
@@ -81,7 +87,7 @@ class TestScraping(TestCase):
     @patch("finance_scraping.scraping.time")
     def test_download_page_bad_status_code(self, time_mock, log_mock):
         session = SessionMock(ok=False, text='hello')
-        _ = scraping.download_page_contents(
+        _ = download_page_contents(
             session,
             'url',
             'timeout',
@@ -96,5 +102,5 @@ class TestScraping(TestCase):
             '&id=0P0001DIM8&LanguageId=fr-FR&SecurityToken=0P0001DIM8]3]0]E0W'
             'WE$$ALL,DREXG$XHEL,DREXG$XLON,DREXG$XNYS'
         )
-        security_id = scraping.get_security_id(url)
+        security_id = get_security_id(url)
         self.assertEqual(security_id, '0P0001DIM8')

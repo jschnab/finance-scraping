@@ -3,8 +3,6 @@ import re
 
 from bs4 import BeautifulSoup
 
-from finance_scraping import utils
-
 
 def string_to_float(string):
     """
@@ -186,6 +184,7 @@ def get_yield(soup):
     y = soup.find('td', attrs={'id': 'Col0Yield'}).get_text()
     y = string_to_float(y)
     return y / 100
+
 
 def parse_webpage(page_contents, collection_date):
     """
