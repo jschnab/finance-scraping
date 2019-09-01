@@ -2,17 +2,19 @@ import csv
 from datetime import datetime
 from io import BytesIO, StringIO
 import logging
-import sys
 import time
 from zipfile import ZIP_DEFLATED, ZipFile
 
-import aws
-import config
-import loading
-import parsing_html
-import scraping
-import utils
+from finance_scraping import (
+    aws,
+    config,
+    loading,
+    parsing_html,
+    scraping,
+    utils
+)
 
+LOG_FILE_NAME = 'log.txt'
 RAW_PAGES_S3_PREFIX = 'raw-page-content'
 RAW_PAGES_S3_SUFFIX = 'archive.zip'
 SECURITY_REPORT_S3_PREFIX = 'parsed-page-data'
@@ -39,7 +41,7 @@ CREATE_TABLE_SQL = 'create_table.sql'
 TABLE_NAME = 'daily_security_data'
 
 
-def setup():
+def setup(log_file):
     """
     Retrieve configuration parameters from 'config.ini' and setup logging.
 
@@ -49,7 +51,7 @@ def setup():
     fmt = '%(asctime)s %(levelname)s: %(message)s'
 
     logging.basicConfig(
-        filename='log.txt',
+        filename=log_file,
         format=fmt,
         filemode='a',
         level=logging.INFO
@@ -115,10 +117,13 @@ def extract(
             max_retries
         )
 
-        # zip each page as a text file in an archive
-        text_buffer = StringIO(results)
-        security_id = scraping.get_security_id(url)
-        zip_archive.writestr(f'{security_id}.txt', text_buffer.getvalue())
+        # if page scraping was successful
+        # zip page contents as a text file in an archive
+        if results is not None:
+            text_buffer = StringIO(results)
+            security_id = scraping.get_security_id(url)
+            zip_archive.writestr(f'{security_id}.txt', text_buffer.getvalue())
+
         time.sleep(0.5)
 
     zip_archive.close()
@@ -281,7 +286,7 @@ def main():
     if args.configure:
         config.configure()
 
-    params = setup()
+    params = setup(LOG_FILE_NAME)
 
     if args.extract:
         extract(

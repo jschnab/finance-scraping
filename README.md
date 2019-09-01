@@ -12,8 +12,9 @@ data details from pages on [morningstar.fr](http://tools.morningstar.fr/fr/stock
 ### Requirements
 * Python >= 3.6
 * requests >= 2.22
-* BeautifulSoup 4
+* BeautifulSoup4 >= 4.7.1
 * psycopg2 >= 2.8
+* responses >= 0.10.6
 
 ### Installation
 * Make sure you installed the correct version of Python and the required libraries.

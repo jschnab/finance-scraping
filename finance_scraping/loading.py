@@ -71,7 +71,9 @@ def execute_sqls(statements, connection):
 
 def execute_sql_file(file_name, connection):
     with open(file_name) as f:
-        sqls = tuple(s + ';' for s in f.read().split(';') if s != '\n')
+        sqls = tuple(
+            s.strip() + ';' for s in f.read().split(';') if s != '\n'
+        )
     statements = []
     for s in sqls:
         statements.append((s, ()))
@@ -119,7 +121,7 @@ def check_table_for_loaded_data(
         logging.info(msg)
 
         if delete_if_found:
-            msg = f"deleting already loaded data from table {table_name}"
+            msg = f"deleting already loaded data from table '{table_name}'"
             logging.info(msg)
             delete_statement = "DELETE FROM %s WHERE collection_date = %s;"
             execute_sqls(
@@ -128,7 +130,7 @@ def check_table_for_loaded_data(
             )
 
         else:
-            msg = "aborting load in table {table_name}"
+            msg = f"aborting load in table '{table_name}'"
             logging.info(msg)
             sys.exit()
 
@@ -165,4 +167,3 @@ def copy_into(
     finally:
         connection.commit()
         connection.close()
-

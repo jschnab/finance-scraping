@@ -11,12 +11,6 @@ def get_config():
     config = ConfigParser()
     config.read('config.ini')
 
-    # get AWS config
-    aws_config = config['AWS']
-    aws_params = {}
-    aws_params['s3_bucket'] = aws_config['s3_bucket']
-    aws_params['profile'] = aws_config['profile']
-
     # get requests config
     requests_config = config['REQUESTS']
     requests_params = {}
@@ -33,7 +27,7 @@ def get_config():
     requests_params['timeout'] = int(requests_config['timeout'])
 
     return {
-        'AWS': aws_params,
+        'AWS': config['AWS'],
         'REQUESTS': requests_params,
         'SCRAPING': config['SCRAPING'],
         'DATABASE': config['DATABASE']
