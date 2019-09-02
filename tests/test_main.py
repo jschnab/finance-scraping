@@ -123,12 +123,12 @@ class TestMainModule(TestCase):
     @patch("finance_scraping.main.aws.download_s3_object")
     @patch("finance_scraping.main.aws.get_s3_key")
     @patch("finance_scraping.main.loading.check_table_for_loaded_data")
-    @patch("finance_scraping.main.loading.execute_sql_file")
+    @patch("finance_scraping.main.loading.execute_sqls")
     @patch("finance_scraping.main.loading.get_connection")
     def test_load(
         self,
         connection_mock,
-        execute_file_mock,
+        execute_sqls_mock,
         check_table_loaded_mock,
         get_key_mock,
         download_object_mock,
@@ -144,6 +144,7 @@ class TestMainModule(TestCase):
         connection_mock.return_value = 'connection'
         connection_parameters = {
             'database': 'db',
+            'table': 'daily_security_data',
             'username': 'user',
             'password': 'pa$$w0rd',
             'host': 'localhost',
@@ -152,7 +153,7 @@ class TestMainModule(TestCase):
         remove_header_mock.return_value = 'field11,field12\nfield21,field22\n'
         load(connection_parameters, 'mybucket', 'profile')
         connection_mock.assert_has_calls([call(connection_parameters)] * 3)
-        execute_file_mock.assert_called_with('create_table.sql', 'connection')
+        execute_sqls_mock.assert_called_once()
         check_table_loaded_mock.assert_called_with(
             'daily_security_data',
             today_date,

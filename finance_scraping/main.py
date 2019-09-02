@@ -37,8 +37,25 @@ CSV_HEADER = [
     'yield_percent',
     'collection_date'
 ]
-CREATE_TABLE_SQL = 'create_table.sql'
-TABLE_NAME = 'daily_security_data'
+CREATE_TABLE_SQL = """
+    CREATE TABLE IF NOT EXISTS {} (
+    company_name VARCHAR,
+    capital FLOAT,
+    date DATE,
+    time TIME,
+    last_quote FLOAT,
+    last_close FLOAT,
+    daily_change_abs FLOAT,
+    daily_change_rel FLOAT,
+    bid FLOAT,
+    offer FLOAT,
+    low FLOAT,
+    high FLOAT,
+    day_volume FLOAT,
+    p_e FLOAT,
+    yield_percent FLOAT,
+    collection_date DATE
+    );"""
 
 
 def setup(log_file):
@@ -238,16 +255,18 @@ def load(connection_parameters, bucket, profile, date=None):
     else:
         date = utils.format_date(date)
 
+    table_name = connection_parameters['table']
+
     # create table if exists
-    logging.info(f"creating table '{TABLE_NAME}' if not exists")
+    logging.info(f"creating table '{table_name}' if not exists")
     con = loading.get_connection(connection_parameters)
-    loading.execute_sql_file(CREATE_TABLE_SQL, con)
+    loading.execute_sqls([(CREATE_TABLE_SQL.format(table_name), ())], con)
 
     # to make the 'load' step idempotent, we check if data for the specified
     # date is already in the database, if it is we either stop or delete and
     # load again
     con = loading.get_connection(connection_parameters)
-    loading.check_table_for_loaded_data(TABLE_NAME, date, con)
+    loading.check_table_for_loaded_data(table_name, date, con)
 
     # download CSV file to be loaded and remove header
     csv_key = aws.get_s3_key(
@@ -266,12 +285,12 @@ def load(connection_parameters, bucket, profile, date=None):
     # load the whole CSV at once
     logging.info(
         f"loading data into database '{connection_parameters['database']}' "
-        f"in table '{TABLE_NAME}'"
+        f"in table '{table_name}'"
     )
     con = loading.get_connection(connection_parameters)
     loading.copy_into(
         file_object=StringIO(csv_no_header),
-        table_name=TABLE_NAME,
+        table_name=table_name,
         connection=con
     )
     logging.info('loading finished')

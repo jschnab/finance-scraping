@@ -21,6 +21,7 @@ class TestConfig(TestCase):
             },
             'DATABASE': {
                 'database': 'scraping_db',
+                'table': 'mytable',
                 'user': 'username',
                 'password': 'pa$$w0rd',
                 'host': 'localhost',
