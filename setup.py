@@ -24,9 +24,9 @@ setup(
     author_email='jonathan.schnabel31@gmail.com',
     license='GNU General Public License v3.0',
     classifiers=[
-        'Development Status :: 4 - Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Financial and Insurance Industry',
-        'Licence :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         'Operating System :: Unix',
         'Programming Language :: Python :: 3.6',
