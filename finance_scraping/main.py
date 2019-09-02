@@ -75,7 +75,7 @@ def setup(log_file):
     )
 
     # get parameters
-    params = config.get_config()
+    params = config.get_environment_variables()
     return params
 
 

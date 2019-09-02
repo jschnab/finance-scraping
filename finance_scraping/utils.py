@@ -39,16 +39,8 @@ def parse_cli():
         '-c',
         '--configure',
         action='store_true',
-        help="configure the scraper using a 'config.ini' file"
+        help="configure the scraper, requires user input"
     )
-
-    parser.add_argument(
-        '-e',
-        '--configure-environment',
-        action='store_true',
-        help='configure the scraper using environment variables'
-    )
-
 
     parser.add_argument(
         '-e',
