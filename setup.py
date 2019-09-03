@@ -1,15 +1,12 @@
 import os
 from setuptools import setup
 
-__version__ = '0.3.1'
+__version__ = '0.3.3'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 with open(os.path.join(here, 'README.md')) as f:
     long_description = f.read()
-
-with open(os.path.join(here, 'requirements.txt')) as f:
-    reqs = f.readlines()
 
 setup(
     name='finance-scraping',
@@ -33,5 +30,11 @@ setup(
     ],
     python_requires='>=3.6.8',
     keywords='security web scraping etl database',
-    install_requires=reqs
+    install_requires=[
+        'beautifulsoup4==4.7.1',
+        'boto3==1.9.210',
+        'psycopg2==2.8.3',
+        'requests==2.22.0',
+        'responses==0.10.6'
+    ]
 )
