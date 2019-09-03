@@ -1,16 +1,15 @@
 from datetime import datetime
-import os
 from unittest import TestCase
 from unittest.mock import patch, call
 
-from finance_scraping.main import setup_logging, extract, transform, load
+from finance_scraping.main import extract, transform, load
 
 
 class TestMainModule(TestCase):
 
     def setUp(self):
         self.parameters = {
-            'AWS' : {
+            'AWS': {
                 's3_bucket': 'mybucket',
                 'profile': 'profile'
             },
