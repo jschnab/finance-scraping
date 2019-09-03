@@ -39,7 +39,7 @@ def parse_cli():
         '-c',
         '--configure',
         action='store_true',
-        help='configure the scraper'
+        help="configure the scraper, requires user input"
     )
 
     parser.add_argument(

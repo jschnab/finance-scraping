@@ -37,15 +37,30 @@ CSV_HEADER = [
     'yield_percent',
     'collection_date'
 ]
-CREATE_TABLE_SQL = 'create_table.sql'
-TABLE_NAME = 'daily_security_data'
+CREATE_TABLE_SQL = """
+    CREATE TABLE IF NOT EXISTS {} (
+    company_name VARCHAR,
+    capital FLOAT,
+    date DATE,
+    time TIME,
+    last_quote FLOAT,
+    last_close FLOAT,
+    daily_change_abs FLOAT,
+    daily_change_rel FLOAT,
+    bid FLOAT,
+    offer FLOAT,
+    low FLOAT,
+    high FLOAT,
+    day_volume FLOAT,
+    p_e FLOAT,
+    yield_percent FLOAT,
+    collection_date DATE
+    );"""
 
 
-def setup(log_file):
+def setup_logging(log_file):
     """
-    Retrieve configuration parameters from 'config.ini' and setup logging.
-
-    :return dict: configuration parameters
+    Setup logging.
     """
     # setup logging
     fmt = '%(asctime)s %(levelname)s: %(message)s'
@@ -57,47 +72,33 @@ def setup(log_file):
         level=logging.INFO
     )
 
-    # get parameters
-    params = config.get_config()
-    return params
 
-
-def extract(
-    bucket,
-    urls_key,
-    profile,
-    max_retries,
-    backoff_factor,
-    retry_on,
-    user_agent,
-    timeout
-):
+def extract():
     """
     Perform the extraction steps of webscraping:
         - download raw pages contents
         - zip data
         - upload zipped archive to AWS S3
 
-    :param str bucket: AWS S3 bucket where data is stored
-    :param str urls_key: AWS S3 key of the file storing the URLs to scrape
-    :param str profile: AWS profile
-    :param int max_retries: maximum number of retries on HTTP request failure
-    :param float backoff_factor: delay backoff factor for HTTP request retries
-    :param list(int) retry_on: HTTP status codes allowing HTTP request retry
-    :param str user_agent: user agent to use for HTTP requests
-    :param int timeout: timeout period (seconds) for HTTP requests
+    This function takes no parameters since all parameters are collected from
+    environment variables.
     """
+    # collect functions parameters from environment variables
+    params = config.get_environment_variables()
+    bucket = params['AWS']['s3_bucket']
+    profile = params['AWS']['profile']
+
     # get list of urls to scrape
     urls_list = scraping.get_urls(
         bucket,
-        urls_key,
+        params['SCRAPING']['urls_s3_key'],
         profile
     )
 
     session = scraping.get_session(
-        max_retries,
-        backoff_factor,
-        retry_on
+        params['REQUESTS']['max_retries'],
+        params['REQUESTS']['backoff_factor'],
+        params['REQUESTS']['retry_on']
     )
 
     # open a ZipFile archive to be stored in memory
@@ -112,9 +113,9 @@ def extract(
         results = scraping.download_page_contents(
             session,
             url,
-            user_agent,
-            timeout,
-            max_retries
+            params['REQUESTS']['user_agent'],
+            params['REQUESTS']['timeout'],
+            params['REQUESTS']['max_retries']
         )
 
         # if page scraping was successful
@@ -135,7 +136,7 @@ def extract(
         RAW_PAGES_S3_SUFFIX,
         date
     )
-    msg = f'uploading pages contents to s3://{bucket}/{archive_key}'
+    msg = f"uploading pages contents to s3://{bucket}/{archive_key}"
     logging.info(msg)
 
     aws.upload_object_to_s3(
@@ -148,7 +149,7 @@ def extract(
     logging.info('scraping finished')
 
 
-def transform(bucket, profile, date=None):
+def transform(date=None):
     """
     Perform the transform step of the pipeline:
         - download and unzip raw page archive from AWS S3
@@ -156,11 +157,10 @@ def transform(bucket, profile, date=None):
         - write data as a CSV file
         - upload CSV to S3
 
+    AWS parameters are collected from environment variables.
     If you want to transform data collected at a date other than today,
     pass the 'date' argument.
 
-    :param str bucket: AWS S3 bucket where data is stored
-    :param str profile: AWS profile
     :param str date: date corresponding to the data to process,
                      optional (default None)
     """
@@ -168,6 +168,11 @@ def transform(bucket, profile, date=None):
         date = datetime.today().strftime('%Y/%m/%d')
     else:
         date = utils.format_date(date)
+
+    # collect functions parameters from environment variables
+    params = config.get_environment_variables()
+    bucket = params['AWS']['s3_bucket']
+    profile = params['AWS']['profile']
 
     # download raw web pages contents
     archive_key = aws.get_s3_key(
@@ -222,15 +227,10 @@ def transform(bucket, profile, date=None):
     logging.info('transform finished')
 
 
-def load(connection_parameters, bucket, profile, date=None):
+def load(date=None):
     """
     Load the CSV file containing security data into the database.
 
-    :param dict connection_parameters: dictionary of connection parameters
-                                       where the keys are: database, user,
-                                       password, host and port
-    :param str bucket: AWS S3 bucket where data is stored
-    :param str profile: AWS profile
     :param str date: date of security data collection, optional (default None)
     """
     if not date:
@@ -238,16 +238,23 @@ def load(connection_parameters, bucket, profile, date=None):
     else:
         date = utils.format_date(date)
 
+    # collect functions parameters from environment variables
+    params = config.get_environment_variables()
+    bucket = params['AWS']['s3_bucket']
+    profile = params['AWS']['profile']
+    con_params = params['DATABASE']
+    table_name = con_params['table']
+
     # create table if exists
-    logging.info(f"creating table '{TABLE_NAME}' if not exists")
-    con = loading.get_connection(connection_parameters)
-    loading.execute_sql_file(CREATE_TABLE_SQL, con)
+    logging.info(f"creating table '{table_name}' if not exists")
+    con = loading.get_connection(con_params)
+    loading.execute_sqls([(CREATE_TABLE_SQL.format(table_name), ())], con)
 
     # to make the 'load' step idempotent, we check if data for the specified
     # date is already in the database, if it is we either stop or delete and
     # load again
-    con = loading.get_connection(connection_parameters)
-    loading.check_table_for_loaded_data(TABLE_NAME, date, con)
+    con = loading.get_connection(con_params)
+    loading.check_table_for_loaded_data(table_name, date, con)
 
     # download CSV file to be loaded and remove header
     csv_key = aws.get_s3_key(
@@ -265,13 +272,13 @@ def load(connection_parameters, bucket, profile, date=None):
 
     # load the whole CSV at once
     logging.info(
-        f"loading data into database '{connection_parameters['database']}' "
-        f"in table '{TABLE_NAME}'"
+        f"loading data into database '{con_params}' "
+        f"in table '{table_name}'"
     )
-    con = loading.get_connection(connection_parameters)
+    con = loading.get_connection(con_params)
     loading.copy_into(
         file_object=StringIO(csv_no_header),
-        table_name=TABLE_NAME,
+        table_name=table_name,
         connection=con
     )
     logging.info('loading finished')
@@ -286,34 +293,16 @@ def main():
     if args.configure:
         config.configure()
 
-    params = setup(LOG_FILE_NAME)
+    setup_logging(LOG_FILE_NAME)
 
     if args.extract:
-        extract(
-            params['AWS']['s3_bucket'],
-            params['SCRAPING']['urls_s3_key'],
-            params['AWS']['profile'],
-            params['REQUESTS']['max_retries'],
-            params['REQUESTS']['backoff_factor'],
-            params['REQUESTS']['retry_on'],
-            params['REQUESTS']['user_agent'],
-            params['REQUESTS']['timeout'],
-        )
+        extract()
 
     if args.transform:
-        transform(
-            params['AWS']['s3_bucket'],
-            params['AWS']['profile'],
-            args.date
-        )
+        transform(args.date)
 
     if args.load:
-        load(
-            connection_parameters=params['DATABASE'],
-            bucket=params['AWS']['s3_bucket'],
-            profile=params['AWS']['profile'],
-            date=args.date
-        )
+        load(date=args.date)
 
 
 if __name__ == '__main__':

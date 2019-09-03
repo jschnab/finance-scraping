@@ -57,7 +57,7 @@ class TestLoading(TestCase):
         connect_mock.return_value = 'engine'
         parameters = {
             'database': 'database',
-            'user': 'user',
+            'db_user': 'user',
             'password': 'password',
             'host': 'host',
             'port': 'port'

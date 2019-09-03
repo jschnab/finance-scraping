@@ -9,13 +9,13 @@ def get_connection(parameters):
     Connect to a database.
 
     :param dict parameters: dictionary of connection parameters
-                            where the keys are: database, user,
+                            where the keys are: database, db_user,
                             password, host and port
     :return: database connection
     """
     engine = psycopg2.connect(
         database=parameters['database'],
-        user=parameters['user'],
+        user=parameters['db_user'],
         password=parameters['password'],
         host=parameters['host'],
         port=parameters['port'],
