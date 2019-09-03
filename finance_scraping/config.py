@@ -4,7 +4,7 @@ import os
 
 def get_config():
     """
-    Read configuration file, perform appropriate typ conversion
+    Read configuration file, perform appropriate type conversion
     and return the whole configuration.
 
     :return dict[dict]: configuration

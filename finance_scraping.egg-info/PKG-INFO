@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: finance-scraping
-Version: 0.2.5
+Version: 0.3.1
 Summary: Finance Scraping ETL Pipeline
 Home-page: https://github.com/jschnab/finance-scraping
 Author: Jonathan Schnabel
@@ -9,7 +9,7 @@ License: GNU General Public License v3.0
 Description: UNKNOWN
 Keywords: security web scraping etl database
 Platform: UNKNOWN
-Classifier: Development Status :: 3 - Alpha
+Classifier: Development Status :: 4 - Beta
 Classifier: Intended Audience :: Financial and Insurance Industry
 Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
 Classifier: Natural Language :: English
