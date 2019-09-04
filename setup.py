@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-__version__ = '0.3.3'
+__version__ = '0.3.4'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,6 +16,7 @@ setup(
     },
     version=__version__,
     description='Finance Scraping ETL Pipeline',
+    long_description=long_description,
     url='https://github.com/jschnab/finance-scraping',
     author='Jonathan Schnabel',
     author_email='jonathan.schnabel31@gmail.com',

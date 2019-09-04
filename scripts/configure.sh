@@ -35,6 +35,6 @@ done
 
 source $ENV_FILE
 
-exec bash -l
-
 echo "Configuration is finished"
+
+exec bash -l

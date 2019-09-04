@@ -43,10 +43,15 @@ def get_environment_variables():
     :return dict[dict]: configuration
     """
     configuration = {}
+
     configuration['AWS'] = {
         's3_bucket': os.getenv('FINANCE_SCRAPING_S3_BUCKET'),
         'profile': os.getenv('FINANCE_SCRAPING_AWS_PROFILE')
     }
+    # set AWS profile to None if user typed 'None'
+    if configuration['AWS']['profile'] == 'None':
+        configuration['AWS']['profile'] = None
+
     configuration['REQUESTS'] = {
         'user_agent': os.getenv('FINANCE_SCRAPING_USER_AGENT'),
         'max_retries': int(os.getenv('FINANCE_SCRAPING_MAX_RETRIES')),
@@ -55,8 +60,10 @@ def get_environment_variables():
             map(int, os.getenv('FINANCE_SCRAPING_RETRY_ON').split(','))),
         'timeout': int(os.getenv('FINANCE_SCRAPING_TIMEOUT'))
     }
+
     configuration['SCRAPING'] = {
         'urls_s3_key': os.getenv('FINANCE_SCRAPING_URLS_S3_KEY')}
+
     configuration['DATABASE'] = {
         'database': os.getenv('FINANCE_SCRAPING_DATABASE'),
         'table': os.getenv('FINANCE_SCRAPING_TABLE'),
