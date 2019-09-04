@@ -8,23 +8,23 @@ data details from pages on [morningstar.fr](http://tools.morningstar.fr/fr/stock
 * transform: parse raw web pages and store the results in a CSV file, then store in S3
 * load: copy the CSV file into a Postgres database
 
-## How to run
-### Requirements
-* Python >= 3.6
+## Installation
+### Prerequisites
+`finance-scraping` was written in Python 3.6. The following packages are required and will be installed along with `finance-scraping`:
 * requests >= 2.22
 * BeautifulSoup4 >= 4.7.1
 * psycopg2 >= 2.8
 
-### Installation
-* Make sure you installed the correct version of Python and the required libraries.
-* The easiest way to install this tool is to run `pip install finance-scraping`.
-* You can launch unit tests by running `run_tests.sh` from the `tests` folder.
-* Install Postgres, and create a database to load data into. Take note of the user name and
-password with write privileges to this database.
-* Go to the root folder of the repository and then run `./scripts/configure.sh` to set the
-configuration of the scraper. You will be prompted to enter configuration values, which are saved in `~/.bashrc`.
-* Start the pipeline by running `python main.py -etl` to run the entire pipeline, or eitherof the optional arguments `-e`, `-t` or `-l` to run an individual step. It is possible to specify the date parameter `-d` with `-t` and/or `-l` to process data scraped on a specific
-date. For more information run help with `python main.py -h`.
+You need to install PostgresSQL, and create a database to load data into. Take note of the user name and password with write privileges to this database, as you will need these during the configuration of `finance-scraping`.
+
+### Installation and configuration
+* Run `pip install finance-scraping`.
+* You can launch unit tests by running `bash run_tests.sh` from the `tests` folder.
+* Run `finance-scraping -c` to set the configuration of the scraper. You will be prompted to enter configuration values, which are saved in `~/.bashrc`.
+* If you plan to run `finance-scraping` on an EC2 instance launched with an instance role, you can set the parameters `profile` as `None`.
+
+## How to run
+* To run the entire ETL pipeline, run `python main.py -etl`. You can also run `finance-scraping` with any of the optional arguments `-e`, `-t` or `-l` to run an individual step. It is possible to specify the date parameter `-d` with `-t` and/or `-l` to process data scraped on a specific date. For more information run help with `python main.py -h`.
 
 ### Schdule runs with Apache Airflow
 * Read the [Airflow documentation](https://airflow.apache.org/index.html) to install and configure Airflow for your system.
