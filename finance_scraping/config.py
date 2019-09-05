@@ -82,4 +82,12 @@ def configure():
     """
     parent_dir = dirname(dirname(abspath(__file__)))
     config_script = join(parent_dir, 'scripts/configure.sh')
-    subprocess.run(['bash', config_script])
+    try:
+        subprocess.run(['bash', config_script])
+    # ProcessLookupError hapens if you hit ctrl+c
+    except ProcessLookupError:
+        msg = (
+            "\nConfiguration may be incomplete, "
+            "run 'finance-scraping -c' again."
+        )
+        print(msg)

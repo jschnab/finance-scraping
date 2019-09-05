@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 from io import BytesIO, StringIO
 import logging
+import os
 import time
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -62,11 +63,12 @@ def setup_logging(log_file):
     """
     Setup logging.
     """
-    # setup logging
     fmt = '%(asctime)s %(levelname)s: %(message)s'
 
+    log_file_path = os.path.join(os.path.dirname(__file__), log_file)
+
     logging.basicConfig(
-        filename=log_file,
+        filename=log_file_path,
         format=fmt,
         filemode='a',
         level=logging.INFO
@@ -243,6 +245,7 @@ def load(date=None):
     bucket = params['AWS']['s3_bucket']
     profile = params['AWS']['profile']
     con_params = params['DATABASE']
+    database = con_params['database']
     table_name = con_params['table']
 
     # create table if exists
@@ -272,7 +275,7 @@ def load(date=None):
 
     # load the whole CSV at once
     logging.info(
-        f"loading data into database '{con_params}' "
+        f"loading data into database '{database}' "
         f"in table '{table_name}'"
     )
     con = loading.get_connection(con_params)
