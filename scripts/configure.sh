@@ -22,7 +22,6 @@ for ((i=0; i<${#PARAMS[@]}; i++)); do
 
     # keep waiting for user input if no value is set
     while [[ -z ${VAL} ]] && [[ -z $EXISTING ]]; do
-	echo "I am here"
 	echo "${PARAMS[i]}["$EXISTING"]: "
 	read val
     done

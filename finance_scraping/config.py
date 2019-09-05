@@ -84,7 +84,7 @@ def configure():
     config_script = join(parent_dir, 'scripts/configure.sh')
     try:
         subprocess.run(['bash', config_script])
-    # ProcessLookupError hapens if you hit ctrl+c
+    # ProcessLookupError happens if you hit ctrl+c
     except ProcessLookupError:
         msg = (
             "\nConfiguration may be incomplete, "
