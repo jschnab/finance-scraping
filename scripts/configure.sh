@@ -22,7 +22,7 @@ for ((i=0; i<${#PARAMS[@]}; i++)); do
 
     # keep waiting for user input if no value is set
     while [[ -z ${VAL} ]] && [[ -z $EXISTING ]]; do
-	echo "${EXISTING[i]}["$EXISTING"]: "
+	echo "${PARAMS[i]}["$EXISTING"]: "
 	read val
     done
 
@@ -35,6 +35,6 @@ done
 
 source $ENV_FILE
 
-echo "Configuration is finished"
+echo "Configuration is finished."
 
 exec bash -l
