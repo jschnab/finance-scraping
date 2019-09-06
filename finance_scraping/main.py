@@ -2,7 +2,7 @@ import csv
 from datetime import datetime
 from io import BytesIO, StringIO
 import logging
-from os.path import dirname, join
+import os
 import time
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -15,7 +15,7 @@ from finance_scraping import (
     utils
 )
 
-LOG_FILE_NAME = 'log.txt'
+LOG_FILE_NAME = 'finance-scraping.log'
 RAW_PAGES_S3_PREFIX = 'raw-page-content'
 RAW_PAGES_S3_SUFFIX = 'archive.zip'
 SECURITY_REPORT_S3_PREFIX = 'parsed-page-data'
@@ -64,7 +64,7 @@ def setup_logging(log_file):
     Setup logging.
     """
     fmt = '%(asctime)s %(levelname)s: %(message)s'
-    log_file_path = join(dirname(__file__), log_file)
+    log_file_path = os.path.join(os.environ['HOME'], log_file)
 
     logging.basicConfig(
         filename=log_file_path,
