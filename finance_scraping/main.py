@@ -2,7 +2,7 @@ import csv
 from datetime import datetime
 from io import BytesIO, StringIO
 import logging
-import os
+from os.path import dirname, join
 import time
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -64,8 +64,7 @@ def setup_logging(log_file):
     Setup logging.
     """
     fmt = '%(asctime)s %(levelname)s: %(message)s'
-
-    log_file_path = os.path.join(os.path.dirname(__file__), log_file)
+    log_file_path = join(dirname(__file__), log_file)
 
     logging.basicConfig(
         filename=log_file_path,

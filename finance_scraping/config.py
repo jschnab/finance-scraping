@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 import os
-from os.path import abspath, dirname, join
+from os.path import dirname, join
 import subprocess
 
 
@@ -80,10 +80,12 @@ def configure():
     """
     Run BASH configuration script.
     """
-    parent_dir = dirname(dirname(abspath(__file__)))
-    config_script = join(parent_dir, 'scripts/configure.sh')
+    config_file_path = join(
+        dirname(__file__),
+        join('scripts', 'configure.sh')
+    )
     try:
-        subprocess.run(['bash', config_script])
+        subprocess.run(['bash', config_file_path])
     # ProcessLookupError happens if you hit ctrl+c
     except ProcessLookupError:
         msg = (
