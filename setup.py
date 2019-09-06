@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-__version__ = '0.3.4'
+__version__ = '0.3.8'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -11,6 +11,9 @@ with open(os.path.join(here, 'README.md')) as f:
 setup(
     name='finance-scraping',
     packages=['finance_scraping'],
+    package_data={
+        'finance_scraping': ['scripts/configure.sh']
+    },
     entry_points={
         'console_scripts': ['finance-scraping=finance_scraping.main:main']
     },
