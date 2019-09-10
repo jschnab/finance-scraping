@@ -30,20 +30,6 @@ class TestConfig(TestCase):
             }
         }
 
-    def test_get_config(self):
-        c = config.ConfigParser()
-        c['AWS'] = self.config_dict['AWS']
-        c['SCRAPING'] = self.config_dict['SCRAPING']
-        c['DATABASE'] = self.config_dict['DATABASE']
-        expected = {
-            'AWS': c['AWS'],
-            'SCRAPING': c['SCRAPING'],
-            'REQUESTS': self.config_dict['REQUESTS'],
-            'DATABASE': c['DATABASE']
-        }
-        configuration = config.get_config()
-        self.assertEqual(configuration, expected)
-
     def test_get_environment_variables(self):
         prefix = 'FINANCE_SCRAPING_'
         os.environ[f'{prefix}S3_BUCKET'] = 'bucket'

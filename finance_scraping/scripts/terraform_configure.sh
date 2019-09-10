@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# get configuration from user's input and save it as environment variables
+# set Terraform environment variables from user's input
 
 ENV_FILE=~/.bashrc
 
 declare -a PARAMS=(s3_bucket aws_profile urls_s3_key user_agent \
-    max_retries backoff_factor retry_on timeout database table db_user \
-    password host port)
+    max_retries backoff_factor retry_on timeout db_name table db_username \
+    db_password)
 
 echo "Please enter configuration values: "
 echo
@@ -15,12 +15,12 @@ echo
 for ((i=0; i<${#PARAMS[@]}; i++)); do
 
     # show the existing value to the user
-    VAR="FINANCE_SCRAPING_${PARAMS[i]^^}"
+    VAR="TF_VAR_${PARAMS[i]^^}"
     EXISTING=`cat $ENV_FILE | grep $VAR | cut -d= -f2`
     echo "${PARAMS[i]}[$EXISTING]: "
     read VAL
 
-    # keep waiting for user input if no value is set
+    # keep waiting for user's input if no value is set
     while [[ -z ${VAL} ]] && [[ -z $EXISTING ]]; do
 	echo "${PARAMS[i]}[$EXISTING]: "
 	read VAL
@@ -29,7 +29,7 @@ for ((i=0; i<${#PARAMS[@]}; i++)); do
     # user's input overwrites the existing variable
     if [[ ! -z ${VAL} ]]; then
 	sed -i "/^export $VAR/d" $ENV_FILE
-        echo "export $VAR=$VAL" >> $ENV_FILE
+	echo "export $VAR=$VAL" >> $ENV_FILE
     fi
 done
 
