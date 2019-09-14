@@ -86,7 +86,7 @@ def extract():
     """
     # collect functions parameters from environment variables
     params = config.get_environment_variables()
-    bucket = params['AWS']['s3_bucket']
+    bucket = params['AWS']['data_bucket']
     profile = params['AWS']['profile']
 
     # get list of urls to scrape
@@ -172,7 +172,7 @@ def transform(date=None):
 
     # collect functions parameters from environment variables
     params = config.get_environment_variables()
-    bucket = params['AWS']['s3_bucket']
+    bucket = params['AWS']['data_bucket']
     profile = params['AWS']['profile']
 
     # download raw web pages contents
@@ -241,7 +241,7 @@ def load(date=None):
 
     # collect functions parameters from environment variables
     params = config.get_environment_variables()
-    bucket = params['AWS']['s3_bucket']
+    bucket = params['AWS']['data_bucket']
     profile = params['AWS']['profile']
     con_params = params['DATABASE']
     database = con_params['database']

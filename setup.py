@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-__version__ = '0.3.9'
+__version__ = '0.3.10'
 
 here = os.path.abspath(os.path.dirname(__file__))
 

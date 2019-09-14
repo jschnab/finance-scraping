@@ -10,7 +10,7 @@ class TestMainModule(TestCase):
     def setUp(self):
         self.parameters = {
             'AWS': {
-                's3_bucket': 'mybucket',
+                'data_bucket': 'mybucket',
                 'profile': 'profile'
             },
             'SCRAPING': {'urls_s3_key': 'key'},

@@ -9,7 +9,7 @@ class TestConfig(TestCase):
     def setUp(self):
         self.config_dict = {
             'AWS': {
-                's3_bucket': 'bucket',
+                'data_bucket': 'bucket',
                 'profile': 'aws_profile'
             },
             'SCRAPING': {'urls_s3_key': 'urls.txt'},
@@ -41,7 +41,7 @@ class TestConfig(TestCase):
         os.environ[f'{prefix}TIMEOUT'] = '20'
         os.environ[f'{prefix}URLS_S3_KEY'] = 'urls.txt'
         os.environ[f'{prefix}DATABASE'] = 'scraping_db'
-        os.environ[f'{prefix}TABLE'] = 'mytable'
+        os.environ[f'{prefix}DB_TABLE'] = 'mytable'
         os.environ[f'{prefix}DB_USER'] = 'username'
         os.environ[f'{prefix}PASSWORD'] = 'pa$$w0rd'
         os.environ[f'{prefix}HOST'] = 'localhost'

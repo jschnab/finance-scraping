@@ -12,7 +12,7 @@ def get_environment_variables():
     configuration = {}
 
     configuration['AWS'] = {
-        's3_bucket': os.getenv('FINANCE_SCRAPING_S3_BUCKET'),
+        'data_bucket': os.getenv('FINANCE_SCRAPING_S3_BUCKET'),
         'profile': os.getenv('FINANCE_SCRAPING_AWS_PROFILE')
     }
     # set AWS profile to None if user typed 'None'
@@ -33,7 +33,7 @@ def get_environment_variables():
 
     configuration['DATABASE'] = {
         'database': os.getenv('FINANCE_SCRAPING_DATABASE'),
-        'table': os.getenv('FINANCE_SCRAPING_TABLE'),
+        'table': os.getenv('FINANCE_SCRAPING_DB_TABLE'),
         'db_user': os.getenv('FINANCE_SCRAPING_DB_USER'),
         'password': os.getenv('FINANCE_SCRAPING_PASSWORD'),
         'host': os.getenv('FINANCE_SCRAPING_HOST'),

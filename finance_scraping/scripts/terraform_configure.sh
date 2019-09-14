@@ -1,12 +1,46 @@
 #!/bin/bash
 
-# set Terraform environment variables from user's input
-
 ENV_FILE=~/.bashrc
 
-declare -a PARAMS=(s3_bucket aws_profile urls_s3_key user_agent \
-    max_retries backoff_factor retry_on timeout db_name table db_username \
-    db_password)
+echo "Welcome to the configuration of the web scraping utility!"
+
+# check the AWS command-line interface is installed, install if not
+if ! [[ -x "$(command -v aws)" ]]; then
+    echo "aws-cli is not installed, installing..."
+    /usr/bin/pip3 install --upgrade --user --yes aws-cli
+    echo "export PATH=$HOME/.local/bin:$PATH" >> $ENV_FILE
+fi
+
+# check jq (JSON parsing) is installed, install if not
+if ! [[ -x "$(command -v jq)" ]]; then
+    echo "jq (JSON parsing tool) is not installed, installing..."
+    sudo apt install -y jq
+fi
+
+# create a key-pair to later SSH into the Airflow instance
+echo "creating key pair 'airflow-instance-ssh' and saving in $HOME/.ssh"
+aws ec2 create-key-pair --key-name airflow-instance-ssh | jq '.KeyMaterial' > $HOME/.ssh/airflow-instance-ssh.pem
+
+# put the key-pair name in an environment variable to later add it to a load balancer launch config with Terraform
+VAR="TF_VAR_ec2_key_pair"
+if [[ ! -z $VAR ]]; then
+    sed -i "/export $VAR/d" $ENV_FILE
+fi
+echo "echo export $VAR=airflow-instance-ssh"
+
+# record the user's IP address to later add it to an AWS security group in with Terraform
+MYIP=`dig +short myip.opendns.com @resolver1.opendns.com`
+VAR="TF_VAR_my_ip"
+if [[ ! -z $VAR ]]; then
+  sed -i "/export $VAR/d" $ENV_FILE
+fi
+echo "export $VAR=${MYIP}/32" >> $ENV_FILE
+
+# set Terraform environment variables from user's input
+
+declare -a PARAMS=(data_bucket aws_profile urls_s3_key user_agent max_retries \
+    backoff_factor retry_on timeout db_name db_table db_username db_password \
+    state_bucket)
 
 echo "Please enter configuration values: "
 echo
@@ -15,7 +49,7 @@ echo
 for ((i=0; i<${#PARAMS[@]}; i++)); do
 
     # show the existing value to the user
-    VAR="TF_VAR_${PARAMS[i]^^}"
+    VAR="TF_VAR_${PARAMS[i]}"
     EXISTING=`cat $ENV_FILE | grep $VAR | cut -d= -f2`
     echo "${PARAMS[i]}[$EXISTING]: "
     read VAL
