@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: finance-scraping
-Version: 0.3.8
+Version: 0.3.10
 Summary: Finance Scraping ETL Pipeline
 Home-page: https://github.com/jschnab/finance-scraping
 Author: Jonathan Schnabel

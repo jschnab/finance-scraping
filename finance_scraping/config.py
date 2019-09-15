@@ -1,39 +1,6 @@
-from configparser import ConfigParser
 import os
 from os.path import dirname, join
 import subprocess
-
-
-def get_config():
-    """
-    Read configuration file, perform appropriate type conversion
-    and return the whole configuration.
-
-    :return dict[dict]: configuration
-    """
-    config = ConfigParser()
-    config.read('config.ini')
-
-    # get requests config
-    requests_config = config['REQUESTS']
-    requests_params = {}
-    requests_params['user_agent'] = requests_config['user_agent']
-    requests_params['max_retries'] = int(requests_config['max_retries'])
-    requests_params['backoff_factor'] = float(
-        requests_config['backoff_factor']
-    )
-
-    requests_params['retry_on'] = tuple(
-        map(int, requests_config['retry_on'].split(',')))
-
-    requests_params['timeout'] = int(requests_config['timeout'])
-
-    return {
-        'AWS': config['AWS'],
-        'REQUESTS': requests_params,
-        'SCRAPING': config['SCRAPING'],
-        'DATABASE': config['DATABASE']
-    }
 
 
 def get_environment_variables():
@@ -45,7 +12,7 @@ def get_environment_variables():
     configuration = {}
 
     configuration['AWS'] = {
-        's3_bucket': os.getenv('FINANCE_SCRAPING_S3_BUCKET'),
+        'data_bucket': os.getenv('FINANCE_SCRAPING_S3_BUCKET'),
         'profile': os.getenv('FINANCE_SCRAPING_AWS_PROFILE')
     }
     # set AWS profile to None if user typed 'None'
@@ -66,7 +33,7 @@ def get_environment_variables():
 
     configuration['DATABASE'] = {
         'database': os.getenv('FINANCE_SCRAPING_DATABASE'),
-        'table': os.getenv('FINANCE_SCRAPING_TABLE'),
+        'table': os.getenv('FINANCE_SCRAPING_DB_TABLE'),
         'db_user': os.getenv('FINANCE_SCRAPING_DB_USER'),
         'password': os.getenv('FINANCE_SCRAPING_PASSWORD'),
         'host': os.getenv('FINANCE_SCRAPING_HOST'),
@@ -87,9 +54,45 @@ def configure():
     try:
         subprocess.run(['bash', config_file_path])
     # ProcessLookupError happens if you hit ctrl+c
-    except ProcessLookupError:
+    except (KeyboardInterrupt, ProcessLookupError):
         msg = (
             "\nConfiguration may be incomplete, "
             "run 'finance-scraping -c' again."
         )
         print(msg)
+
+
+def terraform_configure():
+    """
+    Run BASH configuration script to store Terraform environment variables.
+    """
+    config_file_path = join(
+        dirname(__file__),
+        join('scripts', 'terraform_configure.sh')
+    )
+    try:
+        subprocess.run(['bash', config_file_path])
+    except (KeyboardInterrupt, ProcessLookupError):
+        msg = (
+            "\nConfiguration may be incomplete, "
+            "run 'finance-scraping --build' again."
+        )
+        print(msg)
+
+def terraform_build():
+    """
+    Builds the infrastructure for the scraper ETL in AWS with Terraform.
+    """
+    build_file_path = join(
+        dirname(__file__),
+        join('scripts', 'terraform_build.sh')
+    )
+    try:
+        subprocess.run(['bash', build_file_path])
+    except (KeyboardInterrupt, ProcessLookupError):
+        msg = (
+            "\nConfiguration may be incomplete, "
+            "run 'finance-scraping --build' again."
+        )
+        print(msg)
+

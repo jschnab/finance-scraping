@@ -39,7 +39,15 @@ def parse_cli():
         '-c',
         '--configure',
         action='store_true',
-        help="configure the scraper, requires user input"
+        help='configure the scraper, requires user input'
+    )
+
+    parser.add_argument(
+        '-b',
+        '--build',
+        action='store_true',
+        help='configure the Terraform provisioning script and then build the \
+infrastructure (requires user input)'
     )
 
     parser.add_argument(

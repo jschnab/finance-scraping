@@ -9,7 +9,7 @@ class TestConfig(TestCase):
     def setUp(self):
         self.config_dict = {
             'AWS': {
-                's3_bucket': 'bucket',
+                'data_bucket': 'bucket',
                 'profile': 'aws_profile'
             },
             'SCRAPING': {'urls_s3_key': 'urls.txt'},
@@ -30,20 +30,6 @@ class TestConfig(TestCase):
             }
         }
 
-    def test_get_config(self):
-        c = config.ConfigParser()
-        c['AWS'] = self.config_dict['AWS']
-        c['SCRAPING'] = self.config_dict['SCRAPING']
-        c['DATABASE'] = self.config_dict['DATABASE']
-        expected = {
-            'AWS': c['AWS'],
-            'SCRAPING': c['SCRAPING'],
-            'REQUESTS': self.config_dict['REQUESTS'],
-            'DATABASE': c['DATABASE']
-        }
-        configuration = config.get_config()
-        self.assertEqual(configuration, expected)
-
     def test_get_environment_variables(self):
         prefix = 'FINANCE_SCRAPING_'
         os.environ[f'{prefix}S3_BUCKET'] = 'bucket'
@@ -55,7 +41,7 @@ class TestConfig(TestCase):
         os.environ[f'{prefix}TIMEOUT'] = '20'
         os.environ[f'{prefix}URLS_S3_KEY'] = 'urls.txt'
         os.environ[f'{prefix}DATABASE'] = 'scraping_db'
-        os.environ[f'{prefix}TABLE'] = 'mytable'
+        os.environ[f'{prefix}DB_TABLE'] = 'mytable'
         os.environ[f'{prefix}DB_USER'] = 'username'
         os.environ[f'{prefix}PASSWORD'] = 'pa$$w0rd'
         os.environ[f'{prefix}HOST'] = 'localhost'

@@ -7,7 +7,7 @@ from finance_scraping.main import extract, transform, load
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2019, 9, 4),
+    'start_date': getenv('FINANCE_SCRAPING_dag_start_date'),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
@@ -17,7 +17,7 @@ default_args = {
 dag = DAG(
     'finance_scraping_etl',
     default_args=default_args,
-    schedule_interval='0 0 * * 1-5'
+    schedule_interval='0 22 * * 1-5'
 )
 
 extract_task = PythonOperator(

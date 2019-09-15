@@ -22,8 +22,8 @@ for ((i=0; i<${#PARAMS[@]}; i++)); do
 
     # keep waiting for user input if no value is set
     while [[ -z ${VAL} ]] && [[ -z $EXISTING ]]; do
-	echo "${PARAMS[i]}["$EXISTING"]: "
-	read val
+	echo "${PARAMS[i]}[$EXISTING]: "
+	read VAL
     done
 
     # user's input overwrites the existing variable
