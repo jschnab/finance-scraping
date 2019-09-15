@@ -43,10 +43,11 @@ def parse_cli():
     )
 
     parser.add_argument(
-        '-tc',
-        '--terraform-configure',
+        '-b',
+        '--build',
         action='store_true',
-        help='configure the Terraform provisioning script, requires user input'
+        help='configure the Terraform provisioning script and then build the \
+infrastructure (requires user input)'
     )
 
     parser.add_argument(

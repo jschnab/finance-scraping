@@ -295,8 +295,9 @@ def main():
     if args.configure:
         config.configure()
 
-    elif args.terraform_configure:
+    elif args.build:
         config.terraform_configure()
+        config.terraform_build()
 
     setup_logging(LOG_FILE_NAME)
 

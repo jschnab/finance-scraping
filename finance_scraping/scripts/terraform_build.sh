@@ -2,12 +2,13 @@
 
 FILE_DIR=$(cd `dirname $0` && pwd)
 INFRA_DIR=$(dirname -- "$(dirname $FILE_DIR)")/infrastructure
-ls $INFRA_DIR
 
 # build the global infrastructure : S3, IAM and VPC
 cd $INFRA_DIR/global/s3
-terraform init -backend-config=$INFRA_DIR/backend.hcl
+terraform init 
 terraform apply -auto-approve
+cd $FILE_DIR
+aws s3api put-object --bucket $TF_VAR_data_bucket --key $TF_VAR_urls_s3_key --body ../scraping_links.txt
 
 cd $INFRA_DIR/global/iam
 terraform init -backend-config=$INFRA_DIR/backend.hcl
@@ -18,7 +19,7 @@ terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
 # build the RDS instance
-cd $INFRA_DIR/rds
+cd $INFRA_DIR/database/data_warehouse
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 

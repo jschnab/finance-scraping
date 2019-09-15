@@ -75,6 +75,24 @@ def terraform_configure():
     except (KeyboardInterrupt, ProcessLookupError):
         msg = (
             "\nConfiguration may be incomplete, "
-            "run 'finance-scraping -c' again."
+            "run 'finance-scraping --build' again."
         )
         print(msg)
+
+def terraform_build():
+    """
+    Builds the infrastructure for the scraper ETL in AWS with Terraform.
+    """
+    build_file_path = join(
+        dirname(__file__),
+        join('scripts', 'terraform_build.sh')
+    )
+    try:
+        subprocess.run(['bash', build_file_path])
+    except (KeyboardInterrupt, ProcessLookupError):
+        msg = (
+            "\nConfiguration may be incomplete, "
+            "run 'finance-scraping --build' again."
+        )
+        print(msg)
+
