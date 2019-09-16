@@ -7,7 +7,7 @@ terraform {
   
 provider "aws" {
   version = "~> 2.0"
-  region = "us-east-1"
+  region = var.region
   profile = var.aws_profile
 }
 
@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "airflow_policy_document" {
     sid = "RDSFullAccess"
     effect = "Allow"
     actions = ["rds:*"]
-    resources = ["arn:aws:rds:us-east-1:*:*"]
+    resources = ["arn:aws:rds:${var.region}:*:*"]
   }
 
   statement {

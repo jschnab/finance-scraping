@@ -7,7 +7,7 @@ terraform {
 
 provider "aws" {
   version = "~> 2.0"
-  region = "us-east-1"
+  region = var.region
   profile = var.aws_profile
 }
 
@@ -16,6 +16,7 @@ module "airflow_instance" {
 
   instance_name = "airflow-instance"
   state_bucket = var.state_bucket
+  region = var.region
   db_remote_state_key = "dev/databases/rds/terraform.tfstate"
   iam_remote_state_key = "global/iam/terraform.tfstate"
   network_remote_state_key = "global/network/terraform.tfstate"
@@ -26,7 +27,7 @@ module "airflow_instance" {
   }
 
   my_ip = var.my_ip
-  ec2_ssh_key = var.ec2_ssh_key
+  ec2_key_pair = var.ec2_key_pair
   s3_bucket = var.data_bucket
   urls_s3_key = var.urls_s3_key
   user_agent = var.user_agent

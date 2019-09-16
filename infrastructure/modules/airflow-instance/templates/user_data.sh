@@ -25,7 +25,7 @@ mv finance-scraping $AIRFLOW_HOME/
 cp $AIRFLOW_HOME/finance-scraping/finance_scraping/finance_scraping_dag.py $AIRFLOW_HOME/dags/
 
 cat << EOL >> $AIRFLOW_HOME/.bashrc
-export FINANCE_SCRAPING_dag_start_date=$(date -d "yesterday 22:00" -u)
+export FINANCE_SCRAPING_dag_start_date=$(date -d "yesterday 22:00" -u -Iminutes)
 export FINANCE_SCRAPING_s3_bucket=${s3_bucket}
 export FINANCE_SCRAPING_aws_profile=None
 export FINANCE_SCRAPING_urls_s3_key=${urls_s3_key}
@@ -63,9 +63,9 @@ pip3 install finance-scraping
 
 pip3 install apache-airflow[systemd]
 
-#cat << EOL > $AIRFLOW_HOME/airflow.cfg
-#${airflow_config}
-#EOL
+cat << EOL > $AIRFLOW_HOME/airflow.cfg
+${airflow_config}
+EOL
 
 cat << EOL >> /etc/profile
 export PATH=/usr/local/bin:$PATH
