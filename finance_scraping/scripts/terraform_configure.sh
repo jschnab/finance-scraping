@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# exit the script if one command fails
+set -e
+
 ENV_FILE=~/.bashrc
 
 echo "Welcome to the configuration of the web scraping utility!"
@@ -11,27 +14,17 @@ if ! [[ -x "$(command -v aws)" ]]; then
     echo "export PATH=$HOME/.local/bin:$PATH" >> $ENV_FILE
 fi
 
-# check jq (JSON parsing) is installed, install if not
-if ! [[ -x "$(command -v jq)" ]]; then
-    echo "jq (JSON parsing tool) is not installed, installing..."
-    sudo apt install -y jq
-fi
-
 # create a key-pair to later SSH into the Airflow instance
-echo "creating key pair 'airflow-instance-ssh' and saving in $HOME/.ssh"
-KEY_PAIR=$(aws ec2 create-key-pair --key-name airflow-instance-ssh 2>/dev/null)
-if [[ -z $KEY_PAIR ]]; then
-    echo
-    echo "The key pair 'airflow-instance-ssh' already exists or there was a problem during key creation."
-    echo "Please make sure you actually have this key pair, or restart configuration."
-    echo "Press any key to continue..."
-    echo
-    read
-else
-    echo $KEY_PAIR | jq '.KeyMaterial' > $HOME/.ssh/airflow-instance-ssh.pem
-fi
+echo "\nCreating key pair 'airflow-instance-ssh' and saving in $HOME/.ssh"
+aws ec2 create-key-pair --key-name airflow-instance-ssh \
+    --query 'KeyMaterial' \
+    --output text \
+    --profile $TF_VAR_aws_profile \
+    > $HOME/.ssh/airflow-instance-ssh.pem
+chmod 400 $HOME/.ssh/airflow-instance-ssh.pem
 
-# put the key-pair name in an environment variable to later add it to a load balancer launch config with Terraform
+# put the key-pair name in an environment variable to later add it to a load balancer
+# launch config with Terraform
 VAR="TF_VAR_ec2_key_pair"
 if [[ ! -z $VAR ]]; then
     sed -i "/^export $VAR/d" $ENV_FILE
@@ -47,9 +40,9 @@ fi
 echo "export $VAR=${MYIP}/32" >> $ENV_FILE
 
 # set Terraform environment variables from user's input
-declare -a PARAMS=(data_bucket aws_profile urls_s3_key user_agent max_retries \
-    backoff_factor retry_on timeout db_name db_table db_username db_password \
-    state_bucket)
+declare -a PARAMS=(data_bucket state_bucket region urls_s3_key \
+	user_agent max_retries backoff_factor retry_on timeout db_name \
+	db_table db_username db_password )
 
 echo
 echo "Please enter configuration values: "
@@ -76,6 +69,9 @@ for ((i=0; i<${#PARAMS[@]}; i++)); do
 	echo "export $VAR=$VAL" >> $ENV_FILE
     fi
 done
+
+# the Airflow instance is launched with a role, so we set profile as None
+echo "export TF_VAR_aws_profile=None" >> $ENV_FILE
 
 source $ENV_FILE
 

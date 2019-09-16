@@ -3,6 +3,11 @@ variable "aws_profile" {
   type = string
 }
 
+variable "region" {
+  description = "AWS region where infrastructure is build"
+  type = string
+}
+
 variable "db_name" {
   description = "name of the database in the instance"
   type = string

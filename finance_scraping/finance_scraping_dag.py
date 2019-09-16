@@ -1,3 +1,6 @@
+from os import getenv
+from dateutil import parser
+
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
@@ -7,7 +10,7 @@ from finance_scraping.main import extract, transform, load
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': getenv('FINANCE_SCRAPING_dag_start_date'),
+    'start_date': parser.parse(getenv('FINANCE_SCRAPING_dag_start_date')),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,

@@ -3,12 +3,17 @@ variable "aws_profile" {
   type = string
 }
 
+variable "region" {
+  description = "AWS region where the infrastructure is built"
+  type = string
+}
+
  variable "my_ip" {
   description = "IP address allowed to access the Airflow instance"
   type = string
 }
 
-variable "ec2_ssh_key" {
+variable "ec2_key_pair" {
   description = "key pair to SSH into the Airflow instance"
   type = string
 }

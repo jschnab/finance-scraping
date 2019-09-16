@@ -10,7 +10,7 @@ terraform {
 
 provider "aws" {
   version = "~> 2.0"
-  region = "us-east-1"
+  region = var.region
   profile = var.aws_profile
 }
 
@@ -42,6 +42,6 @@ data "terraform_remote_state" "network" {
   config = {
     bucket = var.state_bucket
 		key = "global/network/terraform.tfstate"
-		region = "us-east-1"
+		region = var.region
   }
 }

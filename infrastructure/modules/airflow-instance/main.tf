@@ -8,7 +8,7 @@ resource "aws_launch_configuration" "launch_config" {
   instance_type = var.instance_type
   security_groups = [aws_security_group.sg_airflow.id]
   user_data = data.template_file.user_data.rendered
-  key_name = var.ec2_ssh_key
+  key_name = var.ec2_key_pair
   iam_instance_profile = data.terraform_remote_state.iam.outputs.airflow_profile
 
   lifecycle {
@@ -35,6 +35,7 @@ data "template_file" "user_data" {
     port = data.terraform_remote_state.database.outputs.port
     webserver_service = file("${path.module}/templates/airflow-webserver.service")
     scheduler_service = file("${path.module}/templates/airflow-scheduler.service")
+    airflow_config = file("${path.module}/templates/airflow.cfg")
   }
 }
 
@@ -103,7 +104,7 @@ data "terraform_remote_state" "database" {
   config = {
     bucket = var.state_bucket
     key = var.db_remote_state_key
-    region = "us-east-1"
+    region = var.region
   }
 }
 
@@ -112,7 +113,7 @@ data "terraform_remote_state" "iam" {
   config = {
     bucket = var.state_bucket
     key = var.iam_remote_state_key
-    region = "us-east-1"
+    region = var.region
   }
 }
 
@@ -121,6 +122,6 @@ data "terraform_remote_state" "network" {
   config = {
     bucket = var.state_bucket
     key = var.network_remote_state_key
-    region = "us-east-1"
+    region = var.region
   }
 }

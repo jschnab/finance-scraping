@@ -1,3 +1,8 @@
+variable "region" {
+  description = "AWS region where to build infrastructure"
+  type = string
+}
+
 variable "aws_profile" {
   description = "AWS profile Terraform should use"
   type = string

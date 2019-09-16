@@ -4,7 +4,7 @@ terraform {
 
 provider "aws" {
   version = "~> 2.0"
-  region = "us-east-1"
+  region = var.region
   profile = var.aws_profile
 }
 
@@ -14,6 +14,8 @@ resource "aws_s3_bucket" "terraform_state" {
   versioning {
     enabled = true
   }
+
+	force_destroy = true
 
   server_side_encryption_configuration {
     rule {
@@ -30,6 +32,8 @@ resource "aws_s3_bucket" "finance_scraping" {
   versioning {
     enabled = true
   }
+
+	force_destroy = true
 
   server_side_encryption_configuration {
     rule {
