@@ -35,7 +35,6 @@ data "template_file" "user_data" {
     port = data.terraform_remote_state.database.outputs.port
     webserver_service = file("${path.module}/templates/airflow-webserver.service")
     scheduler_service = file("${path.module}/templates/airflow-scheduler.service")
-    airflow_config = file("${path.module}/templates/airflow.cfg")
   }
 }
 
