@@ -5,6 +5,15 @@ YELLOWBOLD="\e[1;33m"
 FILE_DIR=$(cd `dirname $0` && pwd)
 INFRA_DIR=$(dirname -- "$(dirname $FILE_DIR)")/infrastructure
 
+# create a key-pair to later SSH into the Airflow instance
+echo -e "\n${YELLOWBOLD}Creating key pair 'airflow-instance-ssh' and saving in $HOME/.ssh${NORMAL}"
+aws ec2 create-key-pair --key-name airflow-instance-ssh \
+    --query 'KeyMaterial' \
+    --output text \
+    --profile $TF_VAR_aws_profile \
+    > $HOME/.ssh/airflow-instance-ssh.pem
+chmod 400 $HOME/.ssh/airflow-instance-ssh.pem
+
 # add state bucket to backend configuration file
 if [[ ! -z $(grep "^bucket =" $INFRA_DIR/backend.hcl) ]]; then
     sed -i "/^bucket =/d" $INFRA_DIR/backend.hcl
@@ -27,7 +36,7 @@ aws s3api put-object \
 	--bucket $TF_VAR_data_bucket \
 	--key $TF_VAR_urls_s3_key \
 	--body ../scraping_links.txt \
-	--profile $TF_VAR_aws_profile
+	--profile $TF_VAR_aws_profile \
 	>/dev/null
 
 cd $INFRA_DIR/global/iam

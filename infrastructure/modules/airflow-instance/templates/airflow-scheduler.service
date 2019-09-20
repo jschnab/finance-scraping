@@ -3,7 +3,7 @@ Description=Airflow scheduler daemon
 After=network.target
 
 [Service]
-EnvironmentFile=/home/airflow/airflow.cfg
+EnvironmentFile=/home/airflow/airflow.env
 User=airflow
 Group=airflow
 Type=simple
