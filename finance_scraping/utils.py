@@ -39,52 +39,52 @@ def parse_cli():
         '-c',
         '--configure',
         action='store_true',
-        help='configure the scraper, requires user input'
-    )
+        help='configure the scraper for manual use, requires user input')
 
     parser.add_argument(
         '-b',
         '--build',
         action='store_true',
         help='configure the Terraform provisioning script and then build the \
-infrastructure (requires user input)'
-    )
+infrastructure (requires user input)')
+
+    parser.add_argument(
+        '-n',
+        '--nuke',
+        action='store_true',
+        help='tear down the infrastructure')
 
     parser.add_argument(
         '-e',
         '--extract',
         action='store_true',
-        help='run the extract step of the pipeline'
-    )
+        help='run the extract step of the pipeline')
 
     parser.add_argument(
         '-t',
         '--transform',
         action='store_true',
-        help='run the transform step of the pipeline'
-    )
+        help='run the transform step of the pipeline')
 
     parser.add_argument(
         '-l',
         '--load',
         action='store_true',
-        help='run the load step of the pipeline'
-    )
+        help='run the load step of the pipeline')
 
     parser.add_argument(
         '-d',
         '--date',
         type=str,
-        help='specify date of data collection for transform or load'
-    )
+        help='specify date of data collection for transform or load')
 
     args = parser.parse_args()
 
     error_message = (
         "Do not specify options 'extract' and 'date' at the same time, "
         "'date' should only be specified when calling 'transform' and/or "
-        "'load'."
-    )
+        "'load'.")
+
     assert not (args.extract and args.date), error_message
 
     return args

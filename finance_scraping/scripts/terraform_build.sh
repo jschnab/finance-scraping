@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 YELLOWBOLD="\e[1;33m"
 
 FILE_DIR=$(cd `dirname $0` && pwd)
@@ -31,10 +33,11 @@ cd $INFRA_DIR/global/s3
 echo -e "\n${YELLOWBOLD}Building S3 buckets..."
 terraform init 
 terraform apply -auto-approve
+# send the file containing the list of scraping links to the S3 bucket
 cd $FILE_DIR
 aws s3api put-object \
 	--bucket $TF_VAR_data_bucket \
-	--key $TF_VAR_urls_s3_key \
+	--key input/scraping_links.txt \
 	--body ../scraping_links.txt \
 	--profile $TF_VAR_aws_profile \
 	>/dev/null

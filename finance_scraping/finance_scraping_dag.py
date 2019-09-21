@@ -11,8 +11,8 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': datetime.strptime(
-        getenv('FINANCE_SCRAPING_dag_start_date'),
-        '%Y-%m-%dT%H:%M%z'),
+        getenv('FINANCE_SCRAPING_DAG_START_DATE'),
+        '%Y-%m-%dT%H:%M'),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
