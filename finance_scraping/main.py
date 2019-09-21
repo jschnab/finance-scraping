@@ -310,6 +310,14 @@ def main():
     if args.load:
         load(date=args.date)
 
+    elif args.nuke:
+        answer = input('Are you sure you want to destroy the infrastructure? \
+(yes/no): ')
+        if answer == 'yes':
+            config.terraform_nuke()
+        else:
+            print('The infrastructure will not be destroyed.')
+
 
 if __name__ == '__main__':
     main()

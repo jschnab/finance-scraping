@@ -8,7 +8,7 @@ set -e
 
 ENV_FILE=~/.bashrc
 
-echo -e "${YELLOWBOLD}Welcome to the configuration of the web scraping utility!${NORMAL}"
+echo -e "${YELLOWBOLD}\nWelcome to the configuration of the web scraping utility!${NORMAL}"
 
 # check the AWS command-line interface is installed, install if not
 if ! [[ -x "$(command -v aws)" ]]; then
@@ -25,10 +25,10 @@ if [[ ! -z $VAR ]]; then
 fi
 echo "export $VAR=${MYIP}/32" >> $ENV_FILE
 
+
 # set Terraform environment variables from user's input
-declare -a PARAMS=(aws_profile data_bucket state_bucket region urls_s3_key \
-	user_agent max_retries backoff_factor retry_on timeout db_name \
-	db_table db_username db_password )
+declare -a PARAMS=(aws_profile region user_agent max_retries backoff_factor \
+	retry_on timeout db_username db_password )
 
 echo -e "\n${YELLOWBOLD}Please enter configuration values:${NORMAL} \n"
 
@@ -62,6 +62,34 @@ if [[ ! -z $VAR ]]; then
 fi
 echo "export $VAR=airflow-instance-ssh" >> $ENV_FILE
 
+# set S3 buckets names as Terraform environment variables
+RANDOM_STR=$(head /dev/urandom | tr -dc a-z | head -c 20)
+VAR="TF_VAR_state_bucket"
+if [[ ! -z $VAR ]]; then
+    sed -i "/^export $VAR/d" $ENV_FILE
+fi
+echo "export $VAR=terraform-state-$RANDOM_STR" >> $ENV_FILE
+
+VAR="TF_VAR_data_bucket"
+if [[ ! -z $VAR ]]; then
+    sed -i "/^export $VAR/d" $ENV_FILE
+fi
+echo "export $VAR=finance-scraping-$RANDOM_STR" >> $ENV_FILE
+
+# set database and table names as Terraform environment variables
+VAR="TF_VAR_db_name"
+if [[ ! -z $VAR ]]; then
+    sed -i "/^export $VAR/d" $ENV_FILE
+fi
+echo "export $VAR=finance_scraping" >> $ENV_FILE
+
+VAR="TF_VAR_db_table"
+if [[ ! -z $VAR ]]; then
+    sed -i "/^export $VAR/d" $ENV_FILE
+fi
+echo "export $VAR=security_report" >> $ENV_FILE
+
+# export all environment variables
 source $ENV_FILE
 
-echo -e "\n${YELLOWBOLD}Configuration is finished.${NORMAL}"
+echo -e "${YELLOWBOLD}Configuration is finished.${NORMAL}"

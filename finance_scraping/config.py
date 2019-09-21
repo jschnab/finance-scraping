@@ -49,16 +49,14 @@ def configure():
     """
     config_file_path = join(
         dirname(__file__),
-        join('scripts', 'configure.sh')
-    )
+        join('scripts', 'configure.sh'))
     try:
         subprocess.run(['bash', config_file_path])
     # ProcessLookupError happens if you hit ctrl+c
     except (KeyboardInterrupt, ProcessLookupError):
         msg = (
             "\nConfiguration may be incomplete, "
-            "run 'finance-scraping -c' again."
-        )
+            "run 'finance-scraping -c' again.")
         print(msg)
 
 
@@ -68,16 +66,15 @@ def terraform_configure():
     """
     config_file_path = join(
         dirname(__file__),
-        join('scripts', 'terraform_configure.sh')
-    )
+        join('scripts', 'terraform_configure.sh'))
     try:
         subprocess.run(['bash', config_file_path])
     except (KeyboardInterrupt, ProcessLookupError):
         msg = (
             "\nConfiguration may be incomplete, "
-            "run 'finance-scraping --build' again."
-        )
+            "run 'finance-scraping --build' again.")
         print(msg)
+
 
 def terraform_build():
     """
@@ -85,14 +82,28 @@ def terraform_build():
     """
     build_file_path = join(
         dirname(__file__),
-        join('scripts', 'terraform_build.sh')
-    )
+        join('scripts', 'terraform_build.sh'))
     try:
         subprocess.run(['bash', build_file_path])
     except (KeyboardInterrupt, ProcessLookupError):
         msg = (
             "\nConfiguration may be incomplete, "
-            "run 'finance-scraping --build' again."
-        )
+            "run 'finance-scraping --build' again.")
+        print(msg)
+
+
+def terraform_nuke():
+    """
+    Destroy the infrastructure for the scraper ETL in AWS with Terraform.
+    """
+    nuke_file_path = join(
+        dirname(__file__),
+        join('scripts', 'terraform_nuke.sh'))
+    try:
+        subprocess.run(['bash', nuke_file_path])
+    except (KeyboardInterrupt, ProcessLookupError):
+        msg = (
+            "\nDestruction may be incomplete, "
+            "run 'finance-scraping --nuke' again.")
         print(msg)
 
