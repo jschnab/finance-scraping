@@ -9,12 +9,14 @@ INFRA_DIR=$(dirname -- "$(dirname $FILE_DIR)")/infrastructure
 
 # create a key-pair to later SSH into the Airflow instance
 echo -e "\n${YELLOWBOLD}Creating key pair 'airflow-instance-ssh' and saving in $HOME/.ssh${NORMAL}"
-aws ec2 create-key-pair --key-name airflow-instance-ssh \
-    --query 'KeyMaterial' \
-    --output text \
-    --profile $TF_VAR_aws_profile \
-    > $HOME/.ssh/airflow-instance-ssh.pem
-chmod 400 $HOME/.ssh/airflow-instance-ssh.pem
+if [[ ! -f ~/.ssh/airflow-instance-ssh.pem ]]; then
+    aws ec2 create-key-pair --key-name airflow-instance-ssh \
+        --query 'KeyMaterial' \
+        --output text \
+        --profile $TF_VAR_aws_profile \
+        > ~/.ssh/airflow-instance-ssh.pem
+    chmod 400 ~/.ssh/airflow-instance-ssh.pem
+fi
 
 # add state bucket to backend configuration file
 if [[ ! -z $(grep "^bucket =" $INFRA_DIR/backend.hcl) ]]; then

@@ -1,5 +1,4 @@
 from os import getenv
-from dateutil import parser
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator

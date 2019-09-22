@@ -6,7 +6,11 @@ NORMAL="\e[0m"
 # exit the script if one command fails
 set -e
 
-ENV_FILE=~/.bashrc
+# we set variables useful for Terraform in a file
+ENV_FILE=~/.bash_non_interactive
+if [[ ! -f ~/.bash_non_interactive ]]; then
+    touch $ENV_FILE
+fi
 
 echo -e "${YELLOWBOLD}\nWelcome to the configuration of the web scraping utility!${NORMAL}"
 
@@ -24,7 +28,6 @@ if [[ ! -z $VAR ]]; then
   sed -i "/^export $VAR/d" $ENV_FILE
 fi
 echo "export $VAR=${MYIP}/32" >> $ENV_FILE
-
 
 # set Terraform environment variables from user's input
 declare -a PARAMS=(aws_profile region user_agent max_retries backoff_factor \
@@ -88,8 +91,5 @@ if [[ ! -z $VAR ]]; then
     sed -i "/^export $VAR/d" $ENV_FILE
 fi
 echo "export $VAR=security_report" >> $ENV_FILE
-
-# export all environment variables
-source $ENV_FILE
 
 echo -e "${YELLOWBOLD}Configuration is finished.${NORMAL}"

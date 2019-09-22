@@ -83,8 +83,10 @@ def terraform_build():
     build_file_path = join(
         dirname(__file__),
         join('scripts', 'terraform_build.sh'))
+    env = os.environ
+    env['BASH_ENV'] = os.path.join(env['HOME'], '.bash_non_interactive')
     try:
-        subprocess.run(['bash', build_file_path])
+        subprocess.run(['bash', build_file_path], env=env)
     except (KeyboardInterrupt, ProcessLookupError):
         msg = (
             "\nConfiguration may be incomplete, "
@@ -99,6 +101,8 @@ def terraform_nuke():
     nuke_file_path = join(
         dirname(__file__),
         join('scripts', 'terraform_nuke.sh'))
+    env = os.environ
+    env['BASH_ENV'] = os.path.join(env['HOME'], '.bash_non_interactive')
     try:
         subprocess.run(['bash', nuke_file_path])
     except (KeyboardInterrupt, ProcessLookupError):
@@ -106,4 +110,3 @@ def terraform_nuke():
             "\nDestruction may be incomplete, "
             "run 'finance-scraping --nuke' again.")
         print(msg)
-

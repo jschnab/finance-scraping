@@ -1,3 +1,3 @@
 encrypt = true
-bucket = "test-terraform-state-jschnab"
+bucket = "terraform-state-szehrmauzgzslglxqsno"
 region = "us-east-1"
