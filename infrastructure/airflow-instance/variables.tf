@@ -28,11 +28,6 @@ variable "data_bucket" {
   type = string
 }
 
-variable "urls_s3_key" {
-  description = "S3 key where to store the file containing the list of urls to scrape"
-  type = string
-}
-
 variable "user_agent" {
   description = "user agent to use for web scraping"
   type = string

@@ -57,9 +57,9 @@ EOL
 
 pip3 install apache-airflow[systemd]
 
-#cat << EOL > $AIRFLOW_HOME/airflow.cfg
-#{airflow_config}
-#EOL
+cat << EOL > $AIRFLOW_HOME/airflow.cfg
+${airflow_config}
+EOL
 
 pip3 install finance-scraping
 

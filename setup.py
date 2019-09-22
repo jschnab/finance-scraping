@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-__version__ = '0.3.10'
+__version__ = '0.4.0'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,7 +15,7 @@ setup(
         'finance_scraping': ['scripts/configure.sh']
     },
     entry_points={
-        'console_scripts': ['finance-scraper-etl=finance_scraping.main:main']
+        'console_scripts': ['finance-scraper=finance_scraping.main:main']
     },
     version=__version__,
     description='Finance Scraping ETL Pipeline',
