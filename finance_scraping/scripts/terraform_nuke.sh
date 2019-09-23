@@ -14,9 +14,9 @@ chmod 755 $HOME/.ssh/airflow-instance-ssh.pem
 rm $HOME/.ssh/airflow-instance-ssh.pem
 
 echo -e "\n${YELLOWBOLD}Destroying the Airflow EC2 instance...\n"
-cd $INFRA_DIR/airflow-instance
+cd $INFRA_DIR/ec2/airflow-instance
 terraform destroy -auto-approve
-rm -rf $INFRA_DIR/airflow-instance/.terraform
+rm -rf $INFRA_DIR/ec2/airflow-instance/.terraform
 
 echo -e "\n${YELLOWBOLD}Destroying the database...\n"
 cd $INFRA_DIR/databases/data_warehouse
