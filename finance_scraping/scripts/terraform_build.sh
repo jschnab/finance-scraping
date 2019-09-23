@@ -32,7 +32,7 @@ echo "region = \"$TF_VAR_region\"" >> $INFRA_DIR/backend.hcl
 
 # build the global infrastructure : S3, IAM and VPC
 cd $INFRA_DIR/global/s3
-echo -e "\n${YELLOWBOLD}Building S3 buckets..."
+echo -e "\n${YELLOWBOLD}Building S3 buckets...\n"
 terraform init 
 terraform apply -auto-approve
 # send the file containing the list of scraping links to the S3 bucket
@@ -45,23 +45,23 @@ aws s3api put-object \
 	>/dev/null
 
 cd $INFRA_DIR/global/iam
-echo -e "\n${YELLOWBOLD}Building IAM resources.."
+echo -e "\n${YELLOWBOLD}Building IAM resources..\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
 cd $INFRA_DIR/global/network
-echo -e "\n${YELLOWBOLD}Building VPC resources..."
+echo -e "\n${YELLOWBOLD}Building VPC resources...\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
 # build the RDS instance
 cd $INFRA_DIR/databases/data_warehouse
-echo -e "\n${YELLOWBOLD}Building the database..."
+echo -e "\n${YELLOWBOLD}Building the database...\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
 # build the EC2 instance running Apache Airflow
-cd $INFRA_DIR/airflow-instance
+cd $INFRA_DIR/ec2/airflow-instance
 echo -e "\n${YELLOWBOLD}Building the Airflow instance...\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
