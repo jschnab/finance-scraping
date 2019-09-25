@@ -8,38 +8,9 @@ provider "aws" {
   profile = var.aws_profile
 }
 
-resource "aws_s3_bucket" "terraform_state" {
-		bucket = var.state_bucket
-
-  versioning {
-    enabled = true
-  }
-
-	force_destroy = true
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-}
-
-resource "aws_s3_bucket" "finance_scraping" {
-  bucket = var.data_bucket
-
-  versioning {
-    enabled = true
-  }
-
-	force_destroy = true
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+module "buckets" {
+	source = "github.com/jschnab/terraform_modules//s3/state_data_logs?ref=v0.0.8"
+	state_bucket = var.state_bucket
+	data_bucket = var.data_bucket
+	logs_bucket = var.logs_bucket
 }

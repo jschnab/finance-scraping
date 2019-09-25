@@ -12,10 +12,11 @@ provider "aws" {
 }
 
 module "airflow_instance" {
-  source = "github.com/jschnab/terraform_modules//airflow-instance?ref=v0.0.4"
+  source = "github.com/jschnab/terraform_modules//ec2/airflow-instance?ref=v0.0.8"
 
   instance_name = "airflow-instance"
   state_bucket = var.state_bucket
+	logs_bucket = var.logs_bucket
   region = var.region
   db_remote_state_key = "databases/rds/terraform.tfstate"
   iam_remote_state_key = "global/iam/terraform.tfstate"

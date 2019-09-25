@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "network" {
-	source = "github.com/jschnab/terraform_modules//network/vpc-public-private-subnets?ref=v0.0.4"
+	source = "github.com/jschnab/terraform_modules//network/vpc-public-private-subnets?ref=v0.0.8"
 	region = var.region
 	aws_profile = var.aws_profile
 }

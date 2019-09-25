@@ -28,6 +28,11 @@ variable "data_bucket" {
   type = string
 }
 
+variable "logs_bucket" {
+	description = "S3 bucket where logs are stored"
+	type = string
+}
+
 variable "user_agent" {
   description = "user agent to use for web scraping"
   type = string

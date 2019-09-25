@@ -32,7 +32,7 @@ echo "region = \"$TF_VAR_region\"" >> $INFRA_DIR/backend.hcl
 
 # build the global infrastructure : S3, IAM and VPC
 cd $INFRA_DIR/global/s3
-echo -e "\n${YELLOWBOLD}Building S3 buckets...\n"
+echo -e "\n${YELLOWBOLD}Building S3 buckets..."
 terraform init 
 terraform apply -auto-approve
 # send the file containing the list of scraping links to the S3 bucket
