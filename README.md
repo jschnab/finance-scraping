@@ -18,13 +18,15 @@ The pipeline can be run locally and load data in a database provided by the user
 
 ## AWS infrastructure
 The AWS infrastructure provisioned here is free-tier, and should cost you a minimal amount of money once you finish your free-tier allowance.
-The infrastructure is managed with Terraform and composed of the following elements:
+The infrastructure is managed with Terraform and composed of the following elements (see picture below):
 * an EC2 instance running Apache Airflow.
 * an autoscaling group maintains a single running Airflow instance at all times.
 * a security group for the Airflow instance allowing inbound SSH (admin tasks) and TCP traffic (Airflow webserver) only from your IP address.
 * a data warehouse consisting of an RDS instance running the PostgresSQL engine, and hosted on a private subnet.
 * a VPC with a public subnet to host the Airflow instance and a private subnet to host the data warehouse.
 * an IAM role that allows the EC2 instance to communicate with S3 and RDS.
+
+<img src="docs/images/finance_scraper.png" width="800" alt="architecture" >
 
 ## General prerequisites
 * this software is designed to work on a Linux distribution.

@@ -79,6 +79,12 @@ if [[ ! -z $VAR ]]; then
 fi
 echo "export $VAR=finance-scraping-$RANDOM_STR" >> $ENV_FILE
 
+VAR="TF_VAR_logs_bucket"
+if [[ ! -z $VAR ]]; then
+    sed -i "/^export $VAR/d" $ENV_FILE
+fi
+echo "export $VAR=logs-$RANDOM_STR" >> $ENV_FILE
+
 # set database and table names as Terraform environment variables
 VAR="TF_VAR_db_name"
 if [[ ! -z $VAR ]]; then
