@@ -15,7 +15,7 @@ provider "aws" {
 }
 
 module "data_warehouse" {
-  source = "github.com/jschnab/terraform_modules//databases/rds?ref=v0.0.8"
+  source = "github.com/jschnab/terraform_modules//databases/rds?ref=v0.0.10"
 	db_name = var.db_name
 	db_username = var.db_username
 	db_password = var.db_password

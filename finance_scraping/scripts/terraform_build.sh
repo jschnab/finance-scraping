@@ -31,7 +31,7 @@ fi
 echo "region = \"$TF_VAR_region\"" >> $INFRA_DIR/backend.hcl
 
 # build the global infrastructure : S3, IAM and VPC
-cd $INFRA_DIR/global/s3
+cd $INFRA_DIR/s3
 echo -e "\n${YELLOWBOLD}Building S3 buckets..."
 terraform init 
 terraform apply -auto-approve
@@ -44,12 +44,12 @@ aws s3api put-object \
 	--profile $TF_VAR_aws_profile \
 	>/dev/null
 
-cd $INFRA_DIR/global/iam
+cd $INFRA_DIR/iam
 echo -e "\n${YELLOWBOLD}Building IAM resources..\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
-cd $INFRA_DIR/global/network
+cd $INFRA_DIR/network
 echo -e "\n${YELLOWBOLD}Building VPC resources...\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve

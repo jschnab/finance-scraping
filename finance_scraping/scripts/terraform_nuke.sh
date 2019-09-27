@@ -24,16 +24,15 @@ terraform destroy -auto-approve
 rm -rf $INFRA_DIR/databases/data_warehouse/.terraform
 
 echo -e "\n${YELLOWBOLD}Destroying the VPC resources...\n"
-cd $INFRA_DIR/global/network
+cd $INFRA_DIR/network
 terraform destroy -auto-approve
-rm -rf $INFRA_DIR/global/network/.terraform
+rm -rf $INFRA_DIR/network/.terraform
 
-rm -rf $INFRA_DIR/airflow-instance/.terraform
 echo -e "\n${YELLOWBOLD}Destroying the IAM resources...\n"
-cd $INFRA_DIR/global/iam
+cd $INFRA_DIR/iam
 terraform destroy -auto-approve
-rm -rf $INFRA_DIR/global/iam/.terraform
+rm -rf $INFRA_DIR/iam/.terraform
 
 echo -e "\n${YELLOWBOLD}Destroying the S3 buckets...\n"
-cd $INFRA_DIR/global/s3
+cd $INFRA_DIR/s3
 terraform destroy -auto-approve
