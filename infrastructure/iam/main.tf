@@ -1,7 +1,7 @@
 terraform {
   required_version = ">= 0.12, < 0.13"
   backend "s3" {
-    key = "global/iam/terraform.tfstate"
+    key = "iam/terraform.tfstate"
   }
 }
   
@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "airflow_profile" {
-	source = "github.com/jschnab/terraform_modules//iam/airflow_profile?ref=v0.0.10"
+	source = "github.com/jschnab/terraform_modules//iam/airflow_profile?ref=v0.0.19"
 	aws_profile = var.aws_profile
 	data_bucket = var.data_bucket
 	region = var.region

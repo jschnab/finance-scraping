@@ -40,10 +40,10 @@ class TestConfig(TestCase):
         os.environ[f'{prefix}RETRY_ON'] = '500,502,504'
         os.environ[f'{prefix}TIMEOUT'] = '20'
         os.environ[f'{prefix}URLS_S3_KEY'] = 'urls.txt'
-        os.environ[f'{prefix}DATABASE'] = 'scraping_db'
+        os.environ[f'{prefix}DB_NAME'] = 'scraping_db'
         os.environ[f'{prefix}DB_TABLE'] = 'mytable'
-        os.environ[f'{prefix}DB_USER'] = 'username'
-        os.environ[f'{prefix}PASSWORD'] = 'pa$$w0rd'
+        os.environ[f'{prefix}DB_USERNAME'] = 'username'
+        os.environ[f'{prefix}DB_PASSWORD'] = 'pa$$w0rd'
         os.environ[f'{prefix}HOST'] = 'localhost'
         os.environ[f'{prefix}PORT'] = '1234'
         configuration = config.get_environment_variables()

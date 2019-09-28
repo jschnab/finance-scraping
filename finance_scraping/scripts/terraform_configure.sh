@@ -31,7 +31,7 @@ echo "export $VAR=${MYIP}/32" >> $ENV_FILE
 
 # set Terraform environment variables from user's input
 declare -a PARAMS=(aws_profile region user_agent max_retries backoff_factor \
-	retry_on timeout db_username db_password )
+	retry_on timeout db_username db_password)
 
 echo -e "\n${YELLOWBOLD}Please enter configuration values:${NORMAL} \n"
 

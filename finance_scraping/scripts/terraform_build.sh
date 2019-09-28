@@ -49,14 +49,19 @@ echo -e "\n${YELLOWBOLD}Building IAM resources..\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
-cd $INFRA_DIR/network
+cd $INFRA_DIR/network/vpc
 echo -e "\n${YELLOWBOLD}Building VPC resources...\n"
+terraform init -backend-config=$INFRA_DIR/backend.hcl
+terraform apply -auto-approve
+
+cd $INFRA_DIR/network/security_groups
+echo -e "\n${YELLOWBOLD}Building security groups...\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
 # build the RDS instance
 cd $INFRA_DIR/databases/data_warehouse
-echo -e "\n${YELLOWBOLD}Building the database...\n"
+echo -e "\n${YELLOWBOLD}Building the data warehouse...\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
