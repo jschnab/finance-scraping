@@ -32,10 +32,10 @@ def get_environment_variables():
         'urls_s3_key': os.getenv('FINANCE_SCRAPING_URLS_S3_KEY')}
 
     configuration['DATABASE'] = {
-        'database': os.getenv('FINANCE_SCRAPING_DATABASE'),
+        'database': os.getenv('FINANCE_SCRAPING_DB_NAME'),
         'table': os.getenv('FINANCE_SCRAPING_DB_TABLE'),
-        'db_user': os.getenv('FINANCE_SCRAPING_DB_USER'),
-        'password': os.getenv('FINANCE_SCRAPING_PASSWORD'),
+        'db_user': os.getenv('FINANCE_SCRAPING_DB_USERNAME'),
+        'password': os.getenv('FINANCE_SCRAPING_DB_PASSWORD'),
         'host': os.getenv('FINANCE_SCRAPING_HOST'),
         'port': os.getenv('FINANCE_SCRAPING_PORT'),
     }

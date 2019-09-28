@@ -17,8 +17,3 @@ variable "state_bucket" {
   description = "AWS S3 bucket where Terraform state is stored"
   type = string
 }
-
-variable "logs_bucket" {
-	description = "AWS S3 bucket where Airflow write logs"
-	type = string
-}

@@ -31,7 +31,7 @@ echo "export $VAR=${MYIP}/32" >> $ENV_FILE
 
 # set Terraform environment variables from user's input
 declare -a PARAMS=(aws_profile region user_agent max_retries backoff_factor \
-	retry_on timeout db_username db_password )
+	retry_on timeout db_username db_password)
 
 echo -e "\n${YELLOWBOLD}Please enter configuration values:${NORMAL} \n"
 
@@ -78,12 +78,6 @@ if [[ ! -z $VAR ]]; then
     sed -i "/^export $VAR/d" $ENV_FILE
 fi
 echo "export $VAR=finance-scraping-$RANDOM_STR" >> $ENV_FILE
-
-VAR="TF_VAR_logs_bucket"
-if [[ ! -z $VAR ]]; then
-    sed -i "/^export $VAR/d" $ENV_FILE
-fi
-echo "export $VAR=logs-$RANDOM_STR" >> $ENV_FILE
 
 # set database and table names as Terraform environment variables
 VAR="TF_VAR_db_name"
