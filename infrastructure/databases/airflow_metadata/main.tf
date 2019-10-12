@@ -15,7 +15,7 @@ provider "aws" {
 }
 
 module "airflow_metadata" {
-	source = "github.com/jschnab/terraform_modules//databases/rds?ref=v0.0.26"
+	source = "github.com/jschnab/terraform_modules//databases/rds?ref=v0.0.28"
 	db_name = "airflow"
 	db_username = "airflow"
 	db_password = var.meta_db_password

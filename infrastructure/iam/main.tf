@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "airflow_profile" {
-	source = "github.com/jschnab/terraform_modules//iam/airflow_profile?ref=v0.0.23"
+	source = "github.com/jschnab/terraform_modules//iam/airflow_profile?ref=v0.0.28"
 	aws_profile = var.aws_profile
 	data_bucket = var.data_bucket
 	remote_log_folder = var.remote_log_folder
