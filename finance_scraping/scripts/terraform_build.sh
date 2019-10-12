@@ -59,9 +59,14 @@ echo -e "\n${YELLOWBOLD}Building security groups...\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
-# build the RDS instance
+# build the RDS instances
 cd $INFRA_DIR/databases/data_warehouse
 echo -e "\n${YELLOWBOLD}Building the data warehouse...\n"
+terraform init -backend-config=$INFRA_DIR/backend.hcl
+terraform apply -auto-approve
+
+cd $INFRA_DIR/databases/airflow_metadata
+echo -e "\n${YELLOWBOLD}Building the Airflow metadata database...\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 

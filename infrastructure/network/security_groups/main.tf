@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "security_groups" {
-	source = "github.com/jschnab/terraform_modules//network/security-groups-ec2-rds?ref=v0.0.19"
+	source = "github.com/jschnab/terraform_modules//network/security-groups-ec2-rds?ref=v0.0.28"
 	instance_name = "airflow-instance"
 	web_port = 8080
 	db_port = 5432

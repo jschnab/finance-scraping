@@ -9,7 +9,8 @@ provider "aws" {
 }
 
 module "buckets" {
-	source = "github.com/jschnab/terraform_modules//s3/state_data_buckets?ref=v0.0.19"
+	source = "github.com/jschnab/terraform_modules//s3/state_data_buckets?ref=v0.0.28"
 	state_bucket = var.state_bucket
 	data_bucket = var.data_bucket
+	remote_log_folder = var.remote_log_folder
 }

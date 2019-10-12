@@ -79,6 +79,20 @@ if [[ ! -z $VAR ]]; then
 fi
 echo "export $VAR=finance-scraping-$RANDOM_STR" >> $ENV_FILE
 
+VAR="TF_VAR_remote_log_folder"
+if [[ ! -z $VAR ]]; then
+    sed -i "/^export $VAR/d" $ENV_FILE
+fi
+echo "export $VAR=airflow-logs-$RANDOM_STR" >> $ENV_FILE
+
+# set Airflow metadata database password
+META_DB_PASSWORD=$(head /dev/urandom | tr -dc a-z0-9 | head -c 20)
+VAR="TF_VAR_meta_db_password"
+if [[ ! -z $VAR ]]; then
+    sed -i "/^export $VAR/d" $ENV_FILE
+fi
+echo "export $VAR=$META_DB_PASSWORD" >> $ENV_FILE
+
 # set database and table names as Terraform environment variables
 VAR="TF_VAR_db_name"
 if [[ ! -z $VAR ]]; then

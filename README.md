@@ -23,8 +23,10 @@ The infrastructure is managed with Terraform and composed of the following eleme
 * an autoscaling group maintains a single running Airflow instance at all times.
 * a security group for the Airflow instance allowing inbound SSH (admin tasks) and TCP traffic (Airflow webserver) only from your IP address.
 * a data warehouse consisting of an RDS instance running the PostgresSQL engine, and hosted on a private subnet.
+* a metadata database to store Airflow tasks status on a PostgresSQL RDS instance.
 * a VPC with a public subnet to host the Airflow instance and a private subnet to host the data warehouse.
 * an IAM role that allows the EC2 instance to communicate with S3 and RDS.
+* 3 S3 buckets to store the Terraform state files, the scraped data, and the Airflow logs
 
 <img src="docs/images/finance_scraper.png" width="800" alt="architecture" >
 
@@ -72,7 +74,7 @@ Run `pip install finance-scraping` to install the software. Run `finance-scraper
 * db_username: username to use when setting up the database.
 * db_password: password to use when setting up the database.
 
-Provisioning of the AWS infrastructure will start and takes between 5 and 10 minutes.
+Provisioning of the AWS infrastructure will start and takes between 10 and 15 minutes.
 
 ### Monitoring your infrastructure
 When provisioning is done, you can take note of the public IP of the EC2 instance running Airflow on the AWS console and check the Airflow dashboard on port 8080. You can SSH into instance using the key `airflow-instance-ssh` located in your `~/.ssh` folder.
