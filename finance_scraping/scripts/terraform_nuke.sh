@@ -18,10 +18,15 @@ cd $INFRA_DIR/ec2/airflow-instance
 terraform destroy -auto-approve
 rm -rf $INFRA_DIR/ec2/airflow-instance/.terraform
 
-echo -e "\n${YELLOWBOLD}Destroying the database...\n"
+echo -e "\n${YELLOWBOLD}Destroying the data warehouse...\n"
 cd $INFRA_DIR/databases/data_warehouse
 terraform destroy -auto-approve
 rm -rf $INFRA_DIR/databases/data_warehouse/.terraform
+
+echo -e "\n${YELLOWBOLD}Destroying the metadata database...\n"
+cd $INFRA_DIR/databases/airflow_metadata
+terraform destroy -auto-approve
+rm -rf $INFRA_DIR/databases/airflow_metadata/.terraform
 
 echo -e "\n${YELLOWBOLD}Destroying security groups...\n"
 cd $INFRA_DIR/network/security_groups

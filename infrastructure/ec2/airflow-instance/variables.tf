@@ -72,3 +72,13 @@ variable "db_password" {
   description = "password to access the RDS instance"
   type = string
 }
+
+variable "remote_log_folder" {
+	description = "remote S3 bucket where to store Airflow logs"
+	type = string
+}
+
+variable "meta_db_password" {
+	description = "password to access the Airflow metadata database"
+	type = string
+}

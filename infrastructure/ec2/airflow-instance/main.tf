@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "airflow_instance" {
-  source = "github.com/jschnab/terraform_modules//ec2/airflow-instance?ref=v0.0.19"
+  source = "github.com/jschnab/terraform_modules//ec2/airflow-instance?ref=v0.0.28"
 
   instance_name = "airflow-instance"
   state_bucket = var.state_bucket
@@ -21,12 +21,12 @@ module "airflow_instance" {
   iam_remote_state_key = "iam/terraform.tfstate"
   vpc_remote_state_key = "network/vpc/terraform.tfstate"
 	security_groups_remote_state_key = "network/security_groups/terraform.tfstate"
+	metadata_db_remote_state_key = "databases/airflow_metadata/terraform.tfstate"
   instance_type = "t2.micro"
   custom_tags = {
     Owner = "Airflow"
     DeployedBy = "Terraform"
   }
-
   ec2_key_pair = var.ec2_key_pair
   s3_bucket = var.data_bucket
   urls_s3_key = "input/scraping_links.txt"
@@ -39,4 +39,6 @@ module "airflow_instance" {
   db_table = var.db_table
   db_username = var.db_username
   db_password = var.db_password
+	remote_log_folder = var.remote_log_folder
+	meta_db_password = var.meta_db_password
 }
