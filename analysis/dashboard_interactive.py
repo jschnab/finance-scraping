@@ -2,14 +2,17 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import dash_table
 from datetime import datetime
 import os
 import pandas as pd
 import plotly.graph_objs as go
+import sqlite3
 
 from db_to_df import db_to_dataframe
 
-data = db_to_dataframe('../finance-data.sq3')
+database_path = '/home/jonathans/finance-scraping/finance-data.sq3'
+data = db_to_dataframe(database_path)
 data.set_index('timestamp', inplace=True)
 
 app = dash.Dash(__name__)
@@ -48,11 +51,23 @@ dropdown_companies = dcc.Dropdown(
     multi=True)
 
 date_picker = dcc.DatePickerRange(
-        id='date_range',
-        min_date_allowed=min_date,
-        max_date_allowed=max_date,
-        initial_visible_month=datetime(2018, 12, 25),
-        style={'background': 'black'})
+    id='date_range',
+    min_date_allowed=min_date,
+    max_date_allowed=max_date,
+    initial_visible_month=datetime(2018, 12, 25),
+    style={'background': 'black'})
+
+dropdown_top_prog = dcc.Dropdown(
+    id='drop-top-prog',
+    options=options_dropdown_y,
+    value='capital',
+    style={'width': '150px'})
+
+div_var_table_prog = html.Div(
+    children=[
+        html.Label('Attribute'),
+        dropdown_top_prog],
+    style={'columnCount': 1, 'display': 'inline-block'})
 
 div_variables = html.Div(
     children=[
@@ -67,7 +82,31 @@ app.layout = html.Div(children=[
     html.H1('Technological Companies Stocks Dashboard'),
     html.H2('Timeseries Analysis'),
     html.Div(children=[div_variables]),
-    dcc.Graph(id='timeseries')])
+    dcc.Graph(id='timeseries'),
+    html.H2('Top 10'),
+    html.Div(children=[div_var_table_prog]),
+    dcc.Graph(id='top-ten-prog')])
+
+@app.callback(
+    Output(component_id='top-ten-prog', component_property='figure'),
+    [Input(component_id='drop-top-prog', component_property='value')])
+def top_ten_progressions(attribute):
+    sql = f"""
+        SELECT name, {attribute}, date
+        FROM euronext_techno
+        WHERE date in (SELECT MAX(date) FROM euronext_techno)
+        ORDER BY {attribute} DESC
+        LIMIT 10;
+        """
+    con = sqlite3.connect(database_path)
+    df = pd.read_sql(sql, con)
+    layout = go.Layout(title=f'Top 10 companies with highest {attribute}')
+    output_table = go.Figure(
+        data=go.Table(
+            header=dict(values=df.columns),
+            cells=dict(values=[df['name'], df[attribute], df['date']])),
+        layout=layout)
+    return output_table
 
 @app.callback(
     Output(component_id='timeseries', component_property='figure'),
