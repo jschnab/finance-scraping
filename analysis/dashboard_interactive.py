@@ -15,7 +15,17 @@ database_path = '/home/jonathans/finance-scraping/finance-data.sq3'
 data = db_to_dataframe(database_path)
 data.set_index('timestamp', inplace=True)
 
-app = dash.Dash(__name__)
+external_stylesheets = [
+    'https://codepen.io/chriddyp/pen/bWLwgP.css',
+    {
+        'href': 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css',
+        'rel': 'stylesheet',
+        'integrity': 'sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO',
+        'crossorigin': 'anonymous'
+    }
+]
+
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 attributes = [
     'capital',
@@ -66,29 +76,29 @@ dropdown_top_prog = dcc.Dropdown(
 div_var_table_prog = html.Div(
     children=[
         html.Label('Attribute'),
-        dropdown_top_prog],
-    style={'columnCount': 1, 'display': 'inline-block'})
+        dropdown_top_prog])
 
 div_variables = html.Div(
     children=[
-        html.Label('Y-axis variable'),
-        dropdown_y_var,
-        html.Label('Companies'),
-        dropdown_companies,
-        date_picker],
-    style={'columnCount': 1, 'display': 'inline-block'})
+        html.Div('Y-axis variable', className='two columns'),
+        html.Div(dropdown_y_var, className='two columns'),
+        html.Div('Companies', className='two columns'),
+        html.Div(dropdown_companies, className='two columns'),
+        html.Div('Period selection', className='two columns'),
+        html.Div(date_picker, className='two columns')],
+    className='twelve columns')
 
 app.layout = html.Div(children=[
     html.H1('Technological Companies Stocks Dashboard'),
     html.H2('Timeseries Analysis'),
-    html.Div(children=[div_variables]),
+    html.Div(children=[div_variables], className='twelve columns'),
     dcc.Graph(id='timeseries'),
     html.H2('Top 10'),
     html.Div(children=[div_var_table_prog]),
-    dcc.Graph(id='top-ten-prog')])
+    html.Table(id='top-ten-prog')], className='twelve columns')
 
 @app.callback(
-    Output(component_id='top-ten-prog', component_property='figure'),
+    Output(component_id='top-ten-prog', component_property='children'),
     [Input(component_id='drop-top-prog', component_property='value')])
 def top_ten_progressions(attribute):
     sql = f"""
@@ -100,12 +110,11 @@ def top_ten_progressions(attribute):
         """
     con = sqlite3.connect(database_path)
     df = pd.read_sql(sql, con)
-    layout = go.Layout(title=f'Top 10 companies with highest {attribute}')
-    output_table = go.Figure(
-        data=go.Table(
-            header=dict(values=df.columns),
-            cells=dict(values=[df['name'], df[attribute], df['date']])),
-        layout=layout)
+    output_table = html.Table([
+        html.Tr([html.Th(col) for col in df.columns])
+    ] + [
+        html.Tr([html.Td(df.iloc[i][col]) for col in df.columns]) for i in range(10)
+    ])
     return output_table
 
 @app.callback(
