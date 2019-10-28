@@ -54,6 +54,9 @@ app.layout = html.Div([
     # page header
     html.Div([html.H1('Technological Companies Stocks Dashboard')]),
 
+    # timeseries
+    html.Div([html.H2('Timeseries Analysis')]),
+
     # dropdown grid
     html.Div([
 
@@ -78,11 +81,23 @@ app.layout = html.Div([
                     value=['Nokia Oyj', 'Ubisoft Entertainment'],
                     multi=True,
                     className='nine columns'))
+            ]),
+
+            # date picker
+            html.Div([
+                html.Div('Select date range', className='three columns'),
+                html.Div(dcc.DatePickerRange(
+                    id='date_range',
+                    min_date_allowed=min_date,
+                    max_date_allowed=max_date,
+                    initial_visible_month=datetime(2018, 12, 25),
+                    className='nine columns'))
             ])
         ], className='six columns'),
 
-            # empty
-            html.Div(className='six columns'),
+        # empty
+        html.Div(className='six columns'),
+
     ], className='twelve columns'),
 
 
@@ -91,20 +106,76 @@ app.layout = html.Div([
         html.Div([
             dcc.Graph(id='timeseries')
         ], className='twelve columns')
+    ]),
+
+    html.Div(html.H2('Top 10')),
+
+    # drop down
+    html.Div([
+
+        html.Div([
+
+            # table option
+            html.Div([
+                html.Div('Table attribute', className='six columns'),
+                html.Div(dcc.Dropdown(
+                    id='drop-top-prog',
+                    options=options_dropdown_y,
+                    value='capital',
+                    className='six columns'))
+            ])
+        ], className='three columns'),
+
+        # empty
+        html.Div(className='nine columns')
+
+    ], className='twelve columns'),
+
+    # table top 10 progressions
+    html.Div([
+        html.Div(className='one column'),
+        html.Div([
+            html.Table(id='top-ten-prog')
+        ], className='five columns'),
+        html.Div(className='six columns')
     ])
 ])
+
+
+@app.callback(
+    Output(component_id='top-ten-prog', component_property='children'),
+    [Input(component_id='drop-top-prog', component_property='value')])
+def top_ten_progression(attribute):
+    sql = f"""
+        SELECT name, {attribute}, date
+        FROM euronext_techno
+        WHERE date in (SELECT MAX(date) FROM euronext_techno)
+        ORDER BY {attribute} DESC
+        LIMIT 10;
+    """
+    con = sqlite3.connect(database_path)
+    df = pd.read_sql(sql, con)
+    output_table = html.Table([
+        html.Tr([html.Th(col) for col in df.columns])
+    ] + [
+        html.Tr([html.Td(df.iloc[i][col]) for col in df.columns]) for i in range(10)
+    ])
+    return output_table
+
 
 @app.callback(
     Output(component_id='timeseries', component_property='figure'),
     [Input(component_id='y_var', component_property='value'),
-    Input(component_id='companies', component_property='value')])
-def timeseries_plot(y_value, companies):
+    Input(component_id='companies', component_property='value'),
+    Input(component_id='date_range', component_property='start_date'),
+    Input(component_id='date_range', component_property='end_date')])
+def timeseries_plot(y_value, companies, start, end):
     traces = []
     for c in companies:
         trace = go.Scatter(
             name=c,
-            x=data[data['name']==c].index,
-            y=data[data['name']==c][y_value])
+            x=data[data['name']==c][start:end].index,
+            y=data[data['name']==c][y_value][start:end])
         traces.append(trace)
 
     layout = go.Layout(
@@ -117,6 +188,7 @@ def timeseries_plot(y_value, companies):
         layout=layout)
 
     return output_plot
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
