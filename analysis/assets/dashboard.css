@@ -1,0 +1,77 @@
+* {font-family: Helvetica, Arial, sans-serif;}
+
+.main {
+/*	border: 1px solid black;*/
+	padding: 3px;
+	position: absolute;
+	width: 98%;
+}
+
+h2 {
+	border-left: 5px solid;
+	border-left-color: rgb(162,23,27);
+	padding: 2px 5px;
+	margin: 10px;
+}
+
+.container-dropdown {
+/*	border: 1px solid red;*/
+	margin: 3px;
+}
+
+.container-tables{
+/*	border: 1px solid red;*/
+	margin: 3px;
+}
+
+.subcontainer-dropdown{
+/*	border: 1px solid blue;*/
+	margin: 10px 0px 10px 10px;
+	width: 32%;
+	float: left
+}
+
+.container-one-table{
+/*	border: 1px solid blue;*/
+	margin: 10px 0px 10px 10px;
+	width: 46%;
+	float: left
+}
+
+.timeseries-container {
+/*	border: 1px solid green;*/
+	margin: 3px;
+	clear: both;
+}
+
+.label {
+	margin: 3px 0px;
+}
+
+.dropdown {
+	margin: 6px 0px;
+}
+
+.datepicker {
+	margin: 3px 0px;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+	margin-top: 10px;
+}
+
+th {
+	background: rgb(180,180,180);
+	padding: 3px;
+	text-align: left;
+	text-transform: capitalize;
+}
+
+td {
+	padding: 3px;
+}
+
+tr:nth-child(odd) {background: rgb(180,180,180);}
+tr:nth-child(even) {background: gainsboro;}
