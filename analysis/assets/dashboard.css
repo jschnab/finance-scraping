@@ -1,77 +1,90 @@
 * {font-family: Helvetica, Arial, sans-serif;}
 
+:root {
+	box-sizing: border-box;
+	font-size: calc(0.5em + 1vw);
+}
+
+*, ::before, ::after {
+	box-sizing: inherit;
+}
+
 .main {
-/*	border: 1px solid black;*/
-	padding: 3px;
-	position: absolute;
-	width: 98%;
+	float: left;
+	width: 100%;
+	/*box-sizing: border-box;*/
+	padding: 0.5em;
+	border: 1px solid black;
 }
 
 h2 {
-	border-left: 5px solid;
+	border-left: 0.25em solid;
 	border-left-color: rgb(162,23,27);
-	padding: 2px 5px;
-	margin: 10px;
+	padding: 0.1em 0.2em;
+	margin: 0.5em;
 }
 
 .container-dropdown {
-/*	border: 1px solid red;*/
-	margin: 3px;
+	float: left;
+	width: 100%;
+	margin: 0.5em 0;
+	border: 1px solid red;
 }
 
-.container-tables{
-/*	border: 1px solid red;*/
-	margin: 3px;
+.container-tables {
+	float: left;
+	width: 100%;
+	padding: 0.5em;
+	border: 1px solid red;
 }
 
-.subcontainer-dropdown{
-/*	border: 1px solid blue;*/
-	margin: 10px 0px 10px 10px;
-	width: 32%;
+.subcontainer-dropdown {
+	border: 1px solid blue;
+	margin-bottom: 1em;
+	margin-left: 1em;
+	width: calc(33% - 1em);
 	float: left
 }
 
-.container-one-table{
-/*	border: 1px solid blue;*/
-	margin: 10px 0px 10px 10px;
-	width: 46%;
+.container-one-table {
+	box-sizing: border-box;
+	border: 1px solid blue;
+	margin: 0 0 0 0.5em;
+	width: calc(50% - 1em);
 	float: left
 }
 
 .timeseries-container {
-/*	border: 1px solid green;*/
-	margin: 3px;
+	border: 1px solid green;
 	clear: both;
 }
 
 .label {
-	margin: 3px 0px;
+	margin: 0.5em 0em;
 }
 
 .dropdown {
-	margin: 6px 0px;
 }
 
 .datepicker {
-	margin: 3px 0px;
 }
 
 table {
 	border-collapse: collapse;
+	margin-top: 1em;
 	width: 100%;
-	margin-top: 10px;
 }
 
 th {
-	background: rgb(180,180,180);
-	padding: 3px;
+	background: rgb(220,220,220);
+	padding: 0.2em;
 	text-align: left;
 	text-transform: capitalize;
 }
 
 td {
-	padding: 3px;
+	padding: 0.2em;
 }
 
-tr:nth-child(odd) {background: rgb(180,180,180);}
-tr:nth-child(even) {background: gainsboro;}
+tr:nth-child(odd) {background: rgb(220,220,220);}
+tr:nth-child(even) {background: rgb(190,190,190);}
