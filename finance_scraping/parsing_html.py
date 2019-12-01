@@ -51,6 +51,18 @@ def get_company_name(soup):
     return found
 
 
+def get_company_symbol(soup):
+    """
+    :param soup: BeautifulSoup object
+    :return str: company stock symbol
+    """
+    found = soup.find(
+        'span',
+        attrs={'class': 'securitySymbol'}
+    ).get_text()
+    return found
+
+
 def get_last_quote(soup):
     """
     :param soup: BeautifulSoup object
@@ -201,7 +213,10 @@ def parse_webpage(page_contents, collection_date):
     # them in a dictionary
     soup = BeautifulSoup(page_contents, 'html.parser')
 
-    results['company_name'] = get_company_name(soup)
+    if get_company_name(soup):
+        results['company_name'] = get_company_name(soup)
+    else:
+        results['company_name'] = get_company_symbol(soup)
 
     results['last_quote'] = get_last_quote(soup)
 

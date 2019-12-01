@@ -1,0 +1,90 @@
+* {font-family: Helvetica, Arial, sans-serif;}
+
+:root {
+	box-sizing: border-box;
+	font-size: calc(0.5em + 1vw);
+}
+
+*, ::before, ::after {
+	box-sizing: inherit;
+}
+
+.main {
+	float: left;
+	width: 100%;
+	/*box-sizing: border-box;*/
+	padding: 0.5em;
+	border: 1px solid black;
+}
+
+h2 {
+	border-left: 0.25em solid;
+	border-left-color: rgb(162,23,27);
+	padding: 0.1em 0.2em;
+	margin: 0.5em;
+}
+
+.container-dropdown {
+	float: left;
+	width: 100%;
+	margin: 0.5em 0;
+	border: 1px solid red;
+}
+
+.container-tables {
+	float: left;
+	width: 100%;
+	padding: 0.5em;
+	border: 1px solid red;
+}
+
+.subcontainer-dropdown {
+	border: 1px solid blue;
+	margin-bottom: 1em;
+	margin-left: 1em;
+	width: calc(33% - 1em);
+	float: left
+}
+
+.container-one-table {
+	box-sizing: border-box;
+	border: 1px solid blue;
+	margin: 0 0 0 0.5em;
+	width: calc(50% - 1em);
+	float: left
+}
+
+.timeseries-container {
+	border: 1px solid green;
+	clear: both;
+}
+
+.label {
+	margin: 0.5em 0em;
+}
+
+.dropdown {
+}
+
+.datepicker {
+}
+
+table {
+	border-collapse: collapse;
+	margin-top: 1em;
+	width: 100%;
+}
+
+th {
+	background: rgb(220,220,220);
+	padding: 0.2em;
+	text-align: left;
+	text-transform: capitalize;
+}
+
+td {
+	padding: 0.2em;
+}
+
+tr:nth-child(odd) {background: rgb(220,220,220);}
+tr:nth-child(even) {background: rgb(190,190,190);}

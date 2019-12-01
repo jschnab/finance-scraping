@@ -7,6 +7,7 @@ from finance_scraping.parsing_html import (
     string_to_float,
     to_null,
     get_company_name,
+    get_company_symbol,
     get_last_quote,
     get_date_time,
     get_daily_change,
@@ -51,6 +52,10 @@ class TestParsingHTMLBeautifulSoup(TestCase):
     def test_get_company_name(self):
         name = get_company_name(self.soup)
         self.assertEqual(name, 'Dolphin Integration SA')
+
+    def test_get_company_symbol(self):
+        name = get_company_symbol(self.soup)
+        self.assertEqual(name, 'ALDOL')
 
     def test_get_last_quote(self):
         quote = get_last_quote(self.soup)
