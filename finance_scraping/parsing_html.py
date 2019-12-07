@@ -1,7 +1,10 @@
 from math import isnan
+import os
 import re
 
 from bs4 import BeautifulSoup
+
+from mappings import file_to_name
 
 
 def string_to_float(string):
@@ -47,8 +50,9 @@ def get_company_name(soup):
     found = soup.find(
         'span',
         attrs={'class': 'securityName'}
-    ).get_text()
-    return found
+    )
+    if found:
+        return found.get_text()
 
 
 def get_company_symbol(soup):
@@ -59,8 +63,9 @@ def get_company_symbol(soup):
     found = soup.find(
         'span',
         attrs={'class': 'securitySymbol'}
-    ).get_text()
-    return found
+    )
+    if found:
+        return found.get_text()
 
 
 def get_last_quote(soup):
@@ -68,8 +73,10 @@ def get_last_quote(soup):
     :param soup: BeautifulSoup object
     :return str: last quote of the day
     """
-    found = soup.find('span', attrs={'id': 'Col0Price'}).get_text()
-    return string_to_float(found)
+    found = soup.find('span', attrs={'id': 'Col0Price'})
+    if found:
+        last_quote = found.get_text()
+        return string_to_float(last_quote)
 
 
 def get_date_time(soup):
@@ -78,19 +85,20 @@ def get_date_time(soup):
     :return tuple(str, str): date and time of web page update
     """
     # get date and time
-    timestamp = soup.find(
+    found = soup.find(
         'p',
         attrs={'id': 'Col0PriceTime'}
-    ).get_text().split()[1]
-    time = timestamp[10:]
-    date_raw = timestamp[:10]
-
-    # if there is not date, set to 'NULL'
-    date = re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\2-\1', date_raw)
-    if date == date_raw:
-        date = 'NULL'
-
-    return time, date
+    )
+    if found:
+        timestamp = found.get_text().split()[1]
+        time = timestamp[10:]
+        date_raw = timestamp[:10]
+        # if there is not date, set to 'NULL'
+        date = re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\2-\1', date_raw)
+        if date == date_raw:
+            date = 'NULL'
+        return time, date
+    return None, None
 
 
 def get_daily_change(soup):
@@ -98,16 +106,17 @@ def get_daily_change(soup):
     :param soup: BeautifulSoup object
     :return tuple(float, float): absolute and daily value change
     """
-    quote_detail = soup.find(
+    found = soup.find(
         'span',
         attrs={'id': 'Col0PriceDetail'}
-    ).get_text()
-
-    quote_detail_abs = string_to_float(quote_detail.split('|')[0])
-    quote_detail_rel = quote_detail.split('|')[1].replace('%', '')
-    quote_detail_rel = string_to_float(quote_detail_rel) / 100
-
-    return quote_detail_abs, quote_detail_rel
+    )
+    if found:
+        quote_detail = found.get_text()
+        quote_detail_abs = string_to_float(quote_detail.split('|')[0])
+        quote_detail_rel = quote_detail.split('|')[1].replace('%', '')
+        quote_detail_rel = string_to_float(quote_detail_rel) / 100
+        return quote_detail_abs, quote_detail_rel
+    return float('nan'), float('nan')
 
 
 def get_bid_offer(soup):
@@ -115,15 +124,16 @@ def get_bid_offer(soup):
     :param soup: BeautifulSoup object
     :return tuple(float, float): bid and offer on the security
     """
-    bid_offer = soup.find(
+    found = soup.find(
         'td',
         attrs={'id': 'Col0BidOffer'}
-    ).get_text().split(' - ')
-
-    bid = string_to_float(bid_offer[0])
-    offer = string_to_float(bid_offer[1])
-
-    return bid, offer
+    )
+    if found:
+        bid_offer = found.get_text().split(' - ')
+        bid = string_to_float(bid_offer[0])
+        offer = string_to_float(bid_offer[1])
+        return bid, offer
+    return float('nan'), float('nan')
 
 
 def get_low_high(soup):
@@ -131,18 +141,17 @@ def get_low_high(soup):
     :param soup: BeautifulSoup object
     :return tuple(float, float): daily low and high of the security
     """
-    lo_hi = soup.find(
+    found = soup.find(
         'td',
         attrs={'id': 'Col0LowHigh'}
-    ).get_text().split(' - ')
-
-    if len(lo_hi) == 2:
-        low = string_to_float(lo_hi[0])
-        high = string_to_float(lo_hi[1])
-    else:
-        low, high = 'NULL', 'NULL'
-
-    return low, high
+    )
+    if found:
+        lo_hi = found.get_text().split(' - ')
+        if len(lo_hi) == 2:
+            low = string_to_float(lo_hi[0])
+            high = string_to_float(lo_hi[1])
+            return low, high
+    return float('nan'), float('nan')
 
 
 def get_daily_volume(soup):
@@ -150,8 +159,11 @@ def get_daily_volume(soup):
     :param soup: BeautifulSoup object
     :return float: daily volume traded
     """
-    day_vol = soup.find('td', attrs={'id': 'Col0DayVolume'}).get_text()
-    return string_to_float(day_vol)
+    found = soup.find('td', attrs={'id': 'Col0DayVolume'})
+    if found:
+        day_vol = found.get_text()
+        return string_to_float(day_vol)
+    return float('nan')
 
 
 def get_capital(soup):
@@ -159,15 +171,17 @@ def get_capital(soup):
     :param soup: BeautifulSoup object
     :return float: capital of the company
     """
-    capital_str = soup.find('td', attrs={'id': 'Col0MCap'}).get_text()
-    if capital_str[-3:] == 'Mil':
-        capital = string_to_float(capital_str[:-3]) * 10e6
-    elif capital_str[-3:] == 'Bil':
-        capital = string_to_float(capital_str[:-3]) * 10e9
-    else:
-        capital = string_to_float(capital_str)
-
-    return capital
+    found = soup.find('td', attrs={'id': 'Col0MCap'})
+    if found:
+        capital_str = found.get_text()
+        if capital_str[-3:] == 'Mil':
+            capital = string_to_float(capital_str[:-3]) * 10e6
+        elif capital_str[-3:] == 'Bil':
+            capital = string_to_float(capital_str[:-3]) * 10e9
+        else:
+            capital = string_to_float(capital_str)
+        return capital
+    return float('nan')
 
 
 def get_closing_value(soup):
@@ -175,8 +189,11 @@ def get_closing_value(soup):
     :param soup: BeautifulSoup object
     :return float: closing value of the security
     """
-    last_close = soup.find('td', attrs={'id': 'Col0LastClose'}).get_text()
-    return string_to_float(last_close)
+    found = soup.find('td', attrs={'id': 'Col0LastClose'})
+    if found:
+        last_close = found.get_text()
+        return string_to_float(last_close)
+    return float('nan')
 
 
 def get_PE_ratio(soup):
@@ -184,8 +201,11 @@ def get_PE_ratio(soup):
     :param soup: BeautifulSoup object
     :return float: P/E ratio of the security
     """
-    p_e = soup.find('td', attrs={'id': 'Col0PE'}).get_text()
-    return string_to_float(p_e)
+    found = soup.find('td', attrs={'id': 'Col0PE'})
+    if found:
+        p_e = found.get_text()
+        return string_to_float(p_e)
+    return float('nan')
 
 
 def get_yield(soup):
@@ -193,17 +213,22 @@ def get_yield(soup):
     :param soup: BeautifulSoup object
     :return float: yield of the security, in percent
     """
-    y = soup.find('td', attrs={'id': 'Col0Yield'}).get_text()
-    y = string_to_float(y)
-    return y / 100
+    found = soup.find('td', attrs={'id': 'Col0Yield'})
+    if found:
+        y = found.get_text()
+        y = string_to_float(y)
+        return y / 100
+    return float('nan')
 
 
-def parse_webpage(page_contents, collection_date):
+def parse_webpage(page_contents, collection_date, file_name):
     """
     Parse the text of the HTML page.
 
     :param str page_contents: HTML code of the web page
     :param str collection_date: date when data was collected
+    :param str file_name: name of file containing raw web page, such as
+                          '0P0001DIM8.txt', to map web page to company name
     :return dict: dictionary where keys are stock attributes and values are
                   the corresponding values parsed from the HTML
     """
@@ -216,7 +241,8 @@ def parse_webpage(page_contents, collection_date):
     if get_company_name(soup):
         results['company_name'] = get_company_name(soup)
     else:
-        results['company_name'] = get_company_symbol(soup)
+        page_code = os.path.splitext(file_name)[0]
+        results['company_name'] = file_to_name[page_code]
 
     results['last_quote'] = get_last_quote(soup)
 

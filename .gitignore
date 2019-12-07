@@ -2,6 +2,7 @@
 *.swp
 *.sq3
 *.txt
+*.old
 __pycache__
 .git-old
 .coverage
