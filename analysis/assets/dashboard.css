@@ -2,7 +2,7 @@
 
 :root {
 	box-sizing: border-box;
-	font-size: calc(0.5em + 1vw);
+	font-size: calc(0.4em + 0.8vw);
 }
 
 *, ::before, ::after {
@@ -12,9 +12,8 @@
 .main {
 	float: left;
 	width: 100%;
-	/*box-sizing: border-box;*/
 	padding: 0.5em;
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 }
 
 h2 {
@@ -28,18 +27,18 @@ h2 {
 	float: left;
 	width: 100%;
 	margin: 0.5em 0;
-	border: 1px solid red;
+	/*border: 1px solid red;*/
 }
 
 .container-tables {
 	float: left;
 	width: 100%;
 	padding: 0.5em;
-	border: 1px solid red;
+	/*border: 1px solid red;*/
 }
 
 .subcontainer-dropdown {
-	border: 1px solid blue;
+	/*border: 1px solid blue;*/
 	margin-bottom: 1em;
 	margin-left: 1em;
 	width: calc(33% - 1em);
@@ -48,14 +47,14 @@ h2 {
 
 .container-one-table {
 	box-sizing: border-box;
-	border: 1px solid blue;
+	/*border: 1px solid blue;*/
 	margin: 0 0 0 0.5em;
 	width: calc(50% - 1em);
 	float: left
 }
 
 .timeseries-container {
-	border: 1px solid green;
+	/*border: 1px solid green;*/
 	clear: both;
 }
 
@@ -69,6 +68,11 @@ h2 {
 .datepicker {
 }
 
+.top-values {
+	text-align: center;
+	margin: 0.5em;
+}
+
 table {
 	border-collapse: collapse;
 	margin-top: 1em;
@@ -76,7 +80,7 @@ table {
 }
 
 th {
-	background: rgb(220,220,220);
+	background: rgb(240,240,240);
 	padding: 0.2em;
 	text-align: left;
 	text-transform: capitalize;
@@ -86,5 +90,5 @@ td {
 	padding: 0.2em;
 }
 
-tr:nth-child(odd) {background: rgb(220,220,220);}
-tr:nth-child(even) {background: rgb(190,190,190);}
+tr:nth-child(odd) {background: rgb(240,240,240);}
+tr:nth-child(even) {background: rgb(215,215,215);}

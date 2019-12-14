@@ -102,13 +102,14 @@ app.layout = html.Div(
             [html.Div([dcc.Graph(id="timeseries")])],
             className="timeseries-container",
         ),
-        html.Div(html.H2("Top 10")),
+        html.Div(html.H2("Company rankings")),
         # tables container
         html.Div(
             [
                 # single table
                 html.Div(
                     [
+                        html.H3("Top 10 values", className="top-values"),
                         # table top 10 values dropdown
                         html.Div(
                             [
@@ -131,6 +132,7 @@ app.layout = html.Div(
                 # single table
                 html.Div(
                     [
+                        html.H3("Worst 10 values", className="top-values"),
                         # table bottom 10 values dropdown
                         html.Div(
                             [
@@ -173,8 +175,10 @@ def top_ten_values(attribute):
     con = sqlite3.connect(database_path)
     df = pd.read_sql(sql, con)
     if max(df[attribute]) > 1e6:
-        df[attribute] = (df[attribute] / 1e6).round(3).apply("{:,}".format)
+        df[attribute] = (df[attribute] / 1e6).round(5).apply("{:,}".format)
         df.rename(columns={attribute: f"{attribute} (M)"}, inplace=True)
+    else:
+        df[attribute] = df[attribute].round(5)
     output_table = html.Table(
         [html.Tr([html.Th(col) for col in df.columns])]
         + [
@@ -194,19 +198,20 @@ def bottom_ten_values(attribute):
         SELECT name, {attribute}, date
         FROM euronext_techno
         WHERE date in (SELECT MAX(date) FROM euronext_techno)
+        AND {attribute} IS NOT NULL
         ORDER BY {attribute}
         LIMIT 10;
     """
     con = sqlite3.connect(database_path)
     df = pd.read_sql(sql, con)
     if max(df[attribute]) > 1e6:
-        df[attribute] = df[attribute] / 1e6
+        df[attribute] = (df[attribute] / 1e6).round(5).apply("{:,}".format)
         df.rename(columns={attribute: f"{attribute} (M)"}, inplace=True)
     elif max(df[attribute]) > 1e3:
-        df[attribute] = df[attribute] / 1e3
+        df[attribute] = (df[attribute] / 1e3).round(5).apply("{:,}".format)
         df.rename(columns={attribute: f"{attribute} (K)"}, inplace=True)
-    df[attribute] = df[attribute].dropna().round(3)
-    df[attribute] = df[attribute].apply("{:,}".format)
+    else:
+        df[attribute] = df[attribute].round(5)
     output_table = html.Table(
         [html.Tr([html.Th(col) for col in df.columns])]
         + [
