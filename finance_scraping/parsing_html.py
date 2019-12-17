@@ -4,7 +4,7 @@ import re
 
 from bs4 import BeautifulSoup
 
-from mappings import file_to_name
+from finance_scraping.mappings import file_to_name
 
 
 def string_to_float(string):

@@ -111,7 +111,7 @@ class TestMainModule(TestCase):
             'capital': 1982309823,
             'company_name': 'Marshmallows SA'
         }
-        zipfile_mock.return_value.namelist.return_value = ['file_name']
+        zipfile_mock.return_value.namelist.return_value = ['file_name.ext']
         zipfile_mock.return_value.read.return_value.decode.return_value = \
             'webpage contents'
         today_date = datetime.today().strftime('%Y/%m/%d')
@@ -130,7 +130,10 @@ class TestMainModule(TestCase):
             'archive_key',
             'profile'
         )
-        parse_webpage_mock.assert_called_with('webpage contents', today_date)
+        parse_webpage_mock.assert_called_with(
+            'webpage contents',
+            today_date,
+            'file_name.ext')
         upload_object_mock.assert_called_with(
             stringio_mock,
             'mybucket',
