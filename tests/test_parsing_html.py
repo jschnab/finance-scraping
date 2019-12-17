@@ -144,7 +144,7 @@ class TestParsingHTMLBeautifulSoup(TestCase):
         PE_mock.return_value = 'pe'
         yield_mock.return_value = 'yield'
 
-        results = parse_webpage(self.page_contents, '2019-08-31')
+        results = parse_webpage(self.page_contents, '2019-08-31', 'file.ext')
 
         self.assertEqual(results, 'results')
         bs_mock.assert_called_with(self.page_contents, 'html.parser')

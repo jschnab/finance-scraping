@@ -208,7 +208,7 @@ def transform(date=None):
 
         # extract file content, parse HTML code, write to csv
         page_contents = zip_obj.read(file_name).decode()
-        parsed = parsing_html.parse_webpage(page_contents, date)
+        parsed = parsing_html.parse_webpage(page_contents, date, file_name)
         writer.writerow(parsed)
 
     csv_key = aws.get_s3_key(
