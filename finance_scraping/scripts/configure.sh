@@ -5,8 +5,8 @@
 ENV_FILE=~/.bashrc
 
 declare -a PARAMS=(s3_bucket aws_profile urls_s3_key user_agent \
-    max_retries backoff_factor retry_on timeout database table db_user \
-    password host port)
+    max_retries backoff_factor retry_on timeout db_name db_table db_username \
+    db_password host port)
 
 echo "Please enter configuration values: "
 echo
