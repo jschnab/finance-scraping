@@ -175,9 +175,9 @@ def get_capital(soup):
     if found:
         capital_str = found.get_text()
         if capital_str[-3:] == 'Mil':
-            capital = string_to_float(capital_str[:-3]) * 10e6
+            capital = string_to_float(capital_str[:-3]) * 1e6
         elif capital_str[-3:] == 'Bil':
-            capital = string_to_float(capital_str[:-3]) * 10e9
+            capital = string_to_float(capital_str[:-3]) * 1e9
         else:
             capital = string_to_float(capital_str)
         return capital

@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-__version__ = '0.6.3'
+__version__ = '0.6.5'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -12,7 +12,14 @@ setup(
     name='finance-scraping',
     packages=['finance_scraping'],
     package_data={
-        'finance_scraping': ['scripts/configure.sh']
+        'finance_scraping': [
+            'scripts/configure.sh',
+            'scripts/terraform_configure.sh',
+            'scripts/terraform_build.sh',
+            'scripts/terraform_nuke.sh',
+            'scripts/backfill_transform.sh',
+            'scripts/backfill_load.sh',
+        ]
     },
     entry_points={
         'console_scripts': ['finance-scraper=finance_scraping.main:main']
