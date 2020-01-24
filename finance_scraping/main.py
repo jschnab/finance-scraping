@@ -14,6 +14,7 @@ from finance_scraping import (
     scraping,
     utils
 )
+from finance_scraping.sql_commands import CREATE_TABLE, CREATE_NO_NULL_VIEW
 
 LOG_FILE_NAME = 'finance-scraping.log'
 RAW_PAGES_S3_PREFIX = 'raw-page-content'
@@ -38,25 +39,6 @@ CSV_HEADER = [
     'yield_percent',
     'collection_date'
 ]
-CREATE_TABLE_SQL = """
-    CREATE TABLE IF NOT EXISTS {} (
-    company_name VARCHAR,
-    capital FLOAT,
-    date DATE,
-    time TIME,
-    last_quote FLOAT,
-    last_close FLOAT,
-    daily_change_abs FLOAT,
-    daily_change_rel FLOAT,
-    bid FLOAT,
-    offer FLOAT,
-    low FLOAT,
-    high FLOAT,
-    day_volume FLOAT,
-    p_e FLOAT,
-    yield_percent FLOAT,
-    collection_date DATE
-    );"""
 
 
 def setup_logging(log_file):
@@ -250,7 +232,7 @@ def load(date=None):
     # create table if exists
     logging.info(f"creating table '{table_name}' if not exists")
     con = loading.get_connection(con_params)
-    loading.execute_sqls([(CREATE_TABLE_SQL.format(table_name), ())], con)
+    loading.execute_sqls([(CREATE_TABLE.format(table_name), ())], con)
 
     # to make the 'load' step idempotent, we check if data for the specified
     # date is already in the database, if it is we either stop or delete and
