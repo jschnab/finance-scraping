@@ -2,7 +2,7 @@
 
 :root {
 	box-sizing: border-box;
-	font-size: calc(0.4em + 0.8vw);
+	font-size: calc(0.5em + 0.8vw);
 }
 
 *, ::before, ::after {
@@ -22,6 +22,22 @@ h2 {
 	padding: 0.1em 0.2em;
 	margin: 0.5em;
 }
+
+.summary {
+	background: rgb(162,23,27);
+	color: white;
+	padding: 0.3em 1.2em;
+	text-align: justify;
+	margin: 1.8em 0.6em;
+}
+
+a:.summary, {
+	color: white;
+}
+
+.summary-text {font-size: 0.85rem;}
+
+
 
 .container-dropdown {
 	float: left;
@@ -48,7 +64,7 @@ h2 {
 .container-one-table {
 	box-sizing: border-box;
 	/*border: 1px solid blue;*/
-	margin: 0 0 0 0.5em;
+	margin: 0 0 2em 0.5em;
 	width: calc(50% - 1em);
 	float: left
 }
