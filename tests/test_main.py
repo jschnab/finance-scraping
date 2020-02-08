@@ -183,7 +183,7 @@ class TestMainModule(TestCase):
 
         # check correct calls were made
         connection_mock.assert_has_calls([call(connection_parameters)] * 3)
-        self.assertEqual(execute_sqls_mock.call_count, 2)
+        self.assertEqual(execute_sqls_mock.call_count, 3)
         check_table_loaded_mock.assert_called_with(
             'daily_security_data',
             today_date,

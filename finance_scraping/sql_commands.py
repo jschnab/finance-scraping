@@ -19,7 +19,7 @@ CREATE_TABLE = """
     );"""
 
 CREATE_NO_NULL_VIEW = """
-    CREATE OR REPLACE MATERIALIZED VIEW {table_name}_no_nulls
+    CREATE MATERIALIZED VIEW IF NOT EXISTS {table_name}_no_nulls
     AS
     SELECT * FROM {table_name}
     WHERE (
@@ -27,5 +27,7 @@ CREATE_NO_NULL_VIEW = """
         capital IS NOT NULL AND
         date IS NOT NULL AND
         last_quote IS NOT NULL AND
-        p_e IS NOT NULL AND
+        p_e IS NOT NULL
     );"""
+
+REFRESH_NO_NULL_VIEW = """REFRESH MATERIALIZED VIEW {table_name}_no_nulls;"""
