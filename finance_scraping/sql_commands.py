@@ -19,9 +19,9 @@ CREATE_TABLE = """
     );"""
 
 CREATE_NO_NULL_VIEW = """
-    CREATE MATERIALIZED VIEW {}_no_nulls
+    CREATE OR REPLACE MATERIALIZED VIEW {table_name}_no_nulls
     AS
-    SELECT * FROM {}
+    SELECT * FROM {table_name}
     WHERE (
         company_name IS NOT NULL AND
         capital IS NOT NULL AND

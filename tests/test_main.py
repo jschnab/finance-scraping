@@ -141,6 +141,8 @@ class TestMainModule(TestCase):
             'profile'
         )
 
+    @patch("finance_scraping.main.CREATE_TABLE")
+    @patch("finance_scraping.main.CREATE_NO_NULL_VIEW")
     @patch("finance_scraping.main.StringIO")
     @patch("finance_scraping.main.logging")
     @patch("finance_scraping.main.loading.copy_into")
@@ -162,7 +164,9 @@ class TestMainModule(TestCase):
         remove_header_mock,
         copy_into_mock,
         logging_mock,
-        stringio_mock
+        stringio_mock,
+        create_view_mock,
+        create_table_mock,
     ):
         # setup mock
         get_env_mock.return_value = self.parameters
@@ -179,7 +183,7 @@ class TestMainModule(TestCase):
 
         # check correct calls were made
         connection_mock.assert_has_calls([call(connection_parameters)] * 3)
-        execute_sqls_mock.assert_called_once()
+        self.assertEqual(execute_sqls_mock.call_count, 2)
         check_table_loaded_mock.assert_called_with(
             'daily_security_data',
             today_date,
