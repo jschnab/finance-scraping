@@ -52,8 +52,8 @@ def execute_sqls(statements, connection):
     Statements should be passed this way:
     [("SELECT * FROM friends WHERE age > %s", (42,)), ...]
 
-    :param list statements: a list of SQL statements and associated query
-                            parameters
+    :param list(tuple) statements: a list of SQL statements and associated
+                                   query parameters
     :param connection: a psycopg2 connection object
     """
     cur = connection.cursor()

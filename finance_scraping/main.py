@@ -267,6 +267,13 @@ def load(date=None):
     )
     logging.info('loading finished')
 
+    logging.info('creating clean view of data')
+    con = loading.get_connection(con_params)
+    loading.execute_sqls(
+        [(CREATE_NO_NULL_VIEW.format(table_name=table_name), ())],
+        con,
+    )
+
 
 def main():
     """

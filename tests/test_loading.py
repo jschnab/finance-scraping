@@ -9,7 +9,7 @@ from finance_scraping.loading import (
     execute_sql_file,
     data_already_loaded,
     check_table_for_loaded_data,
-    copy_into
+    copy_into,
 )
 
 
