@@ -14,7 +14,11 @@ from finance_scraping import (
     scraping,
     utils
 )
-from finance_scraping.sql_commands import CREATE_TABLE, CREATE_NO_NULL_VIEW
+from finance_scraping.sql_commands import (
+    CREATE_TABLE,
+    CREATE_NO_NULL_VIEW,
+    REFRESH_NO_NULL_VIEW,
+)
 
 LOG_FILE_NAME = 'finance-scraping.log'
 RAW_PAGES_S3_PREFIX = 'raw-page-content'
@@ -267,10 +271,17 @@ def load(date=None):
     )
     logging.info('loading finished')
 
-    logging.info('creating clean view of data')
+    logging.info('creating clean view of data if no exists')
     con = loading.get_connection(con_params)
     loading.execute_sqls(
         [(CREATE_NO_NULL_VIEW.format(table_name=table_name), ())],
+        con,
+    )
+
+    logging.info('refreshing clean view of data')
+    con = loading.get_connection(con_params)
+    loading.execute_sqls(
+        [(REFRESH_NO_NULL_VIEW.format(table_name=table_name), ())],
         con,
     )
 
