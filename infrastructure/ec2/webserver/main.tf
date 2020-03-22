@@ -12,11 +12,11 @@ provider "aws" {
 }
 
 module "webserver" {
-  source                    = "/home/jonathans/terraform_projects/terraform_modules/ec2/webserver"
+  source                    = "github.com/jschnab/terraform_modules//ec2/webserver?ref=v0.0.29"
   key_name                  = "webserver-ssh-key"
   state_bucket              = var.state_bucket
   user_data                 = data.template_file.user_data.rendered
-  state_security_groups_key = "network/security_groups/terraform.tfstate"
+  state_security_groups_key = "network/security-groups/terraform.tfstate"
   state_iam_key             = "iam/terraform.tfstate"
   state_vpc_key             = "network/vpc/terraform.tfstate"
   region                    = var.region
@@ -58,6 +58,6 @@ data "terraform_remote_state" "database" {
   config = {
     bucket = var.state_bucket
     region = var.region
-    key    = "databases/rds/terraform.tfstate"
+    key    = "databases/data-warehouse/terraform.tfstate"
   }
 }

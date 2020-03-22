@@ -4,23 +4,21 @@ terraform {
     key = "iam/terraform.tfstate"
   }
 }
-  
+
 provider "aws" {
   version = "~> 2.0"
-  region = var.region
+  region  = var.region
   profile = var.aws_profile
 }
 
 module "airflow_profile" {
-	#source = "github.com/jschnab/terraform_modules//iam/airflow_profile?ref=v0.0.28"
-	source = "/home/jonathans/terraform_projects/terraform_modules/iam/airflow_profile"
-	aws_profile = var.aws_profile
-	data_bucket = var.data_bucket
-	remote_log_folder = var.remote_log_folder
-	region = var.region
+  source            = "github.com/jschnab/terraform_modules//iam/airflow_profile?ref=v0.0.29"
+  aws_profile       = var.aws_profile
+  data_bucket       = var.data_bucket
+  remote_log_folder = var.remote_log_folder
+  region            = var.region
 }
 
 module "webserver_profile" {
-	#source = "github.com/jschnab/terraform_modules//iam/webserver_profile?ref=v0.0.28"
-	source = "/home/jonathans/terraform_projects/terraform_modules/iam/webserver_profile"
+  source = "github.com/jschnab/terraform_modules//iam/webserver_profile?ref=v0.0.29"
 }
