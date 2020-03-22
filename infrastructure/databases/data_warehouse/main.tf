@@ -15,7 +15,8 @@ provider "aws" {
 }
 
 module "data_warehouse" {
-  source = "github.com/jschnab/terraform_modules//databases/rds?ref=v0.0.28"
+  #source = "github.com/jschnab/terraform_modules//databases/rds?ref=v0.0.28"
+	source = "/home/jonathans/terraform_projects/terraform_modules/databases/rds"
 	subnet_group_name = "datawarehouse-subnet-group"
 	db_name = var.db_name
 	db_username = var.db_username
