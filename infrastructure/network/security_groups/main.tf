@@ -16,7 +16,7 @@ module "security_groups" {
   instance_name          = "airflow"
   airflow_webserver_port = 8080
   db_port                = 5432
-  my_ip                  = var.my_ip
+  my_ip                  = "${var.my_ip}/32"
   state_bucket           = var.state_bucket
   region                 = var.region
   vpc_remote_state_key   = "network/vpc/terraform.tfstate"

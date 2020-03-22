@@ -2,6 +2,8 @@ import os
 from os.path import dirname, join
 import subprocess
 
+TERRAFORM_ENV_FILE = ".terraform_env_vars"
+
 
 def get_db_env_vars():
     """
@@ -95,7 +97,7 @@ def terraform_build():
         dirname(__file__),
         join('scripts', 'terraform_build.sh'))
     env = os.environ
-    env['BASH_ENV'] = os.path.join(env['HOME'], '.bash_non_interactive')
+    env['BASH_ENV'] = os.path.join(env['HOME'], TERRAFORM_ENV_FILE)
     try:
         subprocess.run(['bash', build_file_path], env=env)
     except (KeyboardInterrupt, ProcessLookupError):
@@ -113,7 +115,7 @@ def terraform_nuke():
         dirname(__file__),
         join('scripts', 'terraform_nuke.sh'))
     env = os.environ
-    env['BASH_ENV'] = os.path.join(env['HOME'], '.bash_non_interactive')
+    env['BASH_ENV'] = os.path.join(env['HOME'], TERRAFORM_ENV_FILE)
     try:
         subprocess.run(['bash', nuke_file_path])
     except (KeyboardInterrupt, ProcessLookupError):

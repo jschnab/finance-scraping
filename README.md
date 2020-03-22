@@ -83,6 +83,6 @@ When provisioning is done, you can take note of the public IP of the EC2 instanc
 The whole infrastructure can be destroyed by running `finance-scraper --nuke`.
 
 ### Warning
-Do not modify the configuration files manually (`.terraform` folders, `terraform.tfstate` files and `~/.bash_non_interactive` file). This will break your installation and require painful cleaning.
+Do not modify the configuration files manually (`.terraform` folders, `terraform.tfstate` files and `~/.terraform_env_vars` file). This will break your installation and require painful cleaning.
 
 Be responsible when web scraping, and do not put a high burden on web servers by requesting a lot of pages in a short amount of time. It makes the job of maintaining webservers harder and you could be banned from accessing the website.

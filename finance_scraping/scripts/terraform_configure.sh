@@ -8,8 +8,8 @@ set -e
 set -o pipefail
 
 # we set variables useful for Terraform in a file
-ENV_FILE=~/.bash_non_interactive
-if [[ ! -f ~/.bash_non_interactive ]]; then
+ENV_FILE=~/.terraform_env_vars
+if [[ ! -f $ENV_FILE ]]; then
     touch $ENV_FILE
 fi
 
