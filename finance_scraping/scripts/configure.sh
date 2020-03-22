@@ -2,6 +2,9 @@
 
 # get configuration from user's input and save it as environment variables
 
+set -e
+set -o pipefail
+
 ENV_FILE=~/.bashrc
 
 declare -a PARAMS=(s3_bucket aws_profile urls_s3_key user_agent \
@@ -36,5 +39,3 @@ done
 source $ENV_FILE
 
 echo "Configuration is finished."
-
-exec bash -l

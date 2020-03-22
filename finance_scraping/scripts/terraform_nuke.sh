@@ -13,10 +13,15 @@ aws ec2 delete-key-pair \
 chmod 755 $HOME/.ssh/airflow-instance-ssh.pem
 rm $HOME/.ssh/airflow-instance-ssh.pem
 
-echo -e "\n${YELLOWBOLD}Destroying Airflow EC2 instance...\n"
-cd $INFRA_DIR/ec2/airflow-instance
+echo -e "\n${YELLOWBOLD}Destroying dashboard webserver...\n"
+cd $INFRA_DIR/ec2/webserver
 terraform destroy -auto-approve
-rm -rf $INFRA_DIR/ec2/airflow-instance/.terraform
+rm -rf $INFRA_DIR/ec2/webserver/.terraform
+
+echo -e "\n${YELLOWBOLD}Destroying Airflow EC2 instance...\n"
+cd $INFRA_DIR/ec2/airflow
+terraform destroy -auto-approve
+rm -rf $INFRA_DIR/ec2/airflow/.terraform
 
 echo -e "\n${YELLOWBOLD}Destroying the data warehouse...\n"
 cd $INFRA_DIR/databases/data_warehouse

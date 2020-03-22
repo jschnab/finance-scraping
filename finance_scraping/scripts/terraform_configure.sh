@@ -5,6 +5,7 @@ NORMAL="\e[0m"
 
 # exit the script if one command fails
 set -e
+set -o pipefail
 
 # we set variables useful for Terraform in a file
 ENV_FILE=~/.bash_non_interactive
@@ -31,7 +32,7 @@ echo "export $VAR=${MYIP}/32" >> $ENV_FILE
 
 # set Terraform environment variables from user's input
 declare -a PARAMS=(aws_profile region user_agent max_retries backoff_factor \
-	retry_on timeout db_username db_password)
+	retry_on timeout db_username db_password domain_name)
 
 echo -e "\n${YELLOWBOLD}Please enter configuration values:${NORMAL} \n"
 
