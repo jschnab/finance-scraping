@@ -2,10 +2,30 @@ import os
 from os.path import dirname, join
 import subprocess
 
+TERRAFORM_ENV_FILE = ".terraform_env_vars"
+
+
+def get_db_env_vars():
+    """
+    Read the configuration for the database connection
+    from environment variables.
+
+    :return dict[dict]: configuration
+    """
+    configuration = {
+        'database': os.getenv('FINANCE_SCRAPING_DB_NAME'),
+        'table': os.getenv('FINANCE_SCRAPING_DB_TABLE'),
+        'db_user': os.getenv('FINANCE_SCRAPING_DB_USERNAME'),
+        'password': os.getenv('FINANCE_SCRAPING_DB_PASSWORD'),
+        'host': os.getenv('FINANCE_SCRAPING_HOST'),
+        'port': os.getenv('FINANCE_SCRAPING_PORT'),
+    }
+    return configuration
+
 
 def get_environment_variables():
     """
-    Read the configuration from the environment variables.
+    Read the web scraping configuration from the environment variables.
 
     :return dict[dict]: configuration
     """
@@ -15,8 +35,8 @@ def get_environment_variables():
         'data_bucket': os.getenv('FINANCE_SCRAPING_S3_BUCKET'),
         'profile': os.getenv('FINANCE_SCRAPING_AWS_PROFILE')
     }
-    # set AWS profile to None if user typed 'None'
-    if configuration['AWS']['profile'] == 'None':
+    # set AWS profile to None if user typed 'none' or 'None'
+    if configuration['AWS']['profile'].lower() == 'none':
         configuration['AWS']['profile'] = None
 
     configuration['REQUESTS'] = {
@@ -31,14 +51,7 @@ def get_environment_variables():
     configuration['SCRAPING'] = {
         'urls_s3_key': os.getenv('FINANCE_SCRAPING_URLS_S3_KEY')}
 
-    configuration['DATABASE'] = {
-        'database': os.getenv('FINANCE_SCRAPING_DB_NAME'),
-        'table': os.getenv('FINANCE_SCRAPING_DB_TABLE'),
-        'db_user': os.getenv('FINANCE_SCRAPING_DB_USERNAME'),
-        'password': os.getenv('FINANCE_SCRAPING_DB_PASSWORD'),
-        'host': os.getenv('FINANCE_SCRAPING_HOST'),
-        'port': os.getenv('FINANCE_SCRAPING_PORT'),
-    }
+    configuration['DATABASE'] = get_db_env_vars()
 
     return configuration
 
@@ -84,7 +97,7 @@ def terraform_build():
         dirname(__file__),
         join('scripts', 'terraform_build.sh'))
     env = os.environ
-    env['BASH_ENV'] = os.path.join(env['HOME'], '.bash_non_interactive')
+    env['BASH_ENV'] = os.path.join(env['HOME'], TERRAFORM_ENV_FILE)
     try:
         subprocess.run(['bash', build_file_path], env=env)
     except (KeyboardInterrupt, ProcessLookupError):
@@ -102,7 +115,7 @@ def terraform_nuke():
         dirname(__file__),
         join('scripts', 'terraform_nuke.sh'))
     env = os.environ
-    env['BASH_ENV'] = os.path.join(env['HOME'], '.bash_non_interactive')
+    env['BASH_ENV'] = os.path.join(env['HOME'], TERRAFORM_ENV_FILE)
     try:
         subprocess.run(['bash', nuke_file_path])
     except (KeyboardInterrupt, ProcessLookupError):

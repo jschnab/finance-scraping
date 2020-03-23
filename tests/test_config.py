@@ -48,3 +48,14 @@ class TestConfig(TestCase):
         os.environ[f'{prefix}PORT'] = '1234'
         configuration = config.get_environment_variables()
         self.assertEqual(self.config_dict, configuration)
+
+    def test_get_db_env_vars(self):
+        prefix = 'FINANCE_SCRAPING_'
+        os.environ[f'{prefix}DB_NAME'] = 'scraping_db'
+        os.environ[f'{prefix}DB_TABLE'] = 'mytable'
+        os.environ[f'{prefix}DB_USERNAME'] = 'username'
+        os.environ[f'{prefix}DB_PASSWORD'] = 'pa$$w0rd'
+        os.environ[f'{prefix}HOST'] = 'localhost'
+        os.environ[f'{prefix}PORT'] = '1234'
+        configuration = config.get_db_env_vars()
+        self.assertEqual(self.config_dict["DATABASE"], configuration)

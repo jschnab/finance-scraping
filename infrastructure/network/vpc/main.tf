@@ -7,12 +7,12 @@ terraform {
 
 provider "aws" {
   version = "~> 2.0"
-  region = var.region
+  region  = var.region
   profile = var.aws_profile
 }
 
 module "network" {
-	source = "github.com/jschnab/terraform_modules//network/vpc-public-private-subnets?ref=v0.0.28"
-	region = var.region
-	aws_profile = var.aws_profile
+  source      = "github.com/jschnab/terraform_modules//network/scraping_vpc?ref=v0.0.29"
+  region      = var.region
+  aws_profile = var.aws_profile
 }

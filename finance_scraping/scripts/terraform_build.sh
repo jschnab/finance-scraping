@@ -71,7 +71,13 @@ terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve
 
 # build the EC2 instance running Apache Airflow
-cd $INFRA_DIR/ec2/airflow-instance
+cd $INFRA_DIR/ec2/airflow
 echo -e "\n${YELLOWBOLD}Building the Airflow instance...\n"
+terraform init -backend-config=$INFRA_DIR/backend.hcl
+terraform apply -auto-approve
+
+# build the EC2 instance running the dashboard webserver
+cd $INFRA_DIR/ec2/webserver
+echo -e "\n${YELLOWBOLD}Building the dashboard webserver...\n"
 terraform init -backend-config=$INFRA_DIR/backend.hcl
 terraform apply -auto-approve

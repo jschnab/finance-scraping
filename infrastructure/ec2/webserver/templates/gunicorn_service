@@ -1,0 +1,20 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+EnvironmentFile=/home/ec2-user/gunicorn.env
+Type=notify
+User=ec2-user
+Group=ec2-user
+RuntimeDirectory=gunicorn
+WorkingDirectory=/home/ec2-user/finance-scraping/finance_scraping/dashboard
+ExecStart=/usr/local/bin/gunicorn dashboard:server -w \$${N_CORES}
+ExecReload=/bin/kill -s HUP \$MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
