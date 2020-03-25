@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "airflow_instance" {
-  source = "github.com/jschnab/terraform_modules//ec2/airflow?ref=v0.0.29"
+  source = "github.com/jschnab/terraform_modules//ec2/airflow?ref=v0.0.30"
 
   instance_name                    = "airflow"
   state_bucket                     = var.state_bucket
