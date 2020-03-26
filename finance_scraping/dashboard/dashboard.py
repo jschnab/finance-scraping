@@ -7,6 +7,7 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 
 from finance_scraping import config, loading
+from finance_scraping.main import TABLE_COLUMNS
 
 from sql_queries import (
     top_val_sql,
@@ -28,28 +29,13 @@ data.set_index(pd.to_datetime(data["collection_date"]), inplace=True)
 app = dash.Dash("Finance Scraping")
 server = app.server
 
-attributes = [
-    "capital",
-    "last_quote",
-    "last_close",
-    "last_abs",
-    "last_rel",
-    "bid",
-    "offer",
-    "low",
-    "high",
-    "day_volume",
-    "p_e",
-    "yield_percent",
-]
-
 companies = data["company_name"].unique()
 
 min_date = data.index.min().strftime("%Y-%m-%d")
 max_date = data.index.max().strftime("%Y-%m-%d")
 
 options_dropdown_y = [
-    {"label": capitalize(a), "value": a} for a in attributes
+    {"label": capitalize(c), "value": c} for c in TABLE_COLUMNS
 ]
 options_dropdown_companies = [{"label": c, "value": c} for c in companies]
 
@@ -61,7 +47,7 @@ app.layout = html.Div(
         html.Div([html.H1("Technological Companies Stocks Dashboard")]),
         # summary
         html.Div([
-            html.H2("Summary"),
+            html.H2("Summary", className="summary-title"),
             html.P(summary_1, className="summary-text"),
             html.P(summary_2, className="summary-text"),
             html.A(

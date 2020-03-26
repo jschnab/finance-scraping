@@ -25,7 +25,7 @@ RAW_PAGES_S3_PREFIX = 'raw-page-content'
 RAW_PAGES_S3_SUFFIX = 'archive.zip'
 SECURITY_REPORT_S3_PREFIX = 'parsed-page-data'
 SECURITY_REPORT_S3_SUFFIX = 'security_report.csv'
-CSV_HEADER = [
+TABLE_COLUMNS = [
     'company_name',
     'capital',
     'date',
@@ -108,9 +108,8 @@ def extract():
         # if page scraping was successful
         # zip page contents as a text file in an archive
         if results is not None:
-            text_buffer = StringIO(results)
             security_id = scraping.get_security_id(url)
-            zip_archive.writestr(f'{security_id}.txt', text_buffer.getvalue())
+            zip_archive.writestr(f'{security_id}.txt', results)
 
         time.sleep(0.5)
 
@@ -184,7 +183,7 @@ def transform(date=None):
     # we will write data parsed from the web page to a csv in memory
     # 1 page = 1 row
     csv_obj = StringIO()
-    writer = csv.DictWriter(csv_obj, CSV_HEADER, lineterminator='\n')
+    writer = csv.DictWriter(csv_obj, TABLE_COLUMNS, lineterminator='\n')
     writer.writeheader()
 
     # loop through files in the archive (1 file = 1 web page)
