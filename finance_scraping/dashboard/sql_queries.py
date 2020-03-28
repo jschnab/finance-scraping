@@ -1,3 +1,17 @@
+get_all_data_sql = """SELECT * FROM {}_no_nulls;"""
+
+get_max_date_sql = """
+    SELECT TO_CHAR(MAX(collection_date), 'YYYY-MM-DD')
+    FROM {}_no_nulls;"""
+
+get_min_date_sql = """
+    SELECT TO_CHAR(MIN(collection_date), 'YYYY-MM-DD')
+    FROM {}_no_nulls;"""
+
+get_companies_sql = """
+    SELECT DISTINCT company_name
+    FROM {}_no_nulls;"""
+
 top_val_sql = """
     SELECT company_name, {attribute}, date
     FROM security_report_no_nulls
