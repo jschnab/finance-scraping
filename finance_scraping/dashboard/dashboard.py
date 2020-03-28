@@ -93,7 +93,6 @@ def serve_layout():
                                     id="date_range",
                                     min_date_allowed=get_min_date(),
                                     max_date_allowed=get_max_date(),
-                                    initial_visible_month=data.index.min(),
                                     className="datepicker",
                                 )
                             ),

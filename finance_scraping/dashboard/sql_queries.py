@@ -1,7 +1,8 @@
 get_all_data_sql = """SELECT * FROM {}_no_nulls;"""
 
+# need to add 1 day for datepicker to display max date
 get_max_date_sql = """
-    SELECT TO_CHAR(MAX(collection_date), 'YYYY-MM-DD')
+    SELECT TO_CHAR(MAX(collection_date) + INTERVAL '1 DAY', 'YYYY-MM-DD')
     FROM {}_no_nulls;"""
 
 get_min_date_sql = """
