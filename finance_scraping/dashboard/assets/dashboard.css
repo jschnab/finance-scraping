@@ -13,7 +13,10 @@
 	float: left;
 	width: 100%;
 	padding: 0.5em;
-	/*border: 1px solid black;*/
+}
+
+h1 {
+	margin: 0 0.3em;
 }
 
 h2 {
@@ -23,38 +26,39 @@ h2 {
 	margin: 0.5em;
 }
 
+a {
+	color: white;
+}
+
 .summary {
 	background: rgb(162,23,27);
 	color: white;
-	padding: 0.3em 1.2em;
+	padding: 0.5em 1.2em;
 	text-align: justify;
 	margin: 1.8em 0.6em;
 }
 
-a:.summary, {
-	color: white;
+.summary-title {
+	border-left: 0;
+	padding: 0;
+	margin: 0;
 }
 
 .summary-text {font-size: 0.85rem;}
-
-
 
 .container-dropdown {
 	float: left;
 	width: 100%;
 	margin: 0.5em 0;
-	/*border: 1px solid red;*/
 }
 
 .container-tables {
 	float: left;
 	width: 100%;
 	padding: 0.5em;
-	/*border: 1px solid red;*/
 }
 
 .subcontainer-dropdown {
-	/*border: 1px solid blue;*/
 	margin-bottom: 1em;
 	margin-left: 1em;
 	width: calc(33% - 1em);
@@ -63,14 +67,12 @@ a:.summary, {
 
 .container-one-table {
 	box-sizing: border-box;
-	/*border: 1px solid blue;*/
 	margin: 0 0 2em 0.5em;
 	width: calc(50% - 1em);
 	float: left
 }
 
 .timeseries-container {
-	/*border: 1px solid green;*/
 	clear: both;
 }
 

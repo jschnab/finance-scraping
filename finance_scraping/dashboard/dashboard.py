@@ -9,231 +9,214 @@ from dash.dependencies import Input, Output
 from finance_scraping import config, loading
 
 from sql_queries import (
-    top_val_sql,
+    bottom_prog_sql,
     bottom_val_sql,
     top_prog_sql,
-    bottom_prog_sql,
+    top_val_sql,
 )
 from text import (
     summary_1,
     summary_2,
 )
-from utils import capitalize
+from utils import (
+    capitalize,
+    get_all_data,
+    get_attributes,
+    get_companies,
+    get_max_date,
+    get_min_date,
+)
 
-con = loading.get_connection(config.get_db_env_vars())
-data = pd.read_sql("select * from security_report_no_nulls;", con)
-con.close()
-data.set_index(pd.to_datetime(data["collection_date"]), inplace=True)
+
+def serve_layout():
+    attributes = get_attributes()
+
+    return html.Div(
+        [
+            # page title
+            html.Title(["Euronext Technology Companies"]),
+            # page header
+            html.Div([html.H1("Technological Companies Stocks Dashboard")]),
+            # summary
+            html.Div([
+                html.H2("Summary", className="summary-title"),
+                html.P(summary_1, className="summary-text"),
+                html.P(summary_2, className="summary-text"),
+                html.A(
+                    "Please visit my GitHub!",
+                    href="https://github.com/jschnab/finance-scraping.git",
+                    className="summary-text",
+                ),
+            ], className="summary"),
+            # timeseries
+            html.Div([html.H2("Timeseries Analysis")]),
+            # dropdown grid
+            html.Div(
+                [
+                    # select y axis dropdown
+                    html.Div(
+                        [
+                            html.Div("Select y-axis", className="label"),
+                            html.Div(
+                                dcc.Dropdown(
+                                    id="y_var",
+                                    options=attributes,
+                                    value="last_quote",
+                                    className="dropdown",
+                                )
+                            ),
+                        ],
+                        className="subcontainer-dropdown",
+                    ),
+                    # select companies dropdown
+                    html.Div(
+                        [
+                            html.Div("Select companies", className="label"),
+                            html.Div(
+                                dcc.Dropdown(
+                                    id="companies",
+                                    options=get_companies(),
+                                    value=["Capgemini SE"],
+                                    multi=True,
+                                    className="dropdown",
+                                )
+                            ),
+                        ],
+                        className="subcontainer-dropdown",
+                    ),
+                    # date picker
+                    html.Div(
+                        [
+                            html.Div("Select date range", className="label"),
+                            html.Div(
+                                dcc.DatePickerRange(
+                                    id="date_range",
+                                    min_date_allowed=get_min_date(),
+                                    max_date_allowed=get_max_date(),
+                                    initial_visible_month=data.index.min(),
+                                    className="datepicker",
+                                )
+                            ),
+                        ],
+                        className="subcontainer-dropdown",
+                    ),
+                ],
+                className="container-dropdown",
+            ),
+            # graph grid
+            html.Div(
+                [html.Div([dcc.Graph(id="timeseries")])],
+                className="timeseries-container",
+            ),
+            html.Div(html.H2("Company rankings")),
+            # tables container
+            html.Div(
+                [
+                    # single table
+                    html.Div(
+                        [
+                            html.H3("Top 10 values", className="top-values"),
+                            # table top 10 values dropdown
+                            html.Div(
+                                [
+                                    html.Div("Table attribute", className="label"),
+                                    html.Div(
+                                        dcc.Dropdown(
+                                            id="drop-top-values",
+                                            options=attributes,
+                                            value="capital",
+                                            className="dropdown",
+                                        )
+                                    ),
+                                ]
+                            ),
+                            # table top 10 values
+                            html.Table(id="top-ten-values"),
+                        ],
+                        className="container-one-table",
+                    ),
+                    # single table
+                    html.Div(
+                        [
+                            html.H3("Bottom 10 values", className="top-values"),
+                            # table bottom 10 values dropdown
+                            html.Div(
+                                [
+                                    html.Div("Table attribute", className="label"),
+                                    html.Div(
+                                        dcc.Dropdown(
+                                            id="drop-bottom-values",
+                                            options=attributes,
+                                            value="capital",
+                                            className="dropdown",
+                                        )
+                                    ),
+                                ]
+                            ),
+                            # table bottom 10 values
+                            html.Table(id="bottom-ten-values"),
+                        ],
+                        className="container-one-table",
+                    ),
+                    # single table
+                    html.Div(
+                        [
+                            html.H3("Top 10 progressions", className="top-values"),
+                            # table top 10 progressions dropdown
+                            html.Div(
+                                [
+                                    html.Div("Table attribute", className="label"),
+                                    html.Div(
+                                        dcc.Dropdown(
+                                            id="drop-top-prog",
+                                            options=attributes,
+                                            value="capital",
+                                            className="dropdown",
+                                        )
+                                    ),
+                                ]
+                            ),
+                            # table top 10 progressions
+                            html.Table(id="top-ten-prog"),
+                        ],
+                        className="container-one-table",
+                    ),
+                    # single table
+                    html.Div(
+                        [
+                            html.H3(
+                                "Bottom 10 progressions",
+                                className="top-values"),
+                            # table top 10 progressions dropdown
+                            html.Div(
+                                [
+                                    html.Div("Table attribute", className="label"),
+                                    html.Div(
+                                        dcc.Dropdown(
+                                            id="drop-bottom-prog",
+                                            options=attributes,
+                                            value="capital",
+                                            className="dropdown",
+                                        )
+                                    ),
+                                ]
+                            ),
+                            # table bottom 10 progressions
+                            html.Table(id="bottom-ten-prog"),
+                        ],
+                        className="container-one-table",
+                    )
+                ],
+                className="container-tables",
+            ),
+        ],
+        className="main",
+    )
+
 
 app = dash.Dash("Finance Scraping")
 server = app.server
-
-attributes = [
-    "capital",
-    "last_quote",
-    "last_close",
-    "last_abs",
-    "last_rel",
-    "bid",
-    "offer",
-    "low",
-    "high",
-    "day_volume",
-    "p_e",
-    "yield_percent",
-]
-
-companies = data["company_name"].unique()
-
-min_date = data.index.min().strftime("%Y-%m-%d")
-max_date = data.index.max().strftime("%Y-%m-%d")
-
-options_dropdown_y = [
-    {"label": capitalize(a), "value": a} for a in attributes
-]
-options_dropdown_companies = [{"label": c, "value": c} for c in companies]
-
-app.layout = html.Div(
-    [
-        # page title
-        html.Title(["Euronext Technology Companies"]),
-        # page header
-        html.Div([html.H1("Technological Companies Stocks Dashboard")]),
-        # summary
-        html.Div([
-            html.H2("Summary"),
-            html.P(summary_1, className="summary-text"),
-            html.P(summary_2, className="summary-text"),
-            html.A(
-                "Please visit my GitHub!",
-                href="https://github.com/jschnab/finance-scraping.git",
-                className="summary-text",
-            ),
-        ], className="summary"),
-        # timeseries
-        html.Div([html.H2("Timeseries Analysis")]),
-        # dropdown grid
-        html.Div(
-            [
-                # select y axis dropdown
-                html.Div(
-                    [
-                        html.Div("Select y-axis", className="label"),
-                        html.Div(
-                            dcc.Dropdown(
-                                id="y_var",
-                                options=options_dropdown_y,
-                                value="last_quote",
-                                className="dropdown",
-                            )
-                        ),
-                    ],
-                    className="subcontainer-dropdown",
-                ),
-                # select companies dropdown
-                html.Div(
-                    [
-                        html.Div("Select companies", className="label"),
-                        html.Div(
-                            dcc.Dropdown(
-                                id="companies",
-                                options=options_dropdown_companies,
-                                value=["Capgemini SE"],
-                                multi=True,
-                                className="dropdown",
-                            )
-                        ),
-                    ],
-                    className="subcontainer-dropdown",
-                ),
-                # date picker
-                html.Div(
-                    [
-                        html.Div("Select date range", className="label"),
-                        html.Div(
-                            dcc.DatePickerRange(
-                                id="date_range",
-                                min_date_allowed=min_date,
-                                max_date_allowed=max_date,
-                                initial_visible_month=data.index.min(),
-                                className="datepicker",
-                            )
-                        ),
-                    ],
-                    className="subcontainer-dropdown",
-                ),
-            ],
-            className="container-dropdown",
-        ),
-        # graph grid
-        html.Div(
-            [html.Div([dcc.Graph(id="timeseries")])],
-            className="timeseries-container",
-        ),
-        html.Div(html.H2("Company rankings")),
-        # tables container
-        html.Div(
-            [
-                # single table
-                html.Div(
-                    [
-                        html.H3("Top 10 values", className="top-values"),
-                        # table top 10 values dropdown
-                        html.Div(
-                            [
-                                html.Div("Table attribute", className="label"),
-                                html.Div(
-                                    dcc.Dropdown(
-                                        id="drop-top-values",
-                                        options=options_dropdown_y,
-                                        value="capital",
-                                        className="dropdown",
-                                    )
-                                ),
-                            ]
-                        ),
-                        # table top 10 values
-                        html.Table(id="top-ten-values"),
-                    ],
-                    className="container-one-table",
-                ),
-                # single table
-                html.Div(
-                    [
-                        html.H3("Bottom 10 values", className="top-values"),
-                        # table bottom 10 values dropdown
-                        html.Div(
-                            [
-                                html.Div("Table attribute", className="label"),
-                                html.Div(
-                                    dcc.Dropdown(
-                                        id="drop-bottom-values",
-                                        options=options_dropdown_y,
-                                        value="capital",
-                                        className="dropdown",
-                                    )
-                                ),
-                            ]
-                        ),
-                        # table bottom 10 values
-                        html.Table(id="bottom-ten-values"),
-                    ],
-                    className="container-one-table",
-                ),
-                # single table
-                html.Div(
-                    [
-                        html.H3("Top 10 progressions", className="top-values"),
-                        # table top 10 progressions dropdown
-                        html.Div(
-                            [
-                                html.Div("Table attribute", className="label"),
-                                html.Div(
-                                    dcc.Dropdown(
-                                        id="drop-top-prog",
-                                        options=options_dropdown_y,
-                                        value="capital",
-                                        className="dropdown",
-                                    )
-                                ),
-                            ]
-                        ),
-                        # table top 10 progressions
-                        html.Table(id="top-ten-prog"),
-                    ],
-                    className="container-one-table",
-                ),
-                # single table
-                html.Div(
-                    [
-                        html.H3(
-                            "Bottom 10 progressions",
-                            className="top-values"),
-                        # table top 10 progressions dropdown
-                        html.Div(
-                            [
-                                html.Div("Table attribute", className="label"),
-                                html.Div(
-                                    dcc.Dropdown(
-                                        id="drop-bottom-prog",
-                                        options=options_dropdown_y,
-                                        value="capital",
-                                        className="dropdown",
-                                    )
-                                ),
-                            ]
-                        ),
-                        # table bottom 10 progressions
-                        html.Table(id="bottom-ten-prog"),
-                    ],
-                    className="container-one-table",
-                )
-            ],
-            className="container-tables",
-        ),
-    ],
-    className="main",
-)
+app.layout = serve_layout()
 
 
 @app.callback(
@@ -349,6 +332,7 @@ def bottom_ten_prog(attribute):
     ],
 )
 def timeseries_plot(y_value, companies, start, end):
+    data = get_all_data()
     traces = []
     for c in companies:
         trace = go.Scatter(
@@ -365,7 +349,6 @@ def timeseries_plot(y_value, companies, start, end):
     )
 
     output_plot = go.Figure(data=traces, layout=layout)
-
     return output_plot
 
 
