@@ -13,7 +13,7 @@ variable "my_ip" {
   type        = string
 }
 
-variable "ec2_key_pair" {
+variable "airflow_key_pair" {
   description = "key pair to SSH into the Airflow instance"
   type        = string
 }

@@ -60,7 +60,7 @@ done
 
 # put the key-pair name in an environment variable to later add it to a load balancer
 # launch config with Terraform
-VAR="TF_VAR_ec2_key_pair"
+VAR="TF_VAR_airflow_key_pair"
 if [[ ! -z $VAR ]]; then
     sed -i "/^export $VAR/d" $ENV_FILE
 fi

@@ -7,15 +7,26 @@ YELLOWBOLD="\e[1;33m"
 FILE_DIR=$(cd `dirname $0` && pwd)
 INFRA_DIR=$(dirname -- "$(dirname $FILE_DIR)")/infrastructure
 
-# create a key-pair to later SSH into the Airflow instance
-echo -e "\n${YELLOWBOLD}Creating key pair 'airflow-instance-ssh' and saving in $HOME/.ssh${NORMAL}"
-if [[ ! -f ~/.ssh/airflow-instance-ssh.pem ]]; then
-    aws ec2 create-key-pair --key-name airflow-instance-ssh \
+# create a key-pair to SSH into the Airflow instance
+echo -e "\n${YELLOWBOLD}Creating key pair '$TF_VAR_airflow_key_pair' and saving in $HOME/.ssh${NORMAL}"
+if [[ ! -f ~/.ssh/$TF_VAR_airflow_key_pair.pem ]]; then
+    aws ec2 create-key-pair --key-name $TF_VAR_airflow_key_pair \
         --query 'KeyMaterial' \
         --output text \
         --profile $TF_VAR_aws_profile \
-        > ~/.ssh/airflow-instance-ssh.pem
-    chmod 400 ~/.ssh/airflow-instance-ssh.pem
+        > ~/.ssh/$TF_VAR_airflow_key_pair.pem
+    chmod 400 ~/.ssh/$TF_VAR_airflow_key_pair.pem
+fi
+
+# create a key-pair to SSH into the webserver instance
+echo -e "\n${YELLOWBOLD}Creating key pair '$TF_VAR_webserver_key_pair' and saving in $HOME/.ssh${NORMAL}"
+if [[ ! -f ~/.ssh/$TF_VAR_webserver_key_pair.pem ]]; then
+    aws ec2 create-key-pair --key-name $TF_VAR_webserver_key_pair \
+        --query 'KeyMaterial' \
+        --output text \
+        --profile $TF_VAR_aws_profile \
+        > ~/.ssh/$TF_VAR_webserver_key_pair.pem
+    chmod 400 ~/.ssh/$TF_VAR_webserver_key_pair.pem
 fi
 
 # add state bucket to backend configuration file

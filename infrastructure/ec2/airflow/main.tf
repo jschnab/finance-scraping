@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "airflow_instance" {
-  source = "github.com/jschnab/terraform_modules//ec2/airflow?ref=v0.0.29"
+  source = "github.com/jschnab/terraform_modules//ec2/airflow?ref=v0.0.33"
 
   instance_name                    = "airflow"
   state_bucket                     = var.state_bucket
@@ -24,10 +24,9 @@ module "airflow_instance" {
   db_remote_state_key              = "databases/data-warehouse/terraform.tfstate"
   instance_type                    = "t2.micro"
   custom_tags = {
-    Owner      = "Airflow"
     DeployedBy = "Terraform"
   }
-  ec2_key_pair      = var.ec2_key_pair
+  ec2_key_pair      = var.airflow_key_pair
   s3_bucket         = var.data_bucket
   urls_s3_key       = "input/scraping_links.txt"
   user_agent        = var.user_agent
