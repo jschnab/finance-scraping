@@ -10,8 +10,8 @@ INFRA_DIR=$(dirname -- "$(dirname "$FILE_DIR")")/infrastructure
 source ~/.terraform_env_vars
 
 # create a key-pair to SSH into the Airflow instance
-echo -e "\n${YELLOWBOLD}Creating key pair '$TF_VAR_airflow_key_pair' and saving in $HOME/.ssh${NORMAL}"
 if [[ ! -f ~/.ssh/$TF_VAR_airflow_key_pair.pem ]]; then
+    echo -e "\n${YELLOWBOLD}Creating key pair '$TF_VAR_airflow_key_pair' and saving in $HOME/.ssh${NORMAL}"
     aws ec2 create-key-pair --key-name "$TF_VAR_airflow_key_pair" \
         --query 'KeyMaterial' \
         --output text \
@@ -21,8 +21,8 @@ if [[ ! -f ~/.ssh/$TF_VAR_airflow_key_pair.pem ]]; then
 fi
 
 # create a key-pair to SSH into the webserver instance
-echo -e "\n${YELLOWBOLD}Creating key pair '$TF_VAR_webserver_key_pair' and saving in $HOME/.ssh${NORMAL}"
 if [[ ! -f ~/.ssh/$TF_VAR_webserver_key_pair.pem ]]; then
+    echo -e "\n${YELLOWBOLD}Creating key pair '$TF_VAR_webserver_key_pair' and saving in $HOME/.ssh${NORMAL}"
     aws ec2 create-key-pair --key-name "$TF_VAR_webserver_key_pair" \
         --query 'KeyMaterial' \
         --output text \
@@ -45,7 +45,7 @@ echo "region = \"$TF_VAR_region\"" >> "$INFRA_DIR"/backend.hcl
 
 # build the global infrastructure : S3, IAM and VPC
 cd "$INFRA_DIR"/s3
-echo -e "\n${YELLOWBOLD}Building S3 buckets..."
+echo -e "\n${YELLOWBOLD}Building S3 buckets...\n"
 terraform init 
 terraform apply -auto-approve
 # send the file containing the list of scraping links to the S3 bucket

@@ -14,13 +14,20 @@ fi
 
 echo -e "${YELLOWBOLD}\nWelcome to the configuration of the web scraping utility!${NORMAL}"
 
+echo -e "\n${YELLOWBOLD}File '"$ENV_FILE"' is not empty and may contain your current configuration. Do you want to overwrite it? (y/n)${NORMAL}"
+read -r VAL
+if [[ "$VAL" != "y" ]]; then
+    echo -e "${YELLOWBOLD}Exiting${NORMAL}"
+    exit
+fi
+
 # record the user's IP address to later add it to an AWS security group in with Terraform
 MYIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 VAR="TF_VAR_my_ip"
 if [[ -n $VAR ]]; then
   sed -i "/^export $VAR/d" $ENV_FILE
 fi
-echo "export $VAR=${MYIP}/32" >> $ENV_FILE
+echo "export $VAR=${MYIP}" >> $ENV_FILE
 
 # set Terraform environment variables from user's input
 declare -a PARAMS=(aws_profile region user_agent max_retries backoff_factor \
