@@ -292,10 +292,9 @@ def main():
     args = utils.parse_cli()
 
     if args.configure:
-        config.configure()
+        config.terraform_configure()
 
     elif args.build:
-        config.terraform_configure()
         config.terraform_build()
 
     setup_logging(LOG_FILE_NAME)
@@ -310,8 +309,9 @@ def main():
         load(date=args.date)
 
     elif args.nuke:
-        answer = input('Are you sure you want to destroy the infrastructure? \
-(yes/no): ')
+        answer = input(
+            'Are you sure you want to destroy the infrastructure? (yes/no): '
+        )
         if answer == 'yes':
             config.terraform_nuke()
         else:

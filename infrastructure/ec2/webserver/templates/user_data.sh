@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -ex
+set -o pipefail
 
 exec > >(tee /var/log/user_data.log | logger -t user_data) 2>&1
 echo BEGIN
@@ -36,7 +37,7 @@ ${gunicorn_socket}
 EOF
 
 cat << EOF > /home/ec2-user/gunicorn.env
-N_CORES=$((2 * `grep -c processor /proc/cpuinfo` + 1))
+N_CORES=$((2 * $(grep -c processor /proc/cpuinfo) + 1))
 FINANCE_SCRAPING_HOST=${host}
 FINANCE_SCRAPING_PORT=${port}
 FINANCE_SCRAPING_DB_USERNAME=${db_username}
@@ -53,5 +54,5 @@ systemctl start nginx
 
 date "+%Y-%m-%d %H:%M:%S"
 ENDTIME=$(date +%s)
-echo "Startup took $(($ENDTIME - $BEGINTIME)) seconds"
+echo "Startup took $((ENDTIME - BEGINTIME)) seconds"
 echo END

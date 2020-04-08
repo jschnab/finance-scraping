@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "network" {
-  source      = "github.com/jschnab/terraform_modules//network/scraping_vpc?ref=v0.0.29"
+  source      = "github.com/jschnab/terraform_modules//network/scraping_vpc?ref=v0.0.30"
   region      = var.region
   aws_profile = var.aws_profile
 }

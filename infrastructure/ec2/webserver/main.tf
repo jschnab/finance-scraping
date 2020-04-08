@@ -13,7 +13,7 @@ provider "aws" {
 
 module "webserver" {
   source                    = "github.com/jschnab/terraform_modules//ec2/webserver?ref=v0.0.32"
-  key_name                  = "webserver-ssh-key"
+  key_name                  = "webserver-instance-ssh"
   state_bucket              = var.state_bucket
   user_data                 = data.template_file.user_data.rendered
   state_security_groups_key = "network/security-groups/terraform.tfstate"
