@@ -34,6 +34,6 @@ variable "db_password" {
 }
 
 variable "domain_name" {
-	description = "Name of the web domain to use for the server"
-	type        = string
+  description = "Name of the web domain to use for the server"
+  type        = string
 }

@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "security_groups" {
-  source                 = "github.com/jschnab/terraform_modules//network/scraping_security_groups?ref=v0.0.30"
+  source                 = "github.com/jschnab/terraform_modules//network/scraping_security_groups?ref=v0.0.34"
   instance_name          = "airflow"
   airflow_webserver_port = 8080
   db_port                = 5432

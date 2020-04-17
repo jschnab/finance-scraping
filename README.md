@@ -8,8 +8,8 @@
 5. [Cloud installation](README.md#cloud-installation)
 
 ## Description
-This repository contains a Extract-Transform-Load (ETL) pipeline which extracts security
-data details from pages on morningstar.fr (see [an example here](http://tools.morningstar.fr/fr/stockreport/default.aspx?Site=fr&id=0P0001A178&LanguageId=fr-FR&SecurityToken=0P0001A178]3]0]E0WWE$$ALL,DREXG$XHEL,DREXG$XLON,DREXG$XNYS)). The steps of the pipeline are:
+This repository contains a Extract-Transform-Load (ETL) pipeline which extracts security data details from pages on morningstar.fr (see [an example here](http://tools.morningstar.fr/fr/stockreport/default.aspx?Site=fr&id=0P0001A178&LanguageId=fr-FR&SecurityToken=0P0001A178]3]0]E0WWE$$ALL,DREXG$XHEL,DREXG$XLON,DREXG$XNYS)). The data is saved in a SQL database and feeds a web dashboard displaying graphs and tables.
+The steps of the pipeline are:
 * extract: scrape web pages and save them raw on AWS S3.
 * transform: parse raw web pages and store the results in a CSV file, then store in S3.
 * load: copy the CSV file into a PostgresSQL database.
@@ -17,16 +17,13 @@ data details from pages on morningstar.fr (see [an example here](http://tools.mo
 The pipeline can be run locally and load data in a database provided by the user, or in the Amazon Web Services cloud on an infrastructure built automatically by this software.
 
 ## AWS infrastructure
-The AWS infrastructure provisioned here is free-tier, and should cost you a minimal amount of money once you finish your free-tier allowance.
+The AWS infrastructure provisioned here is compatible with the free-tier, and should cost you a minimal amount of money once you finish your free-tier allowance.
 The infrastructure is managed with Terraform and composed of the following elements (see picture below):
-* an EC2 instance running Apache Airflow.
-* an autoscaling group maintains a single running Airflow instance at all times.
-* a security group for the Airflow instance allowing inbound SSH (admin tasks) and TCP traffic (Airflow webserver) only from your IP address.
-* a data warehouse consisting of an RDS instance running the PostgresSQL engine, and hosted on a private subnet.
+* an EC2 instance running Apache Airflow with a Local Executor, belonging to an autoscaling group maintains a single running Airflow instance at all times.
+* a data warehouse consisting of an RDS instance running the PostgresSQL engine
 * a metadata database to store Airflow tasks status on a PostgresSQL RDS instance.
-* a VPC with a public subnet to host the Airflow instance and a private subnet to host the data warehouse.
-* an IAM role that allows the EC2 instance to communicate with S3 and RDS.
-* 3 S3 buckets to store the Terraform state files, the scraped data, and the Airflow logs
+* S3 buckets to store the Terraform state files, the scraped data, and the Airflow logs
+* EC2 instances serving the data dashboard and running a Dash + gunicorn + nginx stack, belonging to an autoscaling group which scales in and out based on CPU usage
 
 <img src="docs/images/finance_scraper.png" width="800" alt="architecture" >
 
@@ -37,7 +34,7 @@ The infrastructure is managed with Terraform and composed of the following eleme
 
 ## Local installation
 ### Prerequisites
-The following packages are required and will be installed along with `finance-scraping`:
+The following packages are will be installed along with `finance-scraping`:
 * requests >= 2.22
 * BeautifulSoup4 >= 4.7.1
 * psycopg2 >= 2.8
@@ -46,8 +43,7 @@ You need to install PostgresSQL, and create a database to load data into. Take n
 
 ### Installation and configuration
 * Run `pip install finance-scraping`.
-* Run `finance-scraper -c` to set the configuration of the scraper. You will be prompted to enter configuration values, which are saved in `~/.bashrc`.
-* If you plan to run `finance-scraper` on an EC2 instance launched with an instance role, you can set the parameters `profile` as `None`.
+* Run `finance-scraper --local-config` to set the configuration of the scraper. You will be prompted to enter configuration values, which are saved in `~/.bashrc`.
 
 ### How to run
 To run the entire ETL pipeline, run `finance-scraper -etl`. You can also run `finance-scraper` with any of the optional arguments `-e`, `-t` or `-l` to run an individual step. It is possible to specify the date parameter `-d` with `-t` and/or `-l` to process data scraped on a specific date. For more information run help with `finance-scraper -h`.
@@ -62,8 +58,10 @@ If you do not have an AWS account, create one [here](https://aws.amazon.com/cons
 
 Install [Terraform 0.12](https://learn.hashicorp.com/terraform/getting-started/install.html).
 
+You should also have a registered domain name where to host your website. You will provide the domain name during the configuration of the infrastructure.
+
 ### Installation and configuration
-Run `pip install finance-scraping` to install the software. Run `finance-scraper --build` to start the configuration wizard and build the infrastructure in AWS. Parameters will be displayed one by one with the current value shown between brackets (empty brackets indicated the absence of value). It is required to provide a value for all parameters. The parameters are:
+Run `pip install finance-scraping` to install the software. Run `finance-scraper --configure` to start the configuration wizard, your input will be required on the command line. Parameters will be displayed one by one with the current value shown between brackets (empty brackets indicated the absence of value). It is required to provide a value for all parameters. The parameters are:
 * aws_profile: the AWS user Terraform should assume to build the infrastructure.
 * region: the AWS region where to build the infrastructure.
 * user_agent: the User-Agent to use when scraping web pages. It is recommended to provide your email address so that the website administrator can contact you if there is a problem. If you want to include spaces, put the value to this parameter between quotes.
@@ -73,11 +71,14 @@ Run `pip install finance-scraping` to install the software. Run `finance-scraper
 * timeout: timeout for the request in seconds. An acceptable value is 20.
 * db_username: username to use when setting up the database.
 * db_password: password to use when setting up the database.
+* domain_name: the name of your website domain
 
-Provisioning of the AWS infrastructure will start and takes between 10 and 15 minutes.
+Then run `finance-scraper --build` to build the infrastructure in AWS. Provisioning of the AWS infrastructure will start and takes between 10 and 15 minutes.
+
+The server hosting the dashboard will not be available until the ETL pipeline has run at least one time, so you will find an error if you try to access your website before ETL has run.
 
 ### Monitoring your infrastructure
-When provisioning is done, you can take note of the public IP of the EC2 instance running Airflow on the AWS console and check the Airflow dashboard on port 8080. You can SSH into instance using the key `airflow-instance-ssh` located in your `~/.ssh` folder.
+Finance scraper does not provide any special tools to monitor your infrastructure, a good next step for this repository is to install the AWS Cloudwatch agent on every instance and send system logs to Cloudwatch Logs. When provisioning is done, you can take note of the public IP of the EC2 instance running Airflow on the AWS console and check the Airflow dashboard on port 8080. You can SSH into instance using the key `airflow-instance-ssh` located in your `~/.ssh` folder.
 
 ### Destroying the infrastructure
 The whole infrastructure can be destroyed by running `finance-scraper --nuke`.
@@ -85,4 +86,4 @@ The whole infrastructure can be destroyed by running `finance-scraper --nuke`.
 ### Warning
 Do not modify the configuration files manually (`.terraform` folders, `terraform.tfstate` files and `~/.terraform_env_vars` file). This will break your installation and require painful cleaning.
 
-Be responsible when web scraping, and do not put a high burden on web servers by requesting a lot of pages in a short amount of time. It makes the job of maintaining webservers harder and you could be banned from accessing the website.
+Be responsible when web scraping, and do not put a high burden on web servers by requesting a lot of pages in a short amount of time. It makes the job of maintaining webservers hard and you could be banned from accessing the website.

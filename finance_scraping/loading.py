@@ -23,26 +23,23 @@ def get_connection(parameters):
     return engine
 
 
-def table_exists(table_name, connection, database_engine='postgres'):
+def table_exists(table_name, connection):
     """
     Check if the table exists in the database.
 
     :param str table_name: name of the table
     :param connection: psycopg2 connection object
-    :param str database_engine: optional, default 'postgres'
     :return bool: True if the table exists, else False
     """
     cur = connection.cursor()
-
-    if database_engine == 'postgres':
-        query = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM information_schema.tables
-                WHERE table_name = %s
-            );"""
-        cur.execute(query, (table_name,))
-        return cur.fetchone()[0]
+    query = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM information_schema.tables
+            WHERE table_name = %s
+        );"""
+    cur.execute(query, (table_name,))
+    return cur.fetchone()[0]
 
 
 def execute_sqls(statements, connection):
@@ -160,10 +157,10 @@ def copy_into(
             sep=separator,
             null=null_if
         )
+        connection.commit()
     except Exception as e:
         logging.critical(e)
         connection.rollback()
         raise
     finally:
-        connection.commit()
         connection.close()
