@@ -9,21 +9,16 @@ BEGINTIME=$(date +%s)
 date "+%Y-%m-%d %H:%M:%S"
 
 yum update -y
-
 yum install -y git python3 gcc postgresql-devel python3-devel.x86_64
-
 amazon-linux-extras install -y epel nginx1
 
 pip3 install gunicorn dash pandas
 
 cd /home/ec2-user
-
 git clone https://github.com/jschnab/finance-scraping.git
-
 pip3 install finance-scraping/.
 
 mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
-
 cat << EOF > /etc/nginx/nginx.conf
 ${nginx_conf}
 EOF
@@ -47,9 +42,7 @@ FINANCE_SCRAPING_DB_TABLE=${db_table}
 EOF
 
 systemctl enable --now gunicorn.socket
-
 systemctl enable nginx
-
 systemctl start nginx
 
 date "+%Y-%m-%d %H:%M:%S"

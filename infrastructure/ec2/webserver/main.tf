@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "webserver" {
-  source                    = "github.com/jschnab/terraform_modules//ec2/webserver?ref=v0.0.32"
+  source                    = "github.com/jschnab/terraform_modules//ec2/webserver?ref=v0.0.34"
   key_name                  = "webserver-instance-ssh"
   state_bucket              = var.state_bucket
   user_data                 = data.template_file.user_data.rendered
@@ -20,10 +20,10 @@ module "webserver" {
   state_iam_key             = "iam/terraform.tfstate"
   state_vpc_key             = "network/vpc/terraform.tfstate"
   region                    = var.region
-	domain_name               = var.domain_name
-	custom_tags               = {
-		Name = "finance-webserver"
-	}
+  domain_name               = var.domain_name
+  custom_tags = {
+    Name = "finance-webserver"
+  }
 }
 
 data "template_file" "user_data" {

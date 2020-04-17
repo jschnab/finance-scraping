@@ -75,11 +75,11 @@ class TestLoading(TestCase):
     def test_table_exists(self):
         con = ConnectionMock()
         query = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM information_schema.tables
-                WHERE table_name = %s
-            );"""
+        SELECT EXISTS (
+            SELECT 1
+            FROM information_schema.tables
+            WHERE table_name = %s
+        );"""
         result = table_exists('mytable', con)
         self.assertEqual(result, (query, ('mytable',)))
 
@@ -209,5 +209,4 @@ class TestLoading(TestCase):
         )
         logging_mock.assert_called_once()
         con.rollback.assert_called_once()
-        con.commit.assert_called_once()
         con.close.assert_called_once()

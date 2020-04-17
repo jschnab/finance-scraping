@@ -36,17 +36,22 @@ def parse_cli():
     parser = argparse.ArgumentParser('Command-line interface for web scraper')
 
     parser.add_argument(
+        '--local-config',
+        action='store_true',
+        help='configure the scraper for local use, requires user input')
+
+
+    parser.add_argument(
         '-c',
         '--configure',
         action='store_true',
-        help='configure the scraper for manual use, requires user input')
+        help='configure the Terraform infrastructure, requires user input')
 
     parser.add_argument(
         '-b',
         '--build',
         action='store_true',
-        help='configure the Terraform provisioning script and then build the \
-infrastructure (requires user input)')
+        help='build the Terraform infrastructure (requires user input)')
 
     parser.add_argument(
         '-n',
