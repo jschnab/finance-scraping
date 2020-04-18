@@ -10,4 +10,4 @@ __pycache__
 *.tfstate*
 dist
 finance_scraping.egg-info/*
-backend.hcl
+*backend.hcl
