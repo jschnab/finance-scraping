@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-__version__ = '0.7.1'
+__version__ = '0.8.0'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -46,6 +46,5 @@ setup(
         'boto3==1.9.210',
         'psycopg2==2.8.3',
         'requests==2.22.0',
-        'responses==0.10.6'
     ]
 )
