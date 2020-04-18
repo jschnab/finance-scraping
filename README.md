@@ -6,6 +6,7 @@
 3. [General prerequisites](README.md#general-prerequisites)
 4. [Local installation](README.md#local-installation)
 5. [Cloud installation](README.md#cloud-installation)
+6. [Warning](README.md#warning)
 
 ## Description
 This repository contains a Extract-Transform-Load (ETL) pipeline which extracts security data details from pages on morningstar.fr (see [an example here](http://tools.morningstar.fr/fr/stockreport/default.aspx?Site=fr&id=0P0001A178&LanguageId=fr-FR&SecurityToken=0P0001A178]3]0]E0WWE$$ALL,DREXG$XHEL,DREXG$XLON,DREXG$XNYS)). The data is saved in a SQL database and feeds a web dashboard displaying graphs and tables.
@@ -29,7 +30,7 @@ The infrastructure is managed with Terraform and composed of the following eleme
 
 ## General prerequisites
 * this software is designed to work on a Linux distribution.
-* Python 3.6 or a superior version is required.
+* Python 3.6 or a higher version is required.
 * you need to provide a file containing a list of URLs to scrape (one URL per line, see an example URL in the description paragraph). Name this file `scraping_links.txt` and place it in folder `finance_scraping` (where the `main.py` module is located).
 
 ## Local installation
@@ -40,6 +41,10 @@ The following packages are will be installed along with `finance-scraping`:
 * psycopg2 >= 2.8
 
 You need to install PostgresSQL, and create a database to load data into. Take note of the user name and password with write privileges to this database, as you will need these during the configuration of `finance-scraping`.
+
+### Running tests
+
+Unit tests can be run by going to the `tests` folder at the root of the repository and by running `run_tests.sh`. This will output a coverage report to the console.
 
 ### Installation and configuration
 * Run `pip install finance-scraping`.
@@ -73,7 +78,8 @@ Run `pip install finance-scraping` to install the software. Run `finance-scraper
 * db_password: password to use when setting up the database.
 * domain_name: the name of your website domain
 
-Then run `finance-scraper --build` to build the infrastructure in AWS. Provisioning of the AWS infrastructure will start and takes between 10 and 15 minutes.
+### Building the infrastructure
+Run `finance-scraper --build` to build the infrastructure in AWS, then provisioning of the AWS infrastructure will start. It takes between 10 and 15 minutes for the process to start provisioning the web server. At this point you will see that Terraform is creating a resourced called `aws_acm_certificate_validation`. This means your nameserver records have been created in AWS Route53 and the SSH certificate is being validated. In order for validation to succeed, you need to update the nameserver records in your domain registrar: copy their URL from Route53 and paste it in the domain registrar. DNS validation usually takes under 40 minutes but can take several hours. If Terraform times out, simply rerun `finance-scraper --build`.
 
 The server hosting the dashboard will not be available until the ETL pipeline has run at least one time, so you will find an error if you try to access your website before ETL has run.
 
@@ -83,7 +89,9 @@ Finance scraper does not provide any special tools to monitor your infrastructur
 ### Destroying the infrastructure
 The whole infrastructure can be destroyed by running `finance-scraper --nuke`.
 
-### Warning
+## Warning
 Do not modify the configuration files manually (`.terraform` folders, `terraform.tfstate` files and `~/.terraform_env_vars` file). This will break your installation and require painful cleaning.
 
 Be responsible when web scraping, and do not put a high burden on web servers by requesting a lot of pages in a short amount of time. It makes the job of maintaining webservers hard and you could be banned from accessing the website.
+
+You are responsible for the costs incurred by your own AWS infrastructure. You should understand how AWS services are priced and know how much the infrastructure deployed by Finance Scraper could cost you if you run out of free-tier allocation. Apart from the documentation, AWS has a [tool to help you estimate your bills](https://calculator.s3.amazonaws.com/index.html).
