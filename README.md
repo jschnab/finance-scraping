@@ -29,7 +29,7 @@ The infrastructure is managed with Terraform and composed of the following eleme
 
 ## General prerequisites
 * this software is designed to work on a Linux distribution.
-* Python 3.6 or a superior version is required.
+* Python 3.6 or a higher version is required.
 * you need to provide a file containing a list of URLs to scrape (one URL per line, see an example URL in the description paragraph). Name this file `scraping_links.txt` and place it in folder `finance_scraping` (where the `main.py` module is located).
 
 ## Local installation
@@ -40,6 +40,10 @@ The following packages are will be installed along with `finance-scraping`:
 * psycopg2 >= 2.8
 
 You need to install PostgresSQL, and create a database to load data into. Take note of the user name and password with write privileges to this database, as you will need these during the configuration of `finance-scraping`.
+
+### Running tests
+
+Unit tests can be run by going to the `tests` folder at the root of the repository and by running `run_tests.sh`. This will output a coverage report to the console.
 
 ### Installation and configuration
 * Run `pip install finance-scraping`.
