@@ -1,7 +1,6 @@
 import pandas as pd
 
 from finance_scraping import config, loading
-from finance_scraping.main import TABLE_COLUMNS
 from sql_queries import (
     get_all_data_sql,
     get_companies_sql,
@@ -10,18 +9,18 @@ from sql_queries import (
 )
 
 ATTRIBUTES = [
-    "Capital",
-    "Last Quote",
-    "Last Close",
-    "Last Abs",
-    "Last Rel",
-    "Bid",
-    "Offer",
-    "Low",
-    "High",
-    "Day Volume",
-    "P E",
-    "Yield Percent",
+    'capital',
+    'last_quote',
+    'last_close',
+    'daily_change_abs',
+    'daily_change_rel',
+    'bid',
+    'offer',
+    'low',
+    'high',
+    'day_volume',
+    'p_e',
+    'yield_percent',
 ]
 
 
@@ -41,7 +40,7 @@ def capitalize(string):
 
 
 def get_attributes():
-    return ATTRIBUTES
+    return [{"label": capitalize(a), "value": a} for a in ATTRIBUTES]
 
 
 def get_companies():
