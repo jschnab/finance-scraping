@@ -9,7 +9,7 @@ from sql_queries import (
     get_min_date_sql,
 )
 
-attributes = [
+ATTRIBUTES = [
     "Capital",
     "Last Quote",
     "Last Close",
@@ -41,7 +41,7 @@ def capitalize(string):
 
 
 def get_attributes():
-    return [{"label": capitalize(c), "value": c} for c in TABLE_COLUMNS]
+    return ATTRIBUTES
 
 
 def get_companies():
