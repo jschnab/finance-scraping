@@ -76,7 +76,11 @@ def serve_layout():
                                 dcc.Dropdown(
                                     id="companies",
                                     options=get_companies(),
-                                    value=["Capgemini SE"],
+                                    value=[
+                                        "Capgemini SE",
+                                        "Ubisoft Entertainment",
+                                        "Dassault Systemes SE",
+                                    ],
                                     multi=True,
                                     className="dropdown",
                                 )
@@ -160,7 +164,7 @@ def serve_layout():
                     # single table
                     html.Div(
                         [
-                            html.H3("Top 10 progressions", className="top-values"),
+                            html.H3("Top 10 movers", className="top-values"),
                             # table top 10 progressions dropdown
                             html.Div(
                                 [
@@ -184,7 +188,7 @@ def serve_layout():
                     html.Div(
                         [
                             html.H3(
-                                "Bottom 10 progressions",
+                                "Bottom 10 movers",
                                 className="top-values"),
                             # table top 10 progressions dropdown
                             html.Div(
