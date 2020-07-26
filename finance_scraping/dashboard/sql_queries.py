@@ -25,6 +25,7 @@ bottom_val_sql = """
     SELECT company_name, {attribute}, date
     FROM security_report_no_nulls
     WHERE date in (SELECT MAX(date) FROM security_report_no_nulls)
+    AND {attribute} IS NOT NULL
     ORDER BY {attribute}
     LIMIT 10;"""
 
