@@ -17,6 +17,7 @@ top_val_sql = """
     SELECT company_name, {attribute}, date
     FROM security_report_no_nulls
     WHERE date in (SELECT MAX(date) FROM security_report_no_nulls)
+    AND {attribute} IS NOT NULL
     ORDER BY {attribute} DESC
     LIMIT 10;"""
 
@@ -24,6 +25,7 @@ bottom_val_sql = """
     SELECT company_name, {attribute}, date
     FROM security_report_no_nulls
     WHERE date in (SELECT MAX(date) FROM security_report_no_nulls)
+    AND {attribute} IS NOT NULL
     ORDER BY {attribute}
     LIMIT 10;"""
 
@@ -44,6 +46,7 @@ top_prog_sql = """
             FROM security_report_no_nulls
         ) b
         WHERE row in (1, 2)
+        AND {attribute} IS NOT NULL
     ) a
     INNER JOIN security_report_no_nulls B
     ON a.previous_day = b.collection_date AND a.company_name = b.company_name
@@ -66,6 +69,7 @@ bottom_prog_sql = """
             FROM security_report_no_nulls
         ) b
         WHERE row in (1, 2)
+        AND {attribute} IS NOT NULL
     ) a
     INNER JOIN security_report_no_nulls B
     ON a.previous_day = b.collection_date AND a.company_name = b.company_name

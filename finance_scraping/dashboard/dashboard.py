@@ -230,6 +230,8 @@ def top_ten_values(attribute):
     con = loading.get_connection(config.get_db_env_vars())
     df = pd.read_sql(top_val_sql.format(attribute=attribute), con)
     con.close()
+    if attribute == "yield_percent":
+        df["yield_percent"] = df["yield_percent"] * 100
     if max(df[attribute]) > 1e6:
         df[attribute] = (df[attribute] / 1e6).round(5).apply("{:,}".format)
         df.rename(columns={attribute: f"{attribute} (M)"}, inplace=True)
@@ -253,6 +255,8 @@ def bottom_ten_values(attribute):
     con = loading.get_connection(config.get_db_env_vars())
     df = pd.read_sql(bottom_val_sql.format(attribute=attribute), con)
     con.close()
+    if attribute == "yield_percent":
+        df["yield_percent"] = df["yield_percent"] * 100
     if max(df[attribute]) > 1e6:
         df[attribute] = (df[attribute] / 1e6).round(5).apply("{:,}".format)
         df.rename(columns={attribute: f"{attribute} (M)"}, inplace=True)
@@ -279,6 +283,8 @@ def top_ten_prog(attribute):
     con = loading.get_connection(config.get_db_env_vars())
     df = pd.read_sql(top_prog_sql.format(attribute=attribute), con)
     con.close()
+    if attribute == "yield_percent":
+        df["diff"] = df["diff"] * 100
     if max(df["diff"]) > 1e6:
         df["diff"] = (df["diff"] / 1e6).round(5).apply("{:,}".format)
         df.rename(columns={"diff": f"diff (M)"}, inplace=True)
@@ -306,6 +312,8 @@ def bottom_ten_prog(attribute):
     con = loading.get_connection(config.get_db_env_vars())
     df = pd.read_sql(bottom_prog_sql.format(attribute=attribute), con)
     con.close()
+    if attribute == "yield_percent":
+        df["diff"] = df["diff"] * 100
     if max(df["diff"]) > 1e6:
         df["diff"] = (df["diff"] / 1e6).round(5).apply("{:,}".format)
         df.rename(columns={"diff": f"diff (M)"}, inplace=True)
