@@ -33,12 +33,14 @@ extract_task = PythonOperator(
 transform_task = PythonOperator(
     task_id='transform',
     python_callable=transform,
+    op_kwargs={"date": "{{ ds }}"},
     dag=dag
 )
 
 load_task = PythonOperator(
     task_id='load',
     python_callable=load,
+    op_kwargs={"date": "{{ ds }}"},
     dag=dag
 )
 

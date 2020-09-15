@@ -129,7 +129,6 @@ def check_table_for_loaded_data(
         else:
             msg = f"aborting load in table '{table_name}'"
             logging.info(msg)
-            sys.exit()
 
 
 def copy_into(
