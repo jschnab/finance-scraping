@@ -153,7 +153,6 @@ class TestLoading(TestCase):
             [(statement, ('mytable', '2019-08-31'))], connection_mock
         )
 
-    @patch("finance_scraping.loading.sys.exit")
     @patch("finance_scraping.loading.logging.info")
     @patch("finance_scraping.loading.data_already_loaded")
     @patch("finance_scraping.loading.get_connection")
@@ -162,7 +161,6 @@ class TestLoading(TestCase):
         connection_mock,
         loaded_mock,
         logging_mock,
-        sys_exit_mock
     ):
         loaded_mock.return_value = True
         check_table_for_loaded_data(
@@ -175,7 +173,6 @@ class TestLoading(TestCase):
             call('data was already loaded on 2019-08-31'),
             call("aborting load in table 'mytable'")
         ])
-        sys_exit_mock.assert_called_once()
 
     @patch("finance_scraping.loading.get_connection")
     def test_copy_into(self, connection_mock):

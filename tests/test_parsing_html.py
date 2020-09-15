@@ -51,51 +51,51 @@ class TestParsingHTMLBeautifulSoup(TestCase):
 
     def test_get_company_name(self):
         name = get_company_name(self.soup)
-        self.assertEqual(name, 'Dolphin Integration SA')
+        self.assertEqual(name, 'Acteos')
 
     def test_get_company_symbol(self):
         name = get_company_symbol(self.soup)
-        self.assertEqual(name, 'ALDOL')
+        self.assertEqual(name, 'EOS')
 
     def test_get_last_quote(self):
         quote = get_last_quote(self.soup)
-        self.assertEqual(quote, 3.66)
+        self.assertEqual(quote, 0.9)
 
     def test_get_date_time(self):
         time, date = get_date_time(self.soup)
-        self.assertEqual(date, '2018-08-16')
-        self.assertEqual(time, '07:15:07')
+        self.assertEqual(date, '2019-08-30')
+        self.assertEqual(time, '16:38:37')
 
     def test_get_daily_change(self):
         absolute, relative = get_daily_change(self.soup)
-        self.assertEqual(absolute, 0.20)
-        self.assertAlmostEqual(relative, 0.0578)
+        self.assertEqual(absolute, -0.01)
+        self.assertAlmostEqual(relative, -0.0153)
 
     def test_get_bid_offer(self):
         bid, offer = get_bid_offer(self.soup)
-        self.assertAlmostEqual(bid, 2.46)
-        self.assertAlmostEqual(offer, 3.66)
+        self.assertAlmostEqual(bid, 0.9)
+        self.assertAlmostEqual(offer, 0.92)
 
     def test_get_low_high(self):
         low, high = get_low_high(self.soup)
-        self.assertAlmostEqual(low, 3.60)
-        self.assertAlmostEqual(high, 3.66)
+        self.assertAlmostEqual(low, 0.9)
+        self.assertAlmostEqual(high, 0.92)
 
     def test_get_daily_volume(self):
         volume = get_daily_volume(self.soup)
-        self.assertAlmostEqual(volume, 1344)
+        self.assertAlmostEqual(volume, 878)
 
     def test_get_capital(self):
         capital = get_capital(self.soup)
-        self.assertTrue(isnan(capital))
+        self.assertFalse(isnan(capital))
 
     def test_get_closing_value(self):
         last_close = get_closing_value(self.soup)
-        self.assertAlmostEqual(last_close, 3.46)
+        self.assertAlmostEqual(last_close, 0.92)
 
     def test_get_PE_ratio(self):
         ratio = get_PE_ratio(self.soup)
-        self.assertAlmostEqual(ratio, 11.44)
+        self.assertAlmostEqual(ratio, -5.97)
 
     def test_get_yield(self):
         y = get_yield(self.soup)

@@ -40,7 +40,6 @@ def parse_cli():
         action='store_true',
         help='configure the scraper for local use, requires user input')
 
-
     parser.add_argument(
         '-c',
         '--configure',
