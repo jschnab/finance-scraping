@@ -1,6 +1,25 @@
 import argparse
-from dateutil import parser
 import os
+
+from datetime import timedelta
+from dateutil import parser
+
+
+def add_business_days(date, n=1):
+    """
+    Add n business days to a date (skip weekends).
+
+    :param datetime.datetime date: starting date
+    :param int n: number of business days to add, optional (defaults 1)
+    :returns: datetime.datetime - date after adding n business days
+    """
+    while n > 0:
+        date += timedelta(days=1)
+        weekday = date.weekday()
+        if weekday >= 5:  # monday is 0
+            continue
+        n -= 1
+    return date
 
 
 def remove_header(text, separator=os.linesep):
@@ -18,13 +37,16 @@ def remove_header(text, separator=os.linesep):
 
 def format_date(date):
     """
-    Format a string representing a date into '%Y/%m/%d'.
+    Format a string representing a date into '%Y/%m/%d' and add 1 business
+    days (Airflow DAG run date is the date at the start of the schedule
+    interval, which is 1 day for this DAG).
 
     :param str date: date to format
     :return str: formatted date
     """
-    date = parser.parse(date)
-    return date.strftime('%Y/%m/%d')
+    parsed = parser.parse(date)
+    current_date = add_business_days(parsed)
+    return current_date.strftime('%Y/%m/%d')
 
 
 def parse_cli():
