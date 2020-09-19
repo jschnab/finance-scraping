@@ -14,17 +14,32 @@ class TestUtils(TestCase):
         no_header = remove_header(text, separator='\n')
         self.assertEqual(no_header, expected)
 
-    def test_format_date(self):
-        expected = '2019/08/31'
+    def test_format_date_monday(self):
+        expected = '2020/09/22'
 
-        input_date = '31-08-2019'
+        input_date = '21-09-2020'
         date = format_date(input_date)
         self.assertEqual(expected, date)
 
-        input_date = '31 August 2019'
+        input_date = '21 September 2020'
         date = format_date(input_date)
         self.assertEqual(expected, date)
 
-        input_date = 'August, 31st 2019'
+        input_date = 'September, 21st 2020'
+        date = format_date(input_date)
+        self.assertEqual(expected, date)
+
+    def test_format_date_friday(self):
+        expected = '2020/09/21'
+
+        input_date = '18-09-2020'
+        date = format_date(input_date)
+        self.assertEqual(expected, date)
+
+        input_date = '18 September 2020'
+        date = format_date(input_date)
+        self.assertEqual(expected, date)
+
+        input_date = 'September, 18th 2020'
         date = format_date(input_date)
         self.assertEqual(expected, date)
