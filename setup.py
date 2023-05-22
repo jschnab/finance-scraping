@@ -45,6 +45,6 @@ setup(
         'beautifulsoup4==4.7.1',
         'boto3==1.9.210',
         'psycopg2==2.8.3',
-        'requests==2.22.0',
+        'requests==2.31.0',
     ]
 )
