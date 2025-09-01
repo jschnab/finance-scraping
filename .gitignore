@@ -1,0 +1,14 @@
+*.csv
+*.swp
+*.sq3
+*.txt
+*.old
+__pycache__
+.git-old
+.coverage
+.terraform
+*.tfstate*
+dist
+finance_scraping.egg-info/*
+*backend.hcl
+finance_scraping_vars

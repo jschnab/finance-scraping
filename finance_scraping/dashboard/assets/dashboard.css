@@ -1,0 +1,112 @@
+* {font-family: Helvetica, Arial, sans-serif;}
+
+:root {
+	box-sizing: border-box;
+	font-size: calc(0.5em + 0.8vw);
+}
+
+*, ::before, ::after {
+	box-sizing: inherit;
+}
+
+.main {
+	float: left;
+	width: 100%;
+	padding: 0.5em;
+}
+
+h1 {
+	margin: 0 0.3em;
+}
+
+h2 {
+	border-left: 0.25em solid;
+	border-left-color: rgb(162,23,27);
+	padding: 0.1em 0.2em;
+	margin: 0.5em;
+}
+
+a {
+	color: white;
+}
+
+.summary {
+	background: rgb(162,23,27);
+	color: white;
+	padding: 0.5em 1.2em;
+	text-align: justify;
+	margin: 1.8em 0.6em;
+}
+
+.summary-title {
+	border-left: 0;
+	padding: 0;
+	margin: 0;
+}
+
+.summary-text {font-size: 0.85rem;}
+
+.container-dropdown {
+	float: left;
+	width: 100%;
+	margin: 0.5em 0;
+}
+
+.container-tables {
+	float: left;
+	width: 100%;
+	padding: 0.5em;
+}
+
+.subcontainer-dropdown {
+	margin-bottom: 1em;
+	margin-left: 1em;
+	width: calc(33% - 1em);
+	float: left
+}
+
+.container-one-table {
+	box-sizing: border-box;
+	margin: 0 0 2em 0.5em;
+	width: calc(50% - 1em);
+	float: left
+}
+
+.timeseries-container {
+	clear: both;
+}
+
+.label {
+	margin: 0.5em 0em;
+}
+
+.dropdown {
+}
+
+.datepicker {
+}
+
+.top-values {
+	text-align: center;
+	margin: 0.5em;
+}
+
+table {
+	border-collapse: collapse;
+	margin-top: 1em;
+	width: 100%;
+}
+
+th {
+	background: rgb(240,240,240);
+	padding: 0.2em;
+	text-align: left;
+	text-transform: capitalize;
+}
+
+td {
+	padding: 0.2em;
+}
+
+tr:nth-child(odd) {background: rgb(240,240,240);}
+tr:nth-child(even) {background: rgb(215,215,215);}
